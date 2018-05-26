@@ -15,17 +15,20 @@ DB_PASSWORD=ISIKAN_PASSWORD_DATABASE_ANDA
 JWT_SECRET=ISIKAN_KUNCI_JWT_RAHASIA
 ``` 
 
-Peta REST API  (`/api`):
+Peta REST API:
 1.  GET
-    * `/login` : Mendapatkan akses dengan JSON Web Token :white_check_mark: 
-    * `/users` : List semua user
-    * `/quiz` : List semua kuis :white_check_mark: 
-    * `/quiz/:id` : Lihat detail kuis beserta pertanyaan dan jawaban :white_check_mark: 
-    * `/user/:id/quiz/:id` : Lihat hasil kuis user beserta jawabannya :white_check_mark:
-    * `/user/:id/score` : Lihat skor user tiap kuis
-    * `/verify/:token` : Verifikasi email user
-    * `/reset/:token` : Reset user password
+    * `/api/login` : Mendapatkan akses dengan JSON Web Token :white_check_mark: 
+    * `/api/users` : List semua user :white_check_mark: 
+    * `/api/quiz` : List semua kuis :white_check_mark: 
+    * `/api/quiz/:id` : Lihat detail kuis beserta pertanyaan dan jawaban :white_check_mark: 
+    * `/api/user/:id/quiz/:id` : Lihat hasil kuis user beserta jawabannya :white_check_mark:
+    * `/api/user/:id/score` : Lihat skor user tiap kuis :white_check_mark: 
+    * `/api/verify/:token` : Verifikasi email user :white_check_mark: 
+    * `/reset/:token` : Halaman untuk reset
 2. POST
-    * `/user`: Buat user, cek kupon bila ada :white_check_mark:
-    * `/quiz`: Buat quiz dengan pertanyaan berikut jawaban
-    * `/answer`: Kirim jawaban user, proses skor
+    * `/api/user`: Buat user, cek kupon bila ada :white_check_mark:
+    * `/api/quiz`: Buat quiz dengan pertanyaan berikut jawaban :white_check_mark: 
+    * `/api/answer`: Kirim jawaban user, proses skor :white_check_mark: 
+    * `/reset` : Kirim email untuk reset Token
+3. PUT
+    * `/reset` : Reset user password dengan mengupdate ke password baru

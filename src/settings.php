@@ -19,7 +19,7 @@ return [
         "db" => [
             "host" => getenv('DB_HOST'),
             "dbname" => getenv('DB_NAME'),
-            "user" => getenv('DB_USER'),
+            "user" => getenv('DB_USERNAME'),
             "pass" => getenv('DB_PASSWORD')
         ],
         "jwt" => [

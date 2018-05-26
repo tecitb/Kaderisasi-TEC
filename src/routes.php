@@ -26,16 +26,15 @@ $app->post('/login', function (Request $request, Response $response, array $args
  
     // verify email address.
     if(!$user) {
-        return $this->response->withJson(['error' => true, 'message' => 'These credentials do not match our records.']);  
+        return $this->response->withJson(['error' => true, 'message' => 'These credentials do not match our records.']);
     }
  
     // verify password.
     if (!password_verify($input['password'],$user->password)) {
-        return $this->response->withJson(['error' => true, 'message' => 'These credentials do not match our records.']);  
+        return $this->response->withJson(['error' => true, 'message' => 'These credentials do not match our records.']); 
     }
  
     $settings = $this->get('settings'); // get settings array.
-    
     $token = JWT::encode([
     	'id' => $user->id,
     	'email' => $user->email,
@@ -44,14 +43,28 @@ $app->post('/login', function (Request $request, Response $response, array $args
     ], $settings['jwt']['secret'], "HS256");
  
     return $this->response->withJson(['token' => $token]);
- 
 });
 
 
 $app->group('/api', function(\Slim\App $app) {
  
-    $app->get('/user',function(Request $request, Response $response, array $args) {
+    $app->get('/jwt',function(Request $request, Response $response, array $args) {
       return $this->response->withJson($request->getAttribute("jwt"));
+    });
+
+    $app->get('/users', function(Request $request, Response $response, array $args) {
+      $sql = "SELECT id, name, email, created_at, updated_at, lunas, isAdmin FROM users";
+      try {
+        $db = $this->get('db');
+        $stmt = $db->query($sql);
+        $users = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $db = null;
+        return $response->withJson($users);
+      }
+      catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+      }
     });
 
     $app->get('/user/{id}',function(Request $request, Response $response, array $args) {
@@ -84,8 +97,9 @@ $app->group('/api', function(\Slim\App $app) {
         $stmt->execute([
           ':id' => $args['id']
         ]);
-        $quiz = $stmt->fetch(PDO::FETCH_OBJ);
+        $quiz = $stmt->fetchAll(PDO::FETCH_OBJ);
         $db = null;
+        $quiz->decoy = explode(", ", $quiz->decoy);
         return $response->withJson($quiz);
       }
       catch (PDOException $e) {
@@ -100,7 +114,7 @@ $app->group('/api', function(\Slim\App $app) {
         $db = $this->get('db');
 
         $stmt = $db->query($sql);
-        $quiz = $stmt->fetch(PDO::FETCH_OBJ);
+        $quiz = $stmt->fetchAll(PDO::FETCH_OBJ);
         $db = null;
         return $response->withJson($quiz);
       }
@@ -120,7 +134,7 @@ $app->group('/api', function(\Slim\App $app) {
           ':uid' => $args['uid'],
           ':qid' => $args['qid']
         ]);
-        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $result = $stmt->fetchAll(PDO::FETCH_OBJ);
         $db = null;
         return $response->withJson($result);
       }
@@ -139,7 +153,7 @@ $app->group('/api', function(\Slim\App $app) {
         $stmt->execute([
           ':id' => $args['id']
         ]);
-        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        $result = $stmt->fetchAll(PDO::FETCH_OBJ);
         $db = null;
         return $response->withJson($result);
       }
@@ -149,6 +163,28 @@ $app->group('/api', function(\Slim\App $app) {
       }
    	});
 
+    $app->get('/verify/{token}', function(Request $request, Response $response, array $args) {
+      $sql = "UPDATE users SET verified = 'YES' WHERE verified = :token";
+      try {
+        $db = $this->get('db');
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+          ':token' => $args['token']
+        ]);
+        $rowCount = $stmt->rowCount();
+        if ($rowCount == 0) {
+          $error = ['error' => ['text' => 'Invalid token.']];
+          return $response->withJson($error);
+        }
+        $result = ["notice"=>["type"=>"success", "text" => "Verification successful"]];
+        return $response->withJson($result);
+      }
+      catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+      }
+    });
+
     $app->post('/user', function(Request $request, Response $response, array $args) {
       if ($request->getAttribute("jwt")['isAdmin'] != 1) {
         $error = ['error' => ['text' => 'Permission denied']];
@@ -157,7 +193,7 @@ $app->group('/api', function(\Slim\App $app) {
 
       $name = $request->getParam('name');
       $email = $request->getParam('email');
-      if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      if(filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
         $error = ['error' => ['text' => 'Not a valid email address']];
         return $response->withJson($error);
       }
@@ -189,10 +225,9 @@ $app->group('/api', function(\Slim\App $app) {
       }
       
       $verified = md5(uniqid(rand(),true));
-      $resetToken = md5(uniqid(rand(),true));
       $isAdmin = 0;
 
-      $sql = "INSERT INTO `users`(`name`, `email`, `password`, `created_at`, `lunas`, `verified`, `resetToken`, `isAdmin`) VALUES (:name,:email,:password,:created_at,:lunas,:verified, :resetToken, :isAdmin)";
+      $sql = "INSERT INTO `users`(`name`, `email`, `password`, `created_at`, `lunas`, `verified`, `isAdmin`) VALUES (:name,:email,:password,:created_at,:lunas,:verified, :isAdmin)";
 
       try {
         $db = $this->get('db');
@@ -205,7 +240,6 @@ $app->group('/api', function(\Slim\App $app) {
           ':created_at' => $created_at,
           ':lunas' => $lunas,
           ':verified' => $verified,
-          ':resetToken' => $resetToken,
           ':isAdmin' => $isAdmin
         ]);
 
@@ -226,4 +260,184 @@ $app->group('/api', function(\Slim\App $app) {
       }
     });
 
+
+    $app->post('/quiz', function(Request $request, Response $response, array $args) {
+      if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+        $error = ['error' => ['text' => 'Permission denied']];
+        return $response->withJson($error);
+      }
+
+      $title = $request->getParam('title');
+
+      $sql = "INSERT INTO `quiz`(`title`) VALUES (:title)";
+      try {
+        $db = $this->get('db');
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+          ':title' => $title
+        ]);
+      }
+      catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+      }
+
+      $question_answer = $request->getParam('question_answer');
+      $type = $question_answer['type'];
+      $question = $question_answer['question'];
+      $answer = $question_answer['answer'];
+      $decoy = implode(", ", $question_answer['decoy']);
+      $created_at = date("Y-m-d H:i:s");
+      $quiz_id = $db->lastInsertId();
+
+      $sql = "INSERT INTO `question_answer`(`type`,`question`, `answer`, `decoy`, `created_at`, `quiz_id`) VALUES (:type, :question, :answer, :decoy, :created_at, :quiz_id)";
+      try {
+        $db = $this->get('db');
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+          ':type' => $type,
+          ':question' => $question,
+          ':answer' => $answer,
+          ':decoy' => $decoy,
+          ':created_at' => $created_at,
+          ':quiz_id' => $quiz_id
+        ]);
+
+        $data = ["notice"=>["type"=>"success", "text" => "Quiz sucessfully added"]];
+        return $response->withJson($data);
+      }
+      catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+      }
+    });
+
+
+    // Kirim jawaban user untuk diproses
+    $app->post('/answer', function(Request $request, Response $response, array $args) {
+
+      $answers = $request->getParam('answers');
+      $quiz_id = $request->getParam('quiz_id');
+      if (filter_var($quiz_id, FILTER_VALIDATE_INT) === FALSE) {
+        $error = ['error' => ['text' => 'Invalid quiz id']];
+        return $response->withJson($error);
+      }
+      $user_id = $request->getAttribute("jwt")['id'];
+
+      $sql = "INSERT INTO user_answer(`answer`,`qa_id`, `user_id`) VALUES ";
+      
+      $placeholders = [];
+      $user_answer = [];
+      $sql_add = [];
+      foreach ($answers as $answer) {
+        $sql_add[] = "(?, ?, " . $user_id . ")";
+        $placeholders[] = $answer["answer"];
+        $placeholders[] = $answer["qa_id"];
+        $user_answer[$answer["qa_id"]] = $answer["answer"];
+      }
+
+      $sql .= implode(", ", $placeholders);
+
+      try {
+        $db = $this->get('db');
+        $stmt = $db->prepare($sql);
+        $stmt->execute($placeholders);
+      }
+      catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+      }
+
+      $question_marks = array_map(function($element) {
+        return '?';
+      }, $user_answer);
+
+      $sql = "SELECT `id` as `qa_id`, `answer` as `correct_answer` FROM `question_answer` WHERE `id` IN (" . implode(',', $question_marks) . ") AND quiz_id = " . $quiz_id;
+
+      try {
+        $db = $this->get('db');
+        $stmt = $db->prepare($sql);
+        $stmt->execute(array_keys($user_answer));
+        $results = $stmt->fetchAll();
+
+        $score = 0;
+        $max = 0;
+
+        foreach ($results as $result) {
+          $key = $result['qa_id'];
+          if($user_answer[$key] == $result['correct_answer']) {
+            $score++;
+          }
+          $max++;
+        }
+
+        $grade = $score * 100 / $max;
+
+        $sql = "INSERT INTO `user_score`(`score`, `quiz_id`, `user_id`) VALUES (:grade,:quiz_id,:user_id)";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+          ':grade' => $grade,
+          ':quiz_id' => $quiz_id,
+          ':user_id' => $user_id
+        ]);
+
+        $data = ["notice"=>["type"=>"success", "text" => "Answer successfully submitted"]];
+        return $response->withJson($data);
+      }
+      catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+      }
+    })
+});
+
+$app->post('/reset', function(Request $request, Response $response, array $args) {
+
+  $email = $request->getParam('email');
+
+  if (filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
+    $error = ['error' => ['text' => 'Invalid email address'];
+    return $response->withJson($error);
+  }
+  
+  try {
+    $db = $this->get('db');
+    $stmt = $db->prepare("SELECT id, email FROM users WHERE email = :email");
+    $stmt->execute([
+      ':email' => $email
+    ]);
+
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if(empty($row['email'])){
+      $error = ['error' => ['text' => 'User not found'];
+      return $response->withJson($error);
+    }
+
+    $id = $row['id'];
+    $token = md5(uniqid(rand(),true));
+
+    $stmt = $db->prepare("INSERT INTO `user_reset`(`user_id`, `resetToken`) VALUES (:id,:token)");
+    $stmt->execute(array(
+        ':id' => $id,
+        ':token' => $token
+    ));
+
+    $to      = $email;
+    $subject = 'Password Reset';
+    $message = "<p>Someone requested that the password be reset.</p>
+    <p>If this was a mistake, just ignore this email and nothing will happen.</p>
+    <p>To reset your password, visit the following address: <a href=\"http://kaderisasi.tec.itb.ac.id/reset/$token\">http://kaderisasi.tec.itb.ac.id/reset/$token</a></p>";
+    $headers = array(
+        'From' => 'admin@kaderisasi.tec.itb.ac.id'
+    );
+
+    mail($to, $subject, $message, $headers);
+
+    $result = ["notice"=>["type"=>"success", "text" => "Check email to reset password"]];
+    return $response->withJson($result);
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
 });
