@@ -29,6 +29,6 @@ Peta REST API:
     * `/api/user`: Buat user, cek kupon bila ada :white_check_mark:
     * `/api/quiz`: Buat quiz dengan pertanyaan berikut jawaban :white_check_mark: 
     * `/api/answer`: Kirim jawaban user, proses skor :white_check_mark: 
-    * `/reset` : Kirim email untuk reset Token
+    * `/reset` : Kirim email untuk reset Token :white_check_mark: 
 3. PUT
     * `/reset` : Reset user password dengan mengupdate ke password baru
