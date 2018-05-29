@@ -30,5 +30,6 @@ Peta REST API:
     * `/api/quiz`: Buat quiz dengan pertanyaan berikut jawaban :white_check_mark: 
     * `/api/answer`: Kirim jawaban user, proses skor :white_check_mark: 
     * `/reset` : Kirim email untuk reset Token :white_check_mark: 
+    * `/generateCoupon/:num`: Generate coupon (default max: 100) :white_check_mark: 
 3. PUT
-    * `/reset` : Reset user password dengan mengupdate ke password baru
+    * `/reset` : Reset user password dengan mengupdate ke password baru :white_check_mark: 

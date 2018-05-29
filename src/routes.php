@@ -312,6 +312,50 @@ $app->group('/api', function(\Slim\App $app) {
       }
     });
 
+    $app->post('/generateCoupon/{num}', function (Request $request, Response $response, array $args) {
+      if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+        $error = ['error' => ['text' => 'Permission denied']];
+        return $response->withJson($error);
+      }
+
+      $number_of_coupons = $args["num"];
+      if (filter_var($number_of_coupons, FILTER_VALIDATE_INT) === FALSE) {
+        $error = ['error' => ['text' => 'Invalid number of coupon']];
+        return $response->withJson($error);
+      }
+
+      if($number_of_coupons > 50 || $number_of_coupons < 1) {
+        $error = ['error' => ['text' => 'Enter number between 1 and 50 only']];
+        return $response->withJson($error);
+      }
+
+      require_once 'class.coupon.php';
+      $sql = "INSERT INTO `coupons`(`coupon`) VALUES ";
+      $pieces = [];
+      for ($i=0; $i < $number_of_coupons; $i++) { 
+        $pieces[] = "('" . coupon::generate(8) . "')";
+      }
+      $sql .= implode(',', $pieces);
+
+      try {
+        $db = $this->get('db');
+        $stmt = $db->query($sql);
+        $row_affected = $stmt->rowCount();
+        if ($row_affected == $number_of_coupons) {
+          $success = ["notice"=>["type"=>"success", "text" => "$row_affected coupons sucessfully added"]];
+          return $response->withJson($success);
+        }
+        else {
+          $warning = ["notice"=>["type"=>"warning", "text" => "Only $row_affected coupons sucessfully added"]];
+          return $response->withJson($warning);
+        }
+      }
+      catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+      }
+    });
+
 
     // Kirim jawaban user untuk diproses
     $app->post('/answer', function(Request $request, Response $response, array $args) {
@@ -388,15 +432,19 @@ $app->group('/api', function(\Slim\App $app) {
         $error = ['error' => ['text' => $e->getMessage()]];
         return $response->withJson($error);
       }
-    })
+    });
+
+
 });
 
+
+// User reset
 $app->post('/reset', function(Request $request, Response $response, array $args) {
 
   $email = $request->getParam('email');
 
   if (filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
-    $error = ['error' => ['text' => 'Invalid email address'];
+    $error = ['error' => ['text' => 'Invalid email address']];
     return $response->withJson($error);
   }
   
@@ -409,7 +457,7 @@ $app->post('/reset', function(Request $request, Response $response, array $args)
 
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if(empty($row['email'])){
-      $error = ['error' => ['text' => 'User not found'];
+      $error = ['error' => ['text' => 'User not found']];
       return $response->withJson($error);
     }
 
@@ -434,6 +482,59 @@ $app->post('/reset', function(Request $request, Response $response, array $args)
     mail($to, $subject, $message, $headers);
 
     $result = ["notice"=>["type"=>"success", "text" => "Check email to reset password"]];
+    return $response->withJson($result);
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+});
+
+$app->get('/reset/{token}', function(Request $request, Response $response, array $args) {
+  $token = $args["token"];
+  $sql = "SELECT `user_id`, `resetToken` as `reset_token` FROM `user_reset` WHERE resetToken = :token";
+  try {
+    $db = $this->get('db');
+    $stmt = $db->prepare($sql);
+    $stmt->execute([
+      ':token' => $token
+    ]);
+    $result = $stmt->fetch(PDO::FETCH_OBJ);
+
+    return $response->withJson($result);
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+});
+
+$app->put('/reset/{token}', function(Request $request, Response $response, array $args) {
+  $user_id = $request->getParam("user_id");
+  $token = $request->getParam("reset_token");
+  $new_password = $request->getParam("new_password");
+  $sql = "SELECT `user_id` FROM `user_reset` WHERE resetToken = :token AND user_id = :uid";
+  try {
+    $db = $this->get('db');
+    $stmt = $db->prepare($sql);
+    $stmt->execute([
+      ':token' => $token,
+      ':uid' => $user_id
+    ]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if(empty($row['user_id'])){
+      $error = ['error' => ['text' => 'Forbidden']];
+      return $response->withJson($error);
+    }
+
+    $password = password_hash($new_password, PASSWORD_DEFAULT);
+    $stmt = $db->prepare("UPDATE `users` SET password = :password WHERE id = :uid");
+    $stmt->execute([
+      ':password' => $password,
+      ':uid' => $user_id
+    ]);
+
+    $result = ["notice"=>["type"=>"success", "text" => "Password reset success"]];
     return $response->withJson($result);
   }
   catch (PDOException $e) {
