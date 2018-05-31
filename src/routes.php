@@ -192,11 +192,12 @@ $app->group('/api', function(\Slim\App $app) {
       }
 
       $name = $request->getParam('name');
-      $email = $request->getParam('email');
-      if(filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
-        $error = ['error' => ['text' => 'Not a valid email address']];
+      if(filter_var($request->getParam('email'), FILTER_VALIDATE_EMAIL) === FALSE) {
+        var_dump($request->getParam('email'));
+        $error = ['error' => ['text' => "$email is not a valid email address"]];
         return $response->withJson($error);
       }
+      $email = $request->getParam('email');
       $password = password_hash($request->getParam('password'), PASSWORD_DEFAULT);
       $created_at = date("Y-m-d H:i:s");
       $lunas = 0;
@@ -215,6 +216,9 @@ $app->group('/api', function(\Slim\App $app) {
           
           if($result['ada_kupon'] == 1) {
             $lunas = 1;
+          }
+          else {
+            return $response->withJson(['error'=>['text' => 'Invalid coupon']]);
           }
         }
         catch (PDOException $e) {
@@ -255,7 +259,11 @@ $app->group('/api', function(\Slim\App $app) {
         return $response->withJson($data);
       }
       catch (PDOException $e) {
-        $error = ['error' => ['text' => $e->getMessage()]];
+        $msg = $e->getMessage();
+        if (strpos($e->getMessage(), 'Duplicate entry') !== FALSE) {
+          $msg = "User already exists";
+        }
+        $error = ['error' => ['text' => $msg]];
         return $response->withJson($error);
       }
     });
@@ -283,25 +291,28 @@ $app->group('/api', function(\Slim\App $app) {
       }
 
       $question_answer = $request->getParam('question_answer');
-      $type = $question_answer['type'];
-      $question = $question_answer['question'];
-      $answer = $question_answer['answer'];
-      $decoy = implode(", ", $question_answer['decoy']);
-      $created_at = date("Y-m-d H:i:s");
-      $quiz_id = $db->lastInsertId();
 
-      $sql = "INSERT INTO `question_answer`(`type`,`question`, `answer`, `decoy`, `created_at`, `quiz_id`) VALUES (:type, :question, :answer, :decoy, :created_at, :quiz_id)";
+      $data = [];
+      foreach ($question_answer as $qa) {
+        $data[] = $qa['type'];
+        $data[] = $qa['question'];
+        $data[] = $qa['answer'];
+        $data[] = implode(", ", $qa['decoy']);
+        $data[] = date("Y-m-d H:i:s");
+        $data[] = $db->lastInsertId();
+      }
+
+      $count = count($data);
+      $add = [];
+      for ($i=0; $i < $count; $i = $i + 6) { 
+        $add[] = "(?, ?, ?, ?, ?, ?)";
+      }
+
+      $sql = "INSERT INTO `question_answer`(`type`,`question`, `answer`, `decoy`, `created_at`, `quiz_id`) VALUES " . implode(',', $add);
       try {
         $db = $this->get('db');
         $stmt = $db->prepare($sql);
-        $stmt->execute([
-          ':type' => $type,
-          ':question' => $question,
-          ':answer' => $answer,
-          ':decoy' => $decoy,
-          ':created_at' => $created_at,
-          ':quiz_id' => $quiz_id
-        ]);
+        $stmt->execute($data);
 
         $data = ["notice"=>["type"=>"success", "text" => "Quiz sucessfully added"]];
         return $response->withJson($data);
@@ -380,7 +391,7 @@ $app->group('/api', function(\Slim\App $app) {
         $user_answer[$answer["qa_id"]] = $answer["answer"];
       }
 
-      $sql .= implode(", ", $placeholders);
+      $sql .= implode(",", $sql_add);
 
       try {
         $db = $this->get('db');
@@ -449,42 +460,51 @@ $app->post('/reset', function(Request $request, Response $response, array $args)
   }
   
   try {
-    $db = $this->get('db');
-    $stmt = $db->prepare("SELECT id, email FROM users WHERE email = :email");
-    $stmt->execute([
-      ':email' => $email
-    ]);
-
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if(empty($row['email'])){
-      $error = ['error' => ['text' => 'User not found']];
-      return $response->withJson($error);
-    }
-
-    $id = $row['id'];
     $token = md5(uniqid(rand(),true));
-
-    $stmt = $db->prepare("INSERT INTO `user_reset`(`user_id`, `resetToken`) VALUES (:id,:token)");
-    $stmt->execute(array(
-        ':id' => $id,
-        ':token' => $token
-    ));
 
     $to      = $email;
     $subject = 'Password Reset';
     $message = "<p>Someone requested that the password be reset.</p>
     <p>If this was a mistake, just ignore this email and nothing will happen.</p>
     <p>To reset your password, visit the following address: <a href=\"http://kaderisasi.tec.itb.ac.id/reset/$token\">http://kaderisasi.tec.itb.ac.id/reset/$token</a></p>";
-    $headers = array(
-        'From' => 'admin@kaderisasi.tec.itb.ac.id'
-    );
+    $headers = 'From: admin@kader.tec.itb.ac.id' . "\r\n" .
+            'To: ' . $email . "\r\n" .
+            'Reply-To: admin@kader.tec.itb.ac.id' . "\r\n" .
+            'X-Mailer: PHP/' . phpversion();
 
-    mail($to, $subject, $message, $headers);
+    if(mail($to, $subject, $message, $headers)) {
+      $db = $this->get('db');
+      $stmt = $db->prepare("SELECT id, email FROM users WHERE email = :email");
+      $stmt->execute([
+        ':email' => $email
+      ]);
 
-    $result = ["notice"=>["type"=>"success", "text" => "Check email to reset password"]];
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if(empty($row['email'])){
+        $error = ['error' => ['text' => 'User not found']];
+        return $response->withJson($error);
+      }
+
+      $id = $row['id'];
+
+      $stmt = $db->prepare("INSERT INTO `user_reset`(`user_id`, `resetToken`) VALUES (:id,:token)");
+      $stmt->execute(array(
+          ':id' => $id,
+          ':token' => $token
+      ));
+
+      $result = ["notice"=>["type"=>"success", "text" => "Check email to reset password"]];
+    }
+    else {
+      $result = ['error' => ['text' => 'Something gone wrong']];
+    }
     return $response->withJson($result);
   }
   catch (PDOException $e) {
+    $msg = $e->getMessage();
+    if (strpos($msg, "Duplicate entry") !== FALSE) {
+      $msg = "Reset token already exists";
+    }
     $error = ['error' => ['text' => $e->getMessage()]];
     return $response->withJson($error);
   }
