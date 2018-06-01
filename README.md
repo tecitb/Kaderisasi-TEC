@@ -1,10 +1,8 @@
 # Situs Kaderisasi TEC
 
-Objectives:
-* Backend RESTful API
-* Single Page Application
+Backend RESTful API, dengan fungsionalitas quiz,user,coupon management 
 
-Instalasi:
+##Instalasi:
 1. `git clone`
 2. Buat file environment variabel `.env` yang berisi 
 ```
