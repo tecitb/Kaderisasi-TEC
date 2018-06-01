@@ -2,7 +2,7 @@
 
 Backend RESTful API, dengan fungsionalitas quiz,user,coupon management 
 
-##Instalasi:
+## Instalasi:
 1. `git clone`
 2. Buat file environment variabel `.env` yang berisi 
 ```
@@ -13,7 +13,7 @@ DB_PASSWORD=ISIKAN_PASSWORD_DATABASE_ANDA
 JWT_SECRET=ISIKAN_KUNCI_JWT_RAHASIA
 ``` 
 
-##Peta REST API:
+## Peta REST API:
 1.  GET
     * `/api/login` : Mendapatkan akses dengan JSON Web Token :white_check_mark: 
     * `/api/users` : List semua user :white_check_mark: 
