@@ -132,3 +132,84 @@ $app->delete('/relations/delete/{id}', function(Request $request, Response $resp
         return $response->withJson($error);
     }
 });
+
+/**
+ * Generates user vCard
+ */
+$app->get('/relations/vcard', function(Request $request, Response $response, array $args) {
+    $userId = $request->getAttribute("jwt")['id'];
+
+    try {
+        $sql = "SELECT * FROM users WHERE id=:user_id";
+
+        $db = $this->get('db');
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+            ':user_id' => $userId,
+        ]);
+
+        $user = $stmt->fetch(PDO::FETCH_OBJ);
+
+        $vcard = "BEGIN:VCARD\n";
+        if($user->name != null) $vcard .= "FN:".$user->name."\n";
+        $vcard .= "ORG:Techno Entrepreneur Club ITB\n";
+        if($user->mobile != null) $vcard .= "TEL;CELL:".$user->mobile."\n";
+        if($user->address != null) $vcard .= "ADR;HOME:".$user->address."\n";
+        if($user->tec_regno != null) $vcard .= "UID:".$user->tec_regno."\n";
+        if($user->about_me != null) $vcard .= "NOTE:".$user->about_me."\n";
+        if($user->line_id != null) $vcard .= "X-LINE:".$user->line_id."\n";
+        if($user->instagram != null) $vcard .= "X-INSTAGRAM:".$user->instagram."\n";
+        if($user->interests != null) $vcard .= "X-INTERESTS:".$user->interests."\n";
+        $vcard .= "END:VCARD";
+
+        return $response->withJson(array("vcard" => utf8_encode($vcard)));
+    }
+    catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+    }
+});
+
+/**
+ * Generates user vCard BY ADMIN
+ */
+
+$app->get('/relations/vcard/{user_id}', function(Request $request, Response $response, array $args) {
+    $isAdmin = $request->getAttribute("jwt")['id'];
+
+    if(!$isAdmin) {
+        return $this->response->withJson(['error' => true, 'message' => 'Unauthorized']);
+    }
+
+    $userId = $args['user_id'];
+
+    try {
+        $sql = "SELECT * FROM users WHERE id=:user_id";
+
+        $db = $this->get('db');
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+            ':user_id' => $userId,
+        ]);
+
+        $user = $stmt->fetch(PDO::FETCH_OBJ);
+
+        $vcard = "BEGIN:VCARD\n";
+        if($user->name != null) $vcard .= "FN:".$user->name."\n";
+        $vcard .= "ORG:Techno Entrepreneur Club ITB\n";
+        if($user->mobile != null) $vcard .= "TEL;CELL:".$user->mobile."\n";
+        if($user->address != null) $vcard .= "ADR;HOME:".$user->address."\n";
+        if($user->tec_regno != null) $vcard .= "UID:".$user->tec_regno."\n";
+        if($user->about_me != null) $vcard .= "NOTE:".$user->about_me."\n";
+        if($user->line_id != null) $vcard .= "X-LINE:".$user->line_id."\n";
+        if($user->instagram != null) $vcard .= "X-INSTAGRAM:".$user->instagram."\n";
+        if($user->interests != null) $vcard .= "X-INTERESTS:".$user->interests."\n";
+        $vcard .= "END:VCARD";
+
+        return $response->withJson(array("vcard" => utf8_encode($vcard)));
+    }
+    catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+    }
+});
