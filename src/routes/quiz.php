@@ -16,10 +16,12 @@ $app->get('/quiz/{id}', function(Request $request, Response $response, array $ar
      $stmt->execute([
        ':id' => $args['id']
      ]);
-     $quiz = $stmt->fetchAll(PDO::FETCH_OBJ);
+     $result = $stmt->fetchAll(PDO::FETCH_OBJ);
      $db = null;
-     $quiz->decoy = explode(", ", $quiz->decoy);
-     return $response->withJson($quiz);
+     foreach ($result as $quiz) {
+       $quiz->decoy = explode(", ", $quiz->decoy);
+     }
+     return $response->withJson($result);
    }
    catch (PDOException $e) {
      $error = ['error' => ['text' => $e->getMessage()]];
