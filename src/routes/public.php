@@ -37,11 +37,6 @@ $app->post('/login', function (Request $request, Response $response, array $args
 
 // REGISTRATION
 $app->post('/registration', function(Request $request, Response $response, array $args) {
-  /* NOTE /registration endpoint should be public */
-  /*if ($request->getAttribute("jwt")['isAdmin'] != 1) {
-    $error = ['error' => ['text' => 'Permission denied']];
-    return $response->withJson($error);
-  }*/
 
   $name = $request->getParam('name');
   $email = $request->getParam('email');
