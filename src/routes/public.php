@@ -27,7 +27,8 @@ $app->post('/login', function (Request $request, Response $response, array $args
       'id' => $user->id,
       'email' => $user->email,
       'name' => $user->name,
-      'isAdmin' => $user->isAdmin
+      'isAdmin' => $user->isAdmin,
+      'tec_regno' => $user->tec_regno
     ], $settings['jwt']['secret'], "HS256");
  
     return $this->response->withJson(['token' => $token]);
@@ -38,8 +39,9 @@ $app->post('/login', function (Request $request, Response $response, array $args
 $app->post('/registration', function(Request $request, Response $response, array $args) {
 
   $name = $request->getParam('name');
-  if(filter_var($request->getParam('email'), FILTER_VALIDATE_EMAIL) === FALSE) {
-    var_dump($request->getParam('email'));
+  $email = $request->getParam('email');
+  if(filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
+    var_dump($email);
     $error = ['error' => ['text' => "$email is not a valid email address"]];
     return $response->withJson($error);
   }
@@ -77,9 +79,39 @@ $app->post('/registration', function(Request $request, Response $response, array
   $verified = md5(uniqid(rand(),true));
   $isAdmin = 0;
 
-  $sql = "INSERT INTO `users`(`name`, `email`, `password`, `created_at`, `lunas`, `verified`, `isAdmin`) VALUES (:name,:email,:password,:created_at,:lunas,:verified, :isAdmin)";
+  $sql = "INSERT INTO `users`
+          (`name`, `email`, `password`, `created_at`, `lunas`, `verified`, `isAdmin`, `interests`, `nickname`, `about_me`, `line_id`, `instagram`, `mobile`, `tec_regno`, `address`) 
+          VALUES (:name,:email,:password,:created_at,:lunas,:verified, :isAdmin, :interests, :nickname, :about_me, :line_id, :instagram, :mobile, :tec_regno, :address)";
 
-  try {
+  /* Informational fields */
+  $interests = $request->getParam("interests");
+  $nickname = $request->getParam("nickname");
+  $aboutMe = $request->getParam("about_me");
+  $lineId = $request->getParam("line_id");
+  $instagram = $request->getParam("instagram");
+  $mobile = $request->getParam("mobile");
+  $address = $request->getParam("address");
+
+  /* Generate TEC registration number */
+  $tecRegNo = 1;
+  $sq2 = "SELECT id FROM users ORDER BY id DESC LIMIT 1";
+
+    try {
+        $stmt = $db->prepare($sq2);
+        $stmt->execute();
+        $result = $stmt->fetch();
+
+        if($stmt->rowCount() > 0) {
+            $tecRegNo = $result['id']+1;
+        }
+    }
+    catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+    }
+
+    $tecRegNoStr = "TEC".str_pad($tecRegNo, 3, '0', STR_PAD_LEFT);
+    try {
     $db = $this->get('db');
 
     $stmt = $db->prepare($sql);
@@ -90,7 +122,15 @@ $app->post('/registration', function(Request $request, Response $response, array
       ':created_at' => $created_at,
       ':lunas' => $lunas,
       ':verified' => $verified,
-      ':isAdmin' => $isAdmin
+      ':isAdmin' => $isAdmin,
+      ':interests' => $interests,
+      ':nickname' => $nickname,
+      ':about_me' => $aboutMe,
+      ':line_id' => $lineId,
+      ':instagram' => $instagram,
+      ':mobile' => $mobile,
+      ':tec_regno' => $tecRegNoStr,
+      ':address' => $address
     ]);
 
     $user_id = $db->lastInsertId();
@@ -106,6 +146,7 @@ $app->post('/registration', function(Request $request, Response $response, array
     $settings = $this->get('settings'); // get settings array.
     $token = JWT::encode([
       'id' => $user_id,
+      'tec_regno' => $tecRegNoStr,
       'name' => $name,
       'email' => $email,
       'isAdmin' => $isAdmin

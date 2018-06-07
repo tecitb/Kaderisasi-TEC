@@ -1,10 +1,10 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.6
+-- version 4.6.5.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 29, 2018 at 05:38 PM
--- Server version: 5.6.35
+-- Generation Time: 07 Jun 2018 pada 15.30
+-- Versi Server: 10.1.21-MariaDB
 -- PHP Version: 7.1.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -23,7 +23,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `coupons`
+-- Struktur dari tabel `coupons`
 --
 
 CREATE TABLE `coupons` (
@@ -32,7 +32,7 @@ CREATE TABLE `coupons` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `coupons`
+-- Dumping data untuk tabel `coupons`
 --
 
 INSERT INTO `coupons` (`id`, `coupon`) VALUES
@@ -60,7 +60,7 @@ INSERT INTO `coupons` (`id`, `coupon`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `question_answer`
+-- Struktur dari tabel `question_answer`
 --
 
 CREATE TABLE `question_answer` (
@@ -74,7 +74,7 @@ CREATE TABLE `question_answer` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `question_answer`
+-- Dumping data untuk tabel `question_answer`
 --
 
 INSERT INTO `question_answer` (`id`, `type`, `question`, `answer`, `decoy`, `created_at`, `quiz_id`) VALUES
@@ -84,7 +84,7 @@ INSERT INTO `question_answer` (`id`, `type`, `question`, `answer`, `decoy`, `cre
 -- --------------------------------------------------------
 
 --
--- Table structure for table `quiz`
+-- Struktur dari tabel `quiz`
 --
 
 CREATE TABLE `quiz` (
@@ -93,7 +93,7 @@ CREATE TABLE `quiz` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `quiz`
+-- Dumping data untuk tabel `quiz`
 --
 
 INSERT INTO `quiz` (`id`, `title`) VALUES
@@ -102,7 +102,7 @@ INSERT INTO `quiz` (`id`, `title`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Struktur dari tabel `users`
 --
 
 CREATE TABLE `users` (
@@ -114,22 +114,30 @@ CREATE TABLE `users` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `lunas` tinyint(1) NOT NULL,
   `verified` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `isAdmin` tinyint(1) NOT NULL DEFAULT '0'
+  `isAdmin` tinyint(1) NOT NULL DEFAULT '0',
+  `interests` text COLLATE utf8_unicode_ci,
+  `nickname` text COLLATE utf8_unicode_ci,
+  `about_me` text COLLATE utf8_unicode_ci,
+  `line_id` text COLLATE utf8_unicode_ci,
+  `instagram` text COLLATE utf8_unicode_ci,
+  `mobile` text COLLATE utf8_unicode_ci,
+  `tec_regno` text COLLATE utf8_unicode_ci,
+  `address` text COLLATE utf8_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `users`
+-- Dumping data untuk tabel `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `created_at`, `updated_at`, `lunas`, `verified`, `isAdmin`) VALUES
-(1, 'Terry Djony', 'demokader@tec.itb.ac.id', '$2y$10$W/sVuNC73RgVexLhMwRMj.jA2rN0th7owX7hrdxn.m2YuAoIAt29G', '2018-05-24 01:10:00', '2018-05-24 01:10:48', 0, 'Yes', 1),
-(2, 'John Terry', 'johnterry@gmail.com', '$2y$10$AcfUvDusmZN5/ZRbWAFHZOswg22gD/UOt.8gFfJy8NAJwaIo0r8Z2', '2018-05-25 10:39:53', '2018-05-25 16:39:54', 0, '659a6d82e0ec8cbb5ac3f60adb9fcaf4', 0),
-(3, 'Terry Jhonny', 'terryjhonny@gmail.com', '$2y$10$tG/20YpUK9diSPB75aJfSu.yqr8POHssDIP6fGgb4kEdkxR6sQpDW', '2018-05-25 13:48:49', '2018-05-25 19:48:50', 1, 'fb2206e6c003e65c3dfc00caefd67fcf', 0);
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `created_at`, `updated_at`, `lunas`, `verified`, `isAdmin`, `interests`, `nickname`, `about_me`, `line_id`, `instagram`, `mobile`, `tec_regno`, `address`) VALUES
+(1, 'Terry Djony', 'demokader@tec.itb.ac.id', '$2y$10$W/sVuNC73RgVexLhMwRMj.jA2rN0th7owX7hrdxn.m2YuAoIAt29G', '2018-05-24 01:10:00', '2018-05-24 01:10:48', 0, 'Yes', 1, NULL, NULL, NULL, NULL, NULL, NULL, 'A17001', NULL),
+(2, 'John Terry', 'johnterry@gmail.com', '$2y$10$AcfUvDusmZN5/ZRbWAFHZOswg22gD/UOt.8gFfJy8NAJwaIo0r8Z2', '2018-05-25 10:39:53', '2018-05-25 16:39:54', 0, '659a6d82e0ec8cbb5ac3f60adb9fcaf4', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(3, 'Terry Jhonny', 'terryjhonny@gmail.com', '$2y$10$tG/20YpUK9diSPB75aJfSu.yqr8POHssDIP6fGgb4kEdkxR6sQpDW', '2018-05-25 13:48:49', '2018-05-25 19:48:50', 1, 'fb2206e6c003e65c3dfc00caefd67fcf', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_answer`
+-- Struktur dari tabel `user_answer`
 --
 
 CREATE TABLE `user_answer` (
@@ -140,7 +148,7 @@ CREATE TABLE `user_answer` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `user_answer`
+-- Dumping data untuk tabel `user_answer`
 --
 
 INSERT INTO `user_answer` (`id`, `answer`, `qa_id`, `user_id`) VALUES
@@ -150,7 +158,29 @@ INSERT INTO `user_answer` (`id`, `answer`, `qa_id`, `user_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_reset`
+-- Struktur dari tabel `user_relations`
+--
+
+CREATE TABLE `user_relations` (
+  `id` bigint(20) NOT NULL,
+  `user_id` text NOT NULL,
+  `relation_with` text NOT NULL COMMENT 'TEC ID no',
+  `vcard` text NOT NULL,
+  `full_name` text NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `user_relations`
+--
+
+INSERT INTO `user_relations` (`id`, `user_id`, `relation_with`, `vcard`, `full_name`, `timestamp`) VALUES
+(1, '1', 'TEC002', 'BEGIN VCARD\n9y278t65frdtecfvhgjbhxckodueftwycsabhdnscubygsydstyfueyiwgyftvyxjusdgftyvhcyychvcfghvytfuytwfdjtgeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImRlbW9rYWRlckB0ZWMuaXRiLmFjLmlkIiwibmFtZSI6IlRlcnJ5IERqb255IiwiaXNBZG1pbiI6IjEifQ.AEnPXou8tvqJglqZPInjnrt6WvGIWPtRki3-NYGijsIeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImRlbW9rYWRlckB0ZWMuaXRiLmFjLmlkIiwibmFtZSI6IlRlcnJ5IERqb255IiwiaXNBZG1pbiI6IjEifQ.AEnPXou8tvqJglqZPInjnrt6WvGIWPtRki3-NYGijsIeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImRlbW9rYWRlckB0ZWMuaXRiLmFjLmlkIiwibmFtZSI6IlRlcnJ5IERqb255IiwiaXNBZG1pbiI6IjEifQ.AEnPXou8tvqJglqZPInjnrt6WvGIWPtRki3-NYGijsIeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImRlbW9rYWRlckB0ZWMuaXRiLmFjLmlkIiwibmFtZSI6IlRlcnJ5IERqb255IiwiaXNBZG1pbiI6IjEifQ.AEnPXou8tvqJglqZPInjnrt6WvGIWPtRki3-NYGijsIeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImRlbW9rYWRlckB0ZWMuaXRiLmFjLmlkIiwibmFtZSI6IlRlcnJ5IERqb255IiwiaXNBZG1pbiI6IjEifQ.AEnPXou8tvqJglqZPInjnrt6WvGIWPtRki3-NYGijsIeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImRlbW9rYWRlckB0ZWMuaXRiLmFjLmlkIiwibmFtZSI6IlRlcnJ5IERqb255IiwiaXNBZG1pbiI6IjEifQ.AEnPXou8tvqJglqZPInjnrt6WvGIWPtRki3-NYGijsIeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImRlbW9rYWRlckB0ZWMuaXRiLmFjLmlkIiwibmFtZSI6IlRlcnJ5IERqb255IiwiaXNBZG1pbiI6IjEifQ.AEnPXou8tvqJglqZPInjnrt6WvGIWPtRki3-NYGijsI\nEND VCARD', 'Muhammad Aditya Hilmy', '2018-06-07 12:46:47');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `user_reset`
 --
 
 CREATE TABLE `user_reset` (
@@ -159,7 +189,7 @@ CREATE TABLE `user_reset` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `user_reset`
+-- Dumping data untuk tabel `user_reset`
 --
 
 INSERT INTO `user_reset` (`user_id`, `resetToken`) VALUES
@@ -168,7 +198,7 @@ INSERT INTO `user_reset` (`user_id`, `resetToken`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_score`
+-- Struktur dari tabel `user_score`
 --
 
 CREATE TABLE `user_score` (
@@ -179,7 +209,7 @@ CREATE TABLE `user_score` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `user_score`
+-- Dumping data untuk tabel `user_score`
 --
 
 INSERT INTO `user_score` (`id`, `score`, `quiz_id`, `user_id`) VALUES
@@ -219,6 +249,12 @@ ALTER TABLE `users`
 -- Indexes for table `user_answer`
 --
 ALTER TABLE `user_answer`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `user_relations`
+--
+ALTER TABLE `user_relations`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -262,6 +298,11 @@ ALTER TABLE `users`
 --
 ALTER TABLE `user_answer`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT for table `user_relations`
+--
+ALTER TABLE `user_relations`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `user_score`
 --
