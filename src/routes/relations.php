@@ -15,7 +15,9 @@ use Slim\Http\Response;
 $app->get('/relations/get',  function(Request $request, Response $response, array $args) {
     $userId = $request->getAttribute("jwt")['id'];
 
-    $sql = "SELECT id, relation_with, full_name FROM `user_relations` WHERE `user_id`=:user_id";
+    $sql = "SELECT user_relations.id, relation_with, full_name, tec_regno FROM `user_relations` 
+            LEFT JOIN users ON user_relations.user_id = users.id
+            WHERE `user_id`=:user_id";
 
     try {
         $db = $this->get('db');
@@ -40,7 +42,9 @@ $app->get('/relations/get',  function(Request $request, Response $response, arra
 $app->get('/relations/details/{id}',  function(Request $request, Response $response, array $args) {
     $userId = $request->getAttribute("jwt")['id'];
 
-    $sql = "SELECT * FROM `user_relations` WHERE `user_id`=:user_id AND `id`=:id";
+    $sql = "SELECT user_relations.*, users.tec_regno FROM `user_relations` 
+            LEFT JOIN users ON user_relations.user_id = users.id
+            WHERE `user_id`=:user_id AND `user_relations`.`id`=:id";
 
     try {
         $db = $this->get('db');
