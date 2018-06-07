@@ -15,7 +15,6 @@ JWT_SECRET=ISIKAN_KUNCI_JWT_RAHASIA
 
 ## Peta REST API:
 1.  GET
-    * `/api/login` : Mendapatkan akses dengan JSON Web Token :white_check_mark: (return token)
     * `/api/users` : List semua user :white_check_mark: 
     * `/api/quiz` : List semua kuis :white_check_mark: 
     * `/api/quiz/:id` : Lihat detail kuis beserta pertanyaan dan jawaban :white_check_mark: 
@@ -24,6 +23,7 @@ JWT_SECRET=ISIKAN_KUNCI_JWT_RAHASIA
     * `/api/verify/:token` : Verifikasi email user :white_check_mark: 
     * `/reset/:token` : Halaman untuk reset
 2. POST
+    * `/api/login` : Mendapatkan akses dengan JSON Web Token :white_check_mark: (return token)
     * `/api/registration`: Buat user, cek kupon bila ada :white_check_mark:
     * `/api/quiz`: Buat quiz dengan pertanyaan berikut jawaban :white_check_mark: 
     * `/api/answer`: Kirim jawaban user, proses skor :white_check_mark: 
