@@ -40,26 +40,6 @@ $app->get('/user/{id}',function(Request $request, Response $response, array $arg
     }
 });
 
-// GET USER RESULT IN A QUIZ
-$app->get('/user/{uid}/quiz/{qid}', function(Request $request, Response $response, array $args) {
-  $sql = "SELECT user_answer.answer, user_score.score as quiz_score, quiz.title as quiz_title, question, question_answer.type as question_type, question_answer.answer as correct_answer, decoy FROM user_answer INNER JOIN question_answer ON user_answer.qa_id = question_answer.id INNER JOIN users ON user_answer.user_id = users.id INNER JOIN quiz ON quiz.id = question_answer.quiz_id INNER JOIN user_score on user_score.quiz_id = quiz.id WHERE quiz.id = :qid AND users.id = :uid";
- try {
-   $db = $this->get('db');
-
-   $stmt = $db->prepare($sql);
-   $stmt->execute([
-     ':uid' => $args['uid'],
-     ':qid' => $args['qid']
-   ]);
-   $result = $stmt->fetchAll(PDO::FETCH_OBJ);
-   $db = null;
-   return $response->withJson($result);
- }
- catch (PDOException $e) {
-   $error = ['error' => ['text' => $e->getMessage()]];
-   return $response->withJson($error);
- }
-});
 
 // GET ALL SCORE OF A USER
 $app->get('/user/{id}/score', function(Request $request, Response $response, array $args) {

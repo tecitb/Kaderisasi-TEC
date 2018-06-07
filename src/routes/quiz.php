@@ -19,7 +19,16 @@ $app->get('/quiz/{id}', function(Request $request, Response $response, array $ar
      $result = $stmt->fetchAll(PDO::FETCH_OBJ);
      $db = null;
      foreach ($result as $quiz) {
-       $quiz->decoy = explode(", ", $quiz->decoy);
+      if($quiz->type == "pilgan") {
+        $quiz->option = array_merge(explode(", ", $quiz->decoy), [$quiz->answer]);
+        shuffle($quiz->option);
+        unset($quiz->answer);
+        unset($quiz->decoy);
+      }
+      elseif ($quiz->type == "isian") {
+        unset($quiz->answer);
+        unset($quiz->decoy);
+      }
      }
      return $response->withJson($result);
    }
@@ -45,65 +54,6 @@ $app->get('/quiz', function(Request $request, Response $response, array $args) {
      return $response->withJson($error);
    }
 });
-
-
-// CREATE A QUIZ
-$app->post('/quiz', function(Request $request, Response $response, array $args) {
- if ($request->getAttribute("jwt")['isAdmin'] != 1) {
-   $error = ['error' => ['text' => 'Permission denied']];
-   return $response->withJson($error);
- }
-
- $title = $request->getParam('title');
-
- $sql = "INSERT INTO `quiz`(`title`) VALUES (:title)";
- try {
-   $db = $this->get('db');
-   $stmt = $db->prepare($sql);
-   $stmt->execute([
-     ':title' => $title
-   ]);
- }
- catch (PDOException $e) {
-   $error = ['error' => ['text' => $e->getMessage()]];
-   return $response->withJson($error);
- }
-
- $question_answer = $request->getParam('question_answer');
-
- $data = [];
- foreach ($question_answer as $qa) {
-   $data[] = $qa['type'];
-   $data[] = $qa['question'];
-   $data[] = $qa['answer'];
-   $data[] = implode(", ", $qa['decoy']);
-   $data[] = date("Y-m-d H:i:s");
-   $data[] = $db->lastInsertId();
- }
-
- $count = count($data);
- $add = [];
- for ($i=0; $i < $count; $i = $i + 6) { 
-   $add[] = "(?, ?, ?, ?, ?, ?)";
- }
-
- $sql = "INSERT INTO `question_answer`(`type`,`question`, `answer`, `decoy`, `created_at`, `quiz_id`) VALUES " . implode(',', $add);
- try {
-   $db = $this->get('db');
-   $stmt = $db->prepare($sql);
-   $stmt->execute($data);
-
-   $data = ["notice"=>["type"=>"success", "text" => "Quiz sucessfully added"]];
-   return $response->withJson($data);
- }
- catch (PDOException $e) {
-   $error = ['error' => ['text' => $e->getMessage()]];
-   return $response->withJson($error);
- }
-});
-
-
-
 
 
 // Kirim jawaban user untuk diproses
