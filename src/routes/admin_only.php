@@ -1,4 +1,8 @@
 <?php
+use Slim\Http\Request;
+use Slim\Http\Response;
+use \Firebase\JWT\JWT;
+
 // GET ALL USERS
 $app->get('/users', function(Request $request, Response $response, array $args) {
   if ($request->getAttribute("jwt")['isAdmin'] != 1) {
