@@ -152,7 +152,7 @@ $app->post('/registration', function(Request $request, Response $response, array
       'isAdmin' => $isAdmin
     ], $settings['jwt']['secret'], "HS256");
     
-    return $this->response->withJson(['token' => $token]);
+    return $this->response->withJson(['token' => $token,'id' => $user_id]);
   }
   catch (PDOException $e) {
     $msg = $e->getMessage();
