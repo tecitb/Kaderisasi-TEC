@@ -1,4 +1,29 @@
 <?php
+use Slim\Http\Request;
+use Slim\Http\Response;
+use \Firebase\JWT\JWT;
+
+// GET ALL USERS
+$app->get('/users', function(Request $request, Response $response, array $args) {
+  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+     $error = ['error' => ['text' => 'Permission denied']];
+     return $response->withJson($error);
+  }
+
+  $sql = "SELECT id, name, email, created_at, updated_at, lunas, isAdmin FROM users";
+  try {
+    $db = $this->get('db');
+    $stmt = $db->query($sql);
+    $users = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+    return $response->withJson($users);
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+});
+
 // GET USER RESULT IN A QUIZ
 $app->get('/user/{uid}/quiz/{qid}', function(Request $request, Response $response, array $args) {
    if ($request->getAttribute("jwt")['isAdmin'] != 1) {

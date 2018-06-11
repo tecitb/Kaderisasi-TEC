@@ -31,7 +31,7 @@ $app->post('/login', function (Request $request, Response $response, array $args
       'tec_regno' => $user->tec_regno
     ], $settings['jwt']['secret'], "HS256");
  
-    return $this->response->withJson(['token' => $token]);
+    return $this->response->withJson(['token' => $token,'id' => $user->id]);
 });
 
 
@@ -52,7 +52,7 @@ $app->post('/registration', function(Request $request, Response $response, array
 
   if ($request->getParam('coupon')) {
     $coupon = $request->getParam('coupon');
-    $sql = "SELECT EXISTS(SELECT * from COUPONS where COUPON = :coupon) as ada_kupon";
+    $sql = "SELECT EXISTS(SELECT * from coupons where coupon = :coupon) as ada_kupon";
 
     try {
       $db = $this->get('db');
