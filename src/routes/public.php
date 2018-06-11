@@ -52,7 +52,7 @@ $app->post('/registration', function(Request $request, Response $response, array
 
   if ($request->getParam('coupon')) {
     $coupon = $request->getParam('coupon');
-    $sql = "SELECT EXISTS(SELECT * from COUPONS where COUPON = :coupon) as ada_kupon";
+    $sql = "SELECT EXISTS(SELECT * from coupons where coupon = :coupon) as ada_kupon";
 
     try {
       $db = $this->get('db');
