@@ -31,7 +31,7 @@ $app->post('/login', function (Request $request, Response $response, array $args
       'tec_regno' => $user->tec_regno
     ], $settings['jwt']['secret'], "HS256");
  
-    return $this->response->withJson(['token' => $token]);
+    return $this->response->withJson(['token' => $token,'id' => $user->id]);
 });
 
 
