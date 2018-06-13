@@ -59,45 +59,67 @@ $app->get('/quiz', function(Request $request, Response $response, array $args) {
 // Kirim jawaban user untuk diproses
 $app->post('/answer', function(Request $request, Response $response, array $args) {
 
- $answers = $request->getParam('answers');
- $quiz_id = $request->getParam('quiz_id');
- if (filter_var($quiz_id, FILTER_VALIDATE_INT) === FALSE) {
+  $answers = $request->getParam('answers');
+  $quiz_id = $request->getParam('quiz_id');
+  $user_id = $request->getAttribute("jwt")['id'];
+
+  if (filter_var($quiz_id, FILTER_VALIDATE_INT) === FALSE) {
    $error = ['error' => ['text' => 'Invalid quiz id']];
    return $response->withJson($error);
- }
- $user_id = $request->getAttribute("jwt")['id'];
+  }
 
- $sql = "INSERT INTO user_answer(`answer`,`qa_id`, `user_id`) VALUES ";
- 
- $placeholders = [];
- $user_answer = [];
- $sql_add = [];
- foreach ($answers as $answer) {
+  // Cek apakah user sudah pernah jawab
+
+  $sql = "SELECT EXISTS(SELECT * from user_score where user_id = :user_id) as sudah_jawab";
+
+  try {
+    $db = $this->get('db');
+    $stmt = $db->prepare($sql);
+    $stmt->execute([':user_id' => $user_id]);
+    $result = $stmt->fetch();
+    
+    if($result['sudah_jawab'] == 1) {
+      return $response->withJson(['error'=>['text' => 'Kuis hanya dapat dijawab sekali']]);
+    }
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+
+  // User belum pernah jawab, lanjutkan...
+
+  $sql = "INSERT INTO user_answer(`answer`,`qa_id`, `user_id`) VALUES ";
+
+  $placeholders = [];
+  $user_answer = [];
+  $sql_add = [];
+  foreach ($answers as $answer) {
    $sql_add[] = "(?, ?, " . $user_id . ")";
    $placeholders[] = $answer["answer"];
    $placeholders[] = $answer["qa_id"];
    $user_answer[$answer["qa_id"]] = $answer["answer"];
- }
+  }
 
- $sql .= implode(",", $sql_add);
+  $sql .= implode(",", $sql_add);
 
- try {
+  try {
    $db = $this->get('db');
    $stmt = $db->prepare($sql);
    $stmt->execute($placeholders);
- }
- catch (PDOException $e) {
+  }
+  catch (PDOException $e) {
    $error = ['error' => ['text' => $e->getMessage()]];
    return $response->withJson($error);
- }
+  }
 
- $question_marks = array_map(function($element) {
+  $question_marks = array_map(function($element) {
    return '?';
- }, $user_answer);
+  }, $user_answer);
 
- $sql = "SELECT `id` as `qa_id`, `answer` as `correct_answer` FROM `question_answer` WHERE `id` IN (" . implode(',', $question_marks) . ") AND quiz_id = " . $quiz_id;
+  $sql = "SELECT `id` as `qa_id`, `answer` as `correct_answer` FROM `question_answer` WHERE `id` IN (" . implode(',', $question_marks) . ") AND quiz_id = " . $quiz_id;
 
- try {
+  try {
    $db = $this->get('db');
    $stmt = $db->prepare($sql);
    $stmt->execute(array_keys($user_answer));
@@ -126,9 +148,9 @@ $app->post('/answer', function(Request $request, Response $response, array $args
 
    $data = ["notice"=>["type"=>"success", "text" => "Answer successfully submitted"]];
    return $response->withJson($data);
- }
- catch (PDOException $e) {
+  }
+  catch (PDOException $e) {
    $error = ['error' => ['text' => $e->getMessage()]];
    return $response->withJson($error);
- }
+  }
 });
