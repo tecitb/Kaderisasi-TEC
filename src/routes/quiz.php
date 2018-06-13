@@ -70,12 +70,12 @@ $app->post('/answer', function(Request $request, Response $response, array $args
 
   // Cek apakah user sudah pernah jawab
 
-  $sql = "SELECT EXISTS(SELECT * from user_score where user_id = :user_id) as sudah_jawab";
+  $sql = "SELECT EXISTS(SELECT * FROM user_score WHERE user_id = :user_id AND quiz_id = :quiz_id) as sudah_jawab";
 
   try {
     $db = $this->get('db');
     $stmt = $db->prepare($sql);
-    $stmt->execute([':user_id' => $user_id]);
+    $stmt->execute([':user_id' => $user_id, ':quiz_id'=>$quiz_id]);
     $result = $stmt->fetch();
     
     if($result['sudah_jawab'] == 1) {
