@@ -40,14 +40,28 @@ $app->get('/quiz/{id}', function(Request $request, Response $response, array $ar
 
 // GET ALL QUIZ
 $app->get('/quiz', function(Request $request, Response $response, array $args) {
+    $user_id = $request->getAttribute("jwt")['id'];
 	$sql = "SELECT * FROM `quiz`";
    try {
      $db = $this->get('db');
 
      $stmt = $db->query($sql);
-     $quiz = $stmt->fetchAll(PDO::FETCH_OBJ);
+     $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+     foreach ($result as $quiz){
+       $sql_check = "SELECT * FROM user_score WHERE user_id = :uid AND quiz_id = :qid";
+       $stmt = $db->prepare($sql_check);
+       $stmt->execute([':uid' => $user_id, ':qid'=>$quiz->id]);
+       $cek = $stmt->fetchAll(PDO::FETCH_ASSOC);
+       if(count($cek) !=0 ) {
+         $quiz->terjawab=1;
+         $quiz->score=$cek[0]['score'];
+       }else{
+         $quiz->terjawab=0;
+       }
+     }
      $db = null;
-     return $response->withJson($quiz);
+     return $response->withJson($result);
    }
    catch (PDOException $e) {
      $error = ['error' => ['text' => $e->getMessage()]];
