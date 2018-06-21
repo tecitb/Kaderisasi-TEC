@@ -5,6 +5,13 @@ use \Firebase\JWT\JWT;
 
 // GET USER INFO
 $app->get('/user/{id}',function(Request $request, Response $response, array $args) {
+
+    if ($request->getAttribute("jwt")['id'] != $args['id']) {
+      if($request->getAttribute("jwt")['isAdmin'] != 1){
+        $error = ['error' => ['text' => 'Permission denied']];
+        return $response->withJson($error);
+      }
+    }
     $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin` FROM `users` WHERE id=:id";
 
     try {
