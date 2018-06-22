@@ -21,7 +21,7 @@ JWT_SECRET=ISIKAN_KUNCI_JWT_RAHASIA
     * `/api/user/:id/quiz/:id` : Lihat hasil kuis user beserta jawabannya :white_check_mark: (ADMIN ONLY)
     * `/api/user/:id/score` : Lihat skor user tiap kuis :white_check_mark: 
     * `/api/verify/:token` : Verifikasi email user :white_check_mark: 
-    * `/reset/:token` : Halaman untuk reset
+    * `/reset/:token` : Halaman untuk reset :white_check_mark:
 2. POST
     * `/api/login` : Mendapatkan akses dengan JSON Web Token :white_check_mark: (return token)
     * `/api/registration`: Buat user, cek kupon bila ada :white_check_mark:
@@ -29,5 +29,6 @@ JWT_SECRET=ISIKAN_KUNCI_JWT_RAHASIA
     * `/api/answer`: Kirim jawaban user, proses skor :white_check_mark: 
     * `/api/reset` : Kirim email untuk reset Token :white_check_mark: 
     * `/api/generateCoupon/:num`: Generate coupon (default max: 100) :white_check_mark: (ADMIN ONLY)
+    * `/api/uploadImage`: Upload foto profil di folder `/uploads`
 3. PUT
     * `/api/reset` : Reset user password dengan mengupdate ke password baru :white_check_mark: 
