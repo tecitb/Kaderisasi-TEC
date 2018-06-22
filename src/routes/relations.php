@@ -151,15 +151,15 @@ $app->get('/relations/vcard', function(Request $request, Response $response, arr
         $user = $stmt->fetch(PDO::FETCH_OBJ);
 
         $vcard = "BEGIN:VCARD\n";
-        if($user->name != null) $vcard .= "FN:".$user->name."\n";
+        if($user->name != '') $vcard .= "FN:".$user->name."\n";
         $vcard .= "ORG:Techno Entrepreneur Club ITB\n";
-        if($user->mobile != null) $vcard .= "TEL;CELL:".$user->mobile."\n";
-        if($user->address != null) $vcard .= "ADR;HOME:".$user->address."\n";
-        if($user->tec_regno != null) $vcard .= "UID:".$user->tec_regno."\n";
-        if($user->about_me != null) $vcard .= "NOTE:".$user->about_me."\n";
-        if($user->line_id != null) $vcard .= "X-LINE:".$user->line_id."\n";
-        if($user->instagram != null) $vcard .= "X-INSTAGRAM:".$user->instagram."\n";
-        if($user->interests != null) $vcard .= "X-INTERESTS:".$user->interests."\n";
+        if($user->mobile != '') $vcard .= "TEL;CELL:".$user->mobile."\n";
+        if($user->address != '') $vcard .= "ADR;HOME:".$user->address."\n";
+        if($user->tec_regno != '') $vcard .= "UID:".$user->tec_regno."\n";
+        if($user->about_me != '') $vcard .= "NOTE:".$user->about_me."\n";
+        if($user->line_id != '') $vcard .= "X-LINE:".$user->line_id."\n";
+        if($user->instagram != '') $vcard .= "X-INSTAGRAM:".$user->instagram."\n";
+        if($user->interests != '') $vcard .= "X-INTERESTS:".$user->interests."\n";
         $vcard .= "END:VCARD";
 
         return $response->withJson(array("vcard" => utf8_encode($vcard)));
@@ -195,15 +195,15 @@ $app->get('/relations/vcard/{user_id}', function(Request $request, Response $res
         $user = $stmt->fetch(PDO::FETCH_OBJ);
 
         $vcard = "BEGIN:VCARD\n";
-        if($user->name != null) $vcard .= "FN:".$user->name."\n";
+        if($user->name != '') $vcard .= "FN:".$user->name."\n";
         $vcard .= "ORG:Techno Entrepreneur Club ITB\n";
-        if($user->mobile != null) $vcard .= "TEL;CELL:".$user->mobile."\n";
-        if($user->address != null) $vcard .= "ADR;HOME:".$user->address."\n";
-        if($user->tec_regno != null) $vcard .= "UID:".$user->tec_regno."\n";
-        if($user->about_me != null) $vcard .= "NOTE:".$user->about_me."\n";
-        if($user->line_id != null) $vcard .= "X-LINE:".$user->line_id."\n";
-        if($user->instagram != null) $vcard .= "X-INSTAGRAM:".$user->instagram."\n";
-        if($user->interests != null) $vcard .= "X-INTERESTS:".$user->interests."\n";
+        if($user->mobile != '') $vcard .= "TEL;CELL:".$user->mobile."\n";
+        if($user->address != '') $vcard .= "ADR;HOME:".$user->address."\n";
+        if($user->tec_regno != '') $vcard .= "UID:".$user->tec_regno."\n";
+        if($user->about_me != '') $vcard .= "NOTE:".$user->about_me."\n";
+        if($user->line_id != '') $vcard .= "X-LINE:".$user->line_id."\n";
+        if($user->instagram != '') $vcard .= "X-INSTAGRAM:".$user->instagram."\n";
+        if($user->interests != '') $vcard .= "X-INTERESTS:".$user->interests."\n";
         $vcard .= "END:VCARD";
 
         return $response->withJson(array("vcard" => utf8_encode($vcard)));
