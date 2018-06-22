@@ -29,5 +29,13 @@ require __DIR__ . '/../src/middleware.php';
 // Register routes
 require __DIR__ . '/../src/routes.php';
 
+// Add default HTTP headers
+$app->add(function ($req, $res, $next) {
+    $response = $next($req, $res);
+    return $response
+        ->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('Access-Control-Allow-Headers', 'Authorization');
+});
+
 // Run app
 $app->run();
