@@ -8,6 +8,7 @@ $app->add(new \Tuupola\Middleware\JwtAuthentication([
     "secret" => $app->getContainer()->get('settings')['jwt']["secret"],
     "algorithm" => ["HS256"],
     "attribute" => "jwt",
+    "secure" => false,
     "error" => function ($response, $arguments) {
         $data["status"] = "error";
         $data["message"] = $arguments["message"];
