@@ -94,7 +94,7 @@ $app->post('/registration', function(Request $request, Response $response, array
 
   /* Generate TEC registration number */
   $tecRegNo = 1;
-  $sq2 = "SELECT id FROM users ORDER BY id DESC LIMIT 1";
+  $sq2 = "SELECT `tec_regno` FROM `users` WHERE `tec_regno` REGEXP '^TEC[0-9]' ORDER BY `tec_regno` DESC";
 
     try {
         $stmt = $db->prepare($sq2);
@@ -102,7 +102,7 @@ $app->post('/registration', function(Request $request, Response $response, array
         $result = $stmt->fetch();
 
         if($stmt->rowCount() > 0) {
-            $tecRegNo = $result['id']+1;
+            $tecRegNo = substr($result['tec_regno'],4)+1;
         }
     }
     catch (PDOException $e) {
@@ -152,7 +152,7 @@ $app->post('/registration', function(Request $request, Response $response, array
       'isAdmin' => $isAdmin
     ], $settings['jwt']['secret'], "HS256");
     
-    return $this->response->withJson(['token' => $token]);
+    return $this->response->withJson(['token' => $token,'id' => $user_id]);
   }
   catch (PDOException $e) {
     $msg = $e->getMessage();
