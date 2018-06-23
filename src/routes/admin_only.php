@@ -56,7 +56,7 @@ $app->get('/getCoupon/{num}', function (Request $request, Response $response, ar
     $error = ['error' => ['text' => 'Permission denied']];
     return $response->withJson($error);
   }
-  $sql = "SELECT `coupon` FROM `coupons` ORDER BY `id` DESC LIMIT :couponNum";
+  $sql = "SELECT `coupon` FROM `coupons` ORDER BY `id` ASC LIMIT :couponNum";
 
   try {
     $db = $this->get("db");
