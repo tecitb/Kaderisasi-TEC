@@ -40,6 +40,8 @@ $app->post('/registration', function(Request $request, Response $response, array
 
   $name = $request->getParam('name');
   $email = $request->getParam('email');
+  $nim = $request->getParam('nim');
+
   if(filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
     var_dump($email);
     $error = ['error' => ['text' => "$email is not a valid email address"]];
@@ -80,17 +82,17 @@ $app->post('/registration', function(Request $request, Response $response, array
   $isAdmin = 0;
 
   $sql = "INSERT INTO `users`
-          (`name`, `email`, `password`, `created_at`, `lunas`, `verified`, `isAdmin`, `interests`, `nickname`, `about_me`, `line_id`, `instagram`, `mobile`, `tec_regno`, `address`) 
-          VALUES (:name,:email,:password,:created_at,:lunas,:verified, :isAdmin, :interests, :nickname, :about_me, :line_id, :instagram, :mobile, :tec_regno, :address)";
+          (`name`, `email`, `password`, `nim`, `created_at`, `lunas`, `verified`, `isAdmin`, `interests`, `nickname`, `about_me`, `line_id`, `instagram`, `mobile`, `tec_regno`, `address`) 
+          VALUES (:name,:email,:password,:nim,:created_at,:lunas,:verified, :isAdmin, :interests, :nickname, :about_me, :line_id, :instagram, :mobile, :tec_regno, :address)";
 
   /* Informational fields */
-  $interests = $request->getParam("interests");
-  $nickname = $request->getParam("nickname");
-  $aboutMe = $request->getParam("about_me");
-  $lineId = $request->getParam("line_id");
-  $instagram = $request->getParam("instagram");
-  $mobile = $request->getParam("mobile");
-  $address = $request->getParam("address");
+  $interests = $request->getParam("interests") ?? '';
+  $nickname = $request->getParam("nickname") ?? '';
+  $aboutMe = $request->getParam("about_me") ?? '';
+  $lineId = $request->getParam("line_id") ?? '';
+  $instagram = $request->getParam("instagram") ?? '';
+  $mobile = $request->getParam("mobile") ?? '';
+  $address = $request->getParam("address") ?? '';
 
   /* Generate TEC registration number */
   $tecRegNo = 1;
@@ -119,6 +121,7 @@ $app->post('/registration', function(Request $request, Response $response, array
       ':name' => $name,
       ':email' => $email,
       ':password' => $password,
+      ':nim' => $nim,
       ':created_at' => $created_at,
       ':lunas' => $lunas,
       ':verified' => $verified,
