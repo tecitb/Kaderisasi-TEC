@@ -50,6 +50,30 @@ $app->get('/user/{uid}/quiz/{qid}', function(Request $request, Response $respons
  }
 });
 
+// GET COUPONS
+$app->get('/getCoupon/{num}', function (Request $request, Response $response, array $args) {
+  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+    $error = ['error' => ['text' => 'Permission denied']];
+    return $response->withJson($error);
+  }
+  $sql = "SELECT `coupon` FROM `coupons` ORDER BY `id` ASC LIMIT :couponNum";
+
+  try {
+    $db = $this->get("db");
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':couponNum', (int)($args['num']), PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+    return $response->withJson($result);
+ }
+ catch (PDOException $e) {
+   $error = ['error' => ['text' => $e->getMessage()]];
+   return $response->withJson($error);
+ }
+});
+
 // GENERATE COUPON
 $app->post('/generateCoupon/{num}', function (Request $request, Response $response, array $args) {
  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
