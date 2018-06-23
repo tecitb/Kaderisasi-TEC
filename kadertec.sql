@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 22, 2018 at 04:57 PM
+-- Generation Time: Jun 23, 2018 at 05:57 AM
 -- Server version: 5.6.35
 -- PHP Version: 7.1.1
 
@@ -117,14 +117,14 @@ CREATE TABLE `users` (
   `verified` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `isAdmin` tinyint(1) NOT NULL DEFAULT '0',
   `interests` text COLLATE utf8_unicode_ci NOT NULL,
-  `nickname` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `nickname` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `about_me` text COLLATE utf8_unicode_ci NOT NULL,
-  `line_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `instagram` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `mobile` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `line_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `instagram` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `mobile` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `tec_regno` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `address` text COLLATE utf8_unicode_ci NOT NULL,
-  `profile_picture` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL
+  `profile_picture` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
