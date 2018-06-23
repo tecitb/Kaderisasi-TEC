@@ -124,7 +124,7 @@ CREATE TABLE `users` (
   `mobile` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `tec_regno` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `address` text COLLATE utf8_unicode_ci NOT NULL,
-  `profile_picture` varchar(255) COLLATE utf8_unicode_ci NOT NULL
+  `profile_picture` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
