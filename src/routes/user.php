@@ -12,7 +12,7 @@ $app->get('/user/{id}',function(Request $request, Response $response, array $arg
         return $response->withJson($error);
       }
     }
-    $sql = "SELECT `id`,`name`,`email`,`nim`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture` FROM `users` WHERE id=:id";
+    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture` FROM `users` WHERE id=:id";
 
     try {
       $db = $this->get('db');

@@ -86,13 +86,13 @@ $app->post('/registration', function(Request $request, Response $response, array
           VALUES (:name,:email,:password,:nim,:created_at,:lunas,:verified, :isAdmin, :interests, :nickname, :about_me, :line_id, :instagram, :mobile, :tec_regno, :address)";
 
   /* Informational fields */
-  $interests = $request->getParam("interests") ?? '';
-  $nickname = $request->getParam("nickname") ?? '';
-  $aboutMe = $request->getParam("about_me") ?? '';
-  $lineId = $request->getParam("line_id") ?? '';
-  $instagram = $request->getParam("instagram") ?? '';
-  $mobile = $request->getParam("mobile") ?? '';
-  $address = $request->getParam("address") ?? '';
+  $interests = $request->getParam("interests", '');
+  $nickname = $request->getParam("nickname", '');
+  $aboutMe = $request->getParam("about_me", '');
+  $lineId = $request->getParam("line_id", '');
+  $instagram = $request->getParam("instagram", '');
+  $mobile = $request->getParam("mobile", '');
+  $address = $request->getParam("address", '');
 
   /* Generate TEC registration number */
   $tecRegNo = 1;
