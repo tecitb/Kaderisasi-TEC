@@ -148,7 +148,12 @@ $app->post('/quiz', function(Request $request, Response $response, array $args) 
    $data[] = $qa['type'];
    $data[] = $qa['question'];
    $data[] = $qa['answer'];
-   $data[] = implode(", ", $qa['decoy']);
+   if($qa['type']=="isian"){
+     $data[] = "";
+   }elseif($qa['type']=="pilgan"){
+     $data[] = implode(", ", $qa['decoy']);
+   }
+   
    $data[] = date("Y-m-d H:i:s");
    $data[] = $db->lastInsertId();
  }
