@@ -15,7 +15,7 @@ use Slim\Http\Response;
 $app->get('/relations/get',  function(Request $request, Response $response, array $args) {
     $userId = $request->getAttribute("jwt")['id'];
 
-    $sql = "SELECT user_relations.id, relation_with, full_name, tec_regno FROM `user_relations` 
+    $sql = "SELECT user_relations.id, relation_with, full_name, tec_regno, vcard FROM `user_relations` 
             LEFT JOIN users ON user_relations.user_id = users.id
             WHERE `user_id`=:user_id";
 
