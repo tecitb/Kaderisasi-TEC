@@ -201,6 +201,22 @@ Isi question_answer :
 | answer    | Jawaban pertanyaan                  |
 | decoy     | Pilihan jawaban(jika type=="pilgan")|
 
+### Get All User Score
+
+Location : `/api/quiz/:id/score`
+Method : GET
+Auth : Admin
+
+Return (array):
+
+| Parameter | Keterangan |
+| --------- | ---------- |
+| user_id   | Id user    |
+| name      | Nama user  |
+| score     | Nilai      |
+
+
+
 ## Coupon
 
 ### Generate Coupons

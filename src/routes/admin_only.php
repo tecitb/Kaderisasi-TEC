@@ -24,6 +24,28 @@ $app->get('/users', function(Request $request, Response $response, array $args) 
   }
 });
 
+// GET ALL QUIZ RESULT
+$app->get('/quiz/{qid}/score', function(Request $request, Response $response, array $args) {
+  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+     $error = ['error' => ['text' => 'Permission denied']];
+     return $response->withJson($error);
+  }
+
+  $sql = "SELECT `user_id`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid";
+  try {
+    $db = $this->get('db');
+    $stmt = $db->prepare($sql);
+    $stmt->execute([":qid" => $args["qid"]]);
+    $quizes = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+    return $response->withJson($quizes);
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+});
+
 // GET USER RESULT IN A QUIZ
 $app->get('/user/{uid}/quiz/{qid}', function(Request $request, Response $response, array $args) {
    if ($request->getAttribute("jwt")['isAdmin'] != 1) {
