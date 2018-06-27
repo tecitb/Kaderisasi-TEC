@@ -46,7 +46,33 @@ $app->get('/quiz/{qid}/score', function(Request $request, Response $response, ar
      return $response->withJson($error);
   }
 
-  $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid";
+    $sortby = $request->getQueryParam("sort");
+  if(($sortby == null)||($sortby == "")){
+    $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid";
+  }
+  else if($sortby == "noTEC_asc"){
+    $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `tec_regno` ASC";
+  }
+  else if($sortby == "noTEC_desc"){
+     $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `tec_regno` DESC";
+  }
+  else if($sortby == "nama_asc"){
+     $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `name` ASC";
+  }
+  else if($sortby == "nama_desc"){
+     $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `name` DESC";
+  }
+  else if($sortby == "score_asc"){
+     $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `score` ASC";
+  }
+  else if($sortby == "score_desc"){
+     $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `score` DESC";
+  }
+  else{
+    $error = ['error' => ['text' => 'invalid parameter']];
+    return $response->withJson($error);
+  }
+
   try {
     $db = $this->get('db');
     $stmt = $db->prepare($sql);
