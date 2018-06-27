@@ -10,7 +10,22 @@ $app->get('/users', function(Request $request, Response $response, array $args) 
      return $response->withJson($error);
   }
 
-  $sql = "SELECT id, name, email, created_at, updated_at, lunas, isAdmin FROM users";
+  $sortby = $request->getQueryParam("sort");
+  if(($sortby == null)||($sortby == "")){
+    $sql = "SELECT id, name, email, created_at, updated_at, lunas, isAdmin FROM users";
+  }else if($sortby == "noTEC_asc"){
+    $sql = "SELECT id, name, email, created_at, updated_at, lunas, isAdmin FROM users ORDER BY tec_regno ASC";
+  }else if($sortby == "noTEC_desc"){
+    $sql = "SELECT id, name, email, created_at, updated_at, lunas, isAdmin FROM users ORDER BY tec_regno DESC";
+  }else if($sortby == "nama_asc"){
+    $sql = "SELECT id, name, email, created_at, updated_at, lunas, isAdmin FROM users ORDER BY name ASC";
+  }else if($sortby == "nama_desc"){
+    $sql = "SELECT id, name, email, created_at, updated_at, lunas, isAdmin FROM users ORDER BY name DESC";
+  }else{
+    $error = ['error' => ['text' => 'invalid parameter']];
+    return $response->withJson($error);
+  }
+
   try {
     $db = $this->get('db');
     $stmt = $db->query($sql);
@@ -31,7 +46,7 @@ $app->get('/quiz/{qid}/score', function(Request $request, Response $response, ar
      return $response->withJson($error);
   }
 
-  $sql = "SELECT `user_id`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid";
+  $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid";
   try {
     $db = $this->get('db');
     $stmt = $db->prepare($sql);

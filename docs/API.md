@@ -69,6 +69,12 @@ Location : `/api/users`
 Method : GET  
 Auth : Admin
 
+Parameter :
+
+| Parameter | Keterangan                                                   |
+| --------- | ------------------------------------------------------------ |
+| sort      | Sorting yang diinginkan :<br />noTEC_asc -> sorting berdasarkan no tec secara ascending<br />noTEC_desc -> sorting berdasarkan no tec secara descending<br />nama_asc -> sorting berdasarkan nama secara ascending<br />nama_desc -> sorting berdasarkan nama secara descending |
+
 Return (array):
 
 | Parameter | Keterangan        |
