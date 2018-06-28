@@ -87,21 +87,33 @@ $app->put('/relations/put/{relation_with}', function(Request $request, Response 
         $fullName = $request->getParam("full_name");
 
         if($numRows > 0) {
+            $relation = $stmt->fetch(PDO::FETCH_OBJ);
+            $id = $relation['id'];
             // If row exists, update existing one
             $qi = "UPDATE `user_relations` SET `vcard`=:vcard, `full_name`=:full_name WHERE `user_id`=:user_id AND `relation_with`=:relation_with";
+
+            $si = $db->prepare($qi);
+            $si->execute([
+                ':user_id' => $userId,
+                ':relation_with' => $args['relation_with'],
+                ':vcard' => $vcard,
+                ':full_name' => $fullName
+            ]);
         } else {
             // If row does not exist, create new
             $qi = "INSERT INTO `user_relations` (`user_id`, `relation_with`, `vcard`, `full_name`) VALUES (:user_id, :relation_with, :vcard, :full_name)";
-        }
 
-        $si = $db->prepare($qi);
-        $si->execute([
-            ':user_id' => $userId,
-            ':relation_with' => $args['relation_with'],
-            ':vcard' => $vcard,
-            ':full_name' => $fullName
-        ]);
-        return $response->withJson(array("success" => true));
+            $si = $db->prepare($qi);
+            $si->execute([
+                ':user_id' => $userId,
+                ':relation_with' => $args['relation_with'],
+                ':vcard' => $vcard,
+                ':full_name' => $fullName
+            ]);
+
+            $id = $db->lastInsertId();
+        }
+        return $response->withJson(array("success" => true, "relationId" => $id));
     }
     catch (PDOException $e) {
         $error = ['error' => ['text' => $e->getMessage()]];
@@ -207,6 +219,68 @@ $app->get('/relations/vcard/{user_id}', function(Request $request, Response $res
         $vcard .= "END:VCARD";
 
         return $response->withJson(array("vcard" => utf8_encode($vcard)));
+    }
+    catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+    }
+});
+
+/**
+ * [Administrative endpoint]
+ * List relations network (nodes and edges)
+ */
+$app->get('/relations/network/{tecregno}',  function(Request $request, Response $response, array $args) {
+    if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+        $error = ['error' => ['text' => 'Permission denied']];
+        return $response->withJson($error);
+    }
+
+    $tecRegNo = $args['tecregno'];
+    if($tecRegNo === "all") {
+        // Filter is undefined, print all relations
+        $sql = "SELECT user_relations.id, relation_with, full_name, tec_regno, vcard FROM `user_relations` 
+            LEFT JOIN users ON user_relations.user_id = users.id";
+    } else {
+        $sql = "SELECT user_relations.id, relation_with, full_name, tec_regno, vcard FROM `user_relations` 
+            LEFT JOIN users ON user_relations.user_id = users.id
+            WHERE `tec_regno`=:tec_regno OR `relation_with`=:tec_regno";
+    }
+
+    try {
+        $db = $this->get('db');
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+            ':tec_regno' => $tecRegNo
+        ]);
+
+        $relations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $ntrac = array();
+        $nodes = array();
+        $edges = array();
+
+        foreach ($relations as $row) {
+            $tno = $row['tec_regno'];
+            $rw = $row['relation_with'];
+            if(empty($ntrac[$tno])) {
+                $ntrac[$tno] = true;
+                $node = array("id" => $tno, "label" => $tno);
+                array_push($nodes, $node);
+            }
+
+            if(empty($ntrac[$rw])) {
+                $ntrac[$rw] = true;
+                $node = array("id" => $rw, "label" => $rw);
+                array_push($nodes, $node);
+            }
+
+            $edge = array("from" => $tno, "to" => $rw);
+            array_push($edges, $edge);
+        }
+
+        $aresp = ["nodes" => $nodes, "edges" => $edges];
+        return $response->withJson($aresp);
     }
     catch (PDOException $e) {
         $error = ['error' => ['text' => $e->getMessage()]];
