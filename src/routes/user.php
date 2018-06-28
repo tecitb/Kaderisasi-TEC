@@ -229,3 +229,50 @@ $app->put('/user/{id}',function(Request $request, Response $response, array $arg
      return $response->withJson($error);
     }
 });
+
+$app->post('/useCoupon', function(Request $request, Response $response, array $args) {
+  $coupon = $request->getParam('coupon');
+  $id = $request->getAttribute("jwt")['id'];
+
+  $sql = "SELECT EXISTS(SELECT * from coupons where coupon = :coupon) as ada_kupon";
+
+
+  $db = $this->get('db');
+  try {
+    $stmt = $db->prepare($sql);
+    $stmt->execute([
+      ':coupon' => $coupon
+    ]);
+    $result = $stmt->fetch();
+    
+    if($result['ada_kupon'] != 1) {
+      return $response->withJson(['error'=>['text' => 'Invalid coupon']]);
+    }
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+
+  try {
+    $db->beginTransaction();
+    $stmt = $db->prepare("UPDATE `users` SET `lunas` = 1 WHERE `id`=:id");
+    $stmt->execute([':id' => $id]);
+
+    $stmt = $db->prepare("DELETE FROM `coupons` WHERE `coupon`=:coupon");
+    $stmt->execute([':coupon' => $coupon]);
+
+    $db->commit();
+
+    $result = ["notice"=>["type"=>"success", "text" => "Coupon use successful. Status: lunas"]];
+    return $response->withJson($result);
+  }
+  catch (PDOException $e) {
+    $db->rollBack();
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+
+
+
+});

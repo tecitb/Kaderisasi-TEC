@@ -135,7 +135,7 @@ Location: `/api/user/:id`
 Method: PUT
 Auth : User (self)
 
-Parameter :
+Data :
 
 | Parameter | Keterangan                                                   |
 | --------- | ------------------------------------------------------------ |
@@ -270,6 +270,20 @@ Return (array):
 | Parameter | Keterangan                        |
 | --------- | --------------------------------- |
 | coupon    | Kode coupon sejumlah yang diminta |
+
+
+### Use Coupon (by User)
+
+Location: `/api/useCoupon`
+Method: POST
+Auth: User
+
+Keterangan: Pakai kupon supaya status user menjadi lunas
+
+Data:
+| Parameter | Keterangan                        |
+| --------- | --------------------------------- |
+| coupon    | Kode coupon                       |
 
 
 
