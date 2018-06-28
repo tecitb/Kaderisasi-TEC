@@ -28,6 +28,8 @@ Location : `/api/registration`
 Method : POST  
 Auth : None
 
+Keterangan: Bisa pakai kupon supaya langsung lunas, bisa juga tidak pakai
+
 Data :
 
 | Parameter | Keterangan              |
@@ -35,7 +37,7 @@ Data :
 | name      | Nama user               |
 | email     | Email user              |
 | password  | Password user           |
-| coupon    | Coupon user             |
+| coupon    | Coupon user (jika ada)  |
 | interests | Interests user          |
 | nickname  | Panggilan user          |
 | about_me  | Detail user             |

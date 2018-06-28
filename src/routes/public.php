@@ -114,6 +114,7 @@ $app->post('/registration', function(Request $request, Response $response, array
     $tecRegNoStr = "TEC".str_pad($tecRegNo, 3, '0', STR_PAD_LEFT);
     try {
     $db = $this->get('db');
+    $db->beginTransaction();
 
     $stmt = $db->prepare($sql);
     $stmt->execute([
@@ -144,6 +145,7 @@ $app->post('/registration', function(Request $request, Response $response, array
         ':coupon' => $request->getParam('coupon')
       ]);
     }
+    $db->commit();
 
     $settings = $this->get('settings'); // get settings array.
     $token = JWT::encode([
@@ -157,6 +159,7 @@ $app->post('/registration', function(Request $request, Response $response, array
     return $this->response->withJson(['token' => $token,'id' => $user_id]);
   }
   catch (PDOException $e) {
+    $db->rollBack();
     $msg = $e->getMessage();
     if (strpos($e->getMessage(), 'Duplicate entry') !== FALSE) {
       $msg = "User already exists";
