@@ -129,6 +129,26 @@ Return (array):
 | quiz_id   | Quiz id                     |
 | score     | Score user di quiz tersebut |
 
+### Update Profile
+
+Location: `/api/user/:id`
+Method: PUT
+Auth : User (self)
+
+Parameter :
+
+| Parameter | Keterangan                                                   |
+| --------- | ------------------------------------------------------------ |
+| name      | Nama user                                                    |
+| email     | Email user                                                   |
+| interests | Interest user                                                |
+| about_me  | About me                                                     |
+| nickname  | nickname                                                     |
+| line_id   | id line                                                      |
+| instagram | instagram                                                    |
+| mobile    | nomor hape                                                   |
+| address   | alamat                                                       |
+
 
 
 ## Quiz
