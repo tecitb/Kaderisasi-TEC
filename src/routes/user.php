@@ -6,28 +6,77 @@ use \Firebase\JWT\JWT;
 // GET USER INFO
 $app->get('/user/{id}',function(Request $request, Response $response, array $args) {
 
-    if ($request->getAttribute("jwt")['id'] != $args['id']) {
-      if($request->getAttribute("jwt")['isAdmin'] != 1){
-        $error = ['error' => ['text' => 'Permission denied']];
-        return $response->withJson($error);
-      }
+    if($request->getAttribute("jwt")['isAdmin'] != 1){
+        if ($request->getAttribute("jwt")['id'] != $args['id']) {
+            $error = ['error' => ['text' => 'Permission denied']];
+            return $response->withJson($error);
+        }
     }
-    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture` FROM `users` WHERE id=:id";
+
+    // Input validation
+    if(empty($args['id'])) {
+        $error = ['error' => ['text' => 'id cannot be empty']];
+        return $response->withJson($error);
+    }
+
+    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture` FROM `users` WHERE id=:id OR `tec_regno`=:id";
 
     try {
-      $db = $this->get('db');
+        $db = $this->get('db');
 
-      $stmt = $db->prepare($sql);
-      $stmt->execute([
-        ':id' => $args['id']
-      ]);
-      $user = $stmt->fetch(PDO::FETCH_OBJ);
-      $db = null;
-      return $response->withJson($user);
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+            ':id' => $args['id']
+        ]);
+        $user = $stmt->fetch(PDO::FETCH_OBJ);
+        $db = null;
+        return $response->withJson($user);
     }
     catch (PDOException $e) {
-      $error = ['error' => ['text' => $e->getMessage()]];
-      return $response->withJson($error);
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+    }
+});
+
+/**
+ * Search user by query
+ * @param query search query
+ */
+$app->get('/user/search/{query}',function(Request $request, Response $response, array $args) {
+
+    if($request->getAttribute("jwt")['isAdmin'] != 1){
+        $error = ['error' => ['text' => 'Permission denied']];
+        return $response->withJson($error);
+    }
+
+    // Input validation
+    if(empty($args['query'])) {
+        $error = ['error' => ['text' => 'Query cannot be empty']];
+        return $response->withJson($error);
+    }
+
+    if(strlen($args['query']) < 3) {
+        $error = ['error' => ['text' => 'Query must contain at least 3 characters']];
+        return $response->withJson($error);
+    }
+
+    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture` FROM `users` 
+            WHERE `name` LIKE :sq OR `email` LIKE :sq OR `nickname` LIKE :sq OR `line_id` LIKE :sq OR `instagram` LIKE :sq OR `mobile` LIKE :sq OR `tec_regno` LIKE :sq OR `address` LIKE :sq OR `NIM` LIKE :sq";
+
+    try {
+        $db = $this->get('db');
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+            ':sq' => '%'.$args['query'].'%'
+        ]);
+        $user = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $db = null;
+        return $response->withJson($user);
+    }
+    catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
     }
 });
 
