@@ -24,6 +24,7 @@ $app->group('/api', function(\Slim\App $app) {
     require_once __DIR__ . '/routes/public.php';
     require_once __DIR__ . '/routes/user.php';
     require_once __DIR__ . '/routes/quiz.php'; 
+    require_once __DIR__ . '/routes/assignment.php';
     require_once __DIR__ . '/routes/relations.php';
     require_once __DIR__ . '/routes/admin_only.php';
 });

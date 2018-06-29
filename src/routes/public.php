@@ -43,11 +43,9 @@ $app->post('/registration', function(Request $request, Response $response, array
   $nim = $request->getParam('nim');
 
   if(filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
-    var_dump($email);
     $error = ['error' => ['text' => "$email is not a valid email address"]];
     return $response->withJson($error);
   }
-  $email = $request->getParam('email');
   $password = password_hash($request->getParam('password'), PASSWORD_DEFAULT);
   $created_at = date("Y-m-d H:i:s");
   $lunas = 0;
@@ -99,6 +97,7 @@ $app->post('/registration', function(Request $request, Response $response, array
   $sq2 = "SELECT `tec_regno` FROM `users` WHERE `tec_regno` REGEXP '^TEC[0-9]' ORDER BY `tec_regno` DESC";
 
     try {
+        $db = $this->get('db');
         $stmt = $db->prepare($sq2);
         $stmt->execute();
         $result = $stmt->fetch();
@@ -115,6 +114,7 @@ $app->post('/registration', function(Request $request, Response $response, array
     $tecRegNoStr = "TEC".str_pad($tecRegNo, 3, '0', STR_PAD_LEFT);
     try {
     $db = $this->get('db');
+    $db->beginTransaction();
 
     $stmt = $db->prepare($sql);
     $stmt->execute([
@@ -145,6 +145,7 @@ $app->post('/registration', function(Request $request, Response $response, array
         ':coupon' => $request->getParam('coupon')
       ]);
     }
+    $db->commit();
 
     $settings = $this->get('settings'); // get settings array.
     $token = JWT::encode([
@@ -158,6 +159,7 @@ $app->post('/registration', function(Request $request, Response $response, array
     return $this->response->withJson(['token' => $token,'id' => $user_id]);
   }
   catch (PDOException $e) {
+    $db->rollBack();
     $msg = $e->getMessage();
     if (strpos($e->getMessage(), 'Duplicate entry') !== FALSE) {
       $msg = "User already exists";

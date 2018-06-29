@@ -28,6 +28,8 @@ Location : `/api/registration`
 Method : POST  
 Auth : None
 
+Keterangan: Bisa pakai kupon supaya langsung lunas, bisa juga tidak pakai
+
 Data :
 
 | Parameter | Keterangan              |
@@ -35,7 +37,7 @@ Data :
 | name      | Nama user               |
 | email     | Email user              |
 | password  | Password user           |
-| coupon    | Coupon user             |
+| coupon    | Coupon user (jika ada)  |
 | interests | Interests user          |
 | nickname  | Panggilan user          |
 | about_me  | Detail user             |
@@ -112,6 +114,7 @@ Return :
 | mobile    | Nomor HP user               |
 | tec_regno | No registrasi TEC           |
 | address   | Alamat user                 |
+| is_active | masih aktif (1) / coret(0)  |
 
 ### Get User Score
 
@@ -129,7 +132,37 @@ Return (array):
 | quiz_id   | Quiz id                     |
 | score     | Score user di quiz tersebut |
 
+### Update Profile
 
+Location: `/api/user/:id`
+Method: PUT
+Auth : User (self)
+
+Data :
+
+| Parameter | Keterangan                                                   |
+| --------- | ------------------------------------------------------------ |
+| name      | Nama user                                                    |
+| email     | Email user                                                   |
+| interests | Interest user                                                |
+| about_me  | About me                                                     |
+| nickname  | nickname                                                     |
+| line_id   | id line                                                      |
+| instagram | instagram                                                    |
+| mobile    | nomor hape                                                   |
+| address   | alamat                                                       |
+
+### Upload profile picture
+
+Location: `/api/uploadImage`
+Method: POST
+Auth : User (self)
+
+Data:
+
+| Parameter | Keterangan                                                   |
+| --------- | ------------------------------------------------------------ |
+| profile_picture      | File image sbg foto profil                        |
 
 ## Quiz
 
@@ -207,6 +240,13 @@ Isi question_answer :
 | answer    | Jawaban pertanyaan                  |
 | decoy     | Pilihan jawaban(jika type=="pilgan")|
 
+### Delete Quiz
+
+Location : `/api/quiz/:id`  
+Method : DELETE
+Auth : Admin
+
+
 ### Get All User Score
 
 Location : `/api/quiz/:id/score`
@@ -252,4 +292,83 @@ Return (array):
 | coupon    | Kode coupon sejumlah yang diminta |
 
 
+### Use Coupon (by User)
 
+Location: `/api/useCoupon`
+Method: POST
+Auth: User
+
+Keterangan: Pakai kupon supaya status user menjadi lunas
+
+Data:
+
+| Parameter | Keterangan                        |
+| --------- | --------------------------------- |
+| coupon    | Kode coupon                       |
+
+
+
+## Assignment
+
+### Add Assignment
+
+Location : `/api/assignment`  
+Method : POST  
+Auth : Admin
+
+Data:
+
+| Parameter | Keterangan                        |
+| --------- | --------------------------------- |
+| title     | Judul assignment                  |
+| description| Deskripsi assignment             |
+
+
+### Edit Assignment
+
+Location : `/api/assignment/:id`  
+Method : PUT  
+Auth : Admin
+
+Data:
+
+| Parameter | Keterangan                        |
+| --------- | --------------------------------- |
+| title     | Judul assignment                  |
+| description| Deskripsi assignment             |
+
+
+### Delete Assignment
+
+Location : `/api/assignment/:id`  
+Method : DELETE  
+Auth : Admin
+
+### Get All Assignment
+
+Location : `/api/assignment`  
+Method : GET  
+Auth : User
+
+Return :
+
+| Parameter | Keterangan                        |
+| --------- | --------------------------------- |
+| id         | ID assignment                    |
+| title       | Judul assignment                |
+| description| Deskripsi assignment             |
+
+
+### Get Assignment (title, description) by ID
+
+Location : `/api/assignment/{id}`  
+Method : GET  
+Auth : User
+
+Return :
+
+| Parameter | Keterangan                        |
+| --------- | --------------------------------- |
+| id         | ID assignment                    |
+| title       | Judul assignment                |
+| description| Deskripsi assignment             |
