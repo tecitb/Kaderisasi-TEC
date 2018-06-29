@@ -114,6 +114,7 @@ Return :
 | mobile    | Nomor HP user               |
 | tec_regno | No registrasi TEC           |
 | address   | Alamat user                 |
+| is_active | masih aktif (1) / coret(0)  |
 
 ### Get User Score
 
@@ -283,6 +284,7 @@ Auth: User
 Keterangan: Pakai kupon supaya status user menjadi lunas
 
 Data:
+
 | Parameter | Keterangan                        |
 | --------- | --------------------------------- |
 | coupon    | Kode coupon                       |
