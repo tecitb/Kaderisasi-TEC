@@ -236,6 +236,15 @@ $app->get('/relations/network/{tecregno}',  function(Request $request, Response 
         return $response->withJson($error);
     }
 
+    $groupBy = $request->getParam('grouping');
+    if(!empty($groupBy)) {
+        $groupBy = "_group__".$request->getParam('grouping');
+        if (!function_exists($groupBy)) {
+            $error = ['error' => ['text' => 'Invalid grouping method']];
+            return $response->withJson($error);
+        }
+    }
+
     $tecRegNo = $args['tecregno'];
     if($tecRegNo === "all") {
         // Filter is undefined, print all relations
@@ -263,15 +272,22 @@ $app->get('/relations/network/{tecregno}',  function(Request $request, Response 
         foreach ($relations as $row) {
             $tno = $row['tec_regno'];
             $rw = $row['relation_with'];
+
             if(empty($ntrac[$tno])) {
                 $ntrac[$tno] = true;
-                $node = array("id" => $tno, "label" => $tno);
+                if(!empty($groupBy)) $group = $groupBy($db, $tno);
+                else $group = "default";
+
+                $node = array("id" => $tno, "label" => $tno, "group" => $group);
                 array_push($nodes, $node);
             }
 
             if(empty($ntrac[$rw])) {
                 $ntrac[$rw] = true;
-                $node = array("id" => $rw, "label" => $rw);
+                if(!empty($groupBy)) $group = $groupBy($db, $rw);
+                else $group = "default";
+
+                $node = array("id" => $rw, "label" => $rw, "group" => $group);
                 array_push($nodes, $node);
             }
 
@@ -287,3 +303,37 @@ $app->get('/relations/network/{tecregno}',  function(Request $request, Response 
         return $response->withJson($error);
     }
 });
+
+/* Relations grouping filters */
+/**
+ * Groups entities by NIM
+ * @param $entityId Entity ID
+ * @return bool|string
+ */
+function _group__jurusan(&$db, $entityId) {
+    $q = "SELECT `NIM` FROM `users` WHERE `tec_regno`=:tec_regno";
+    $stmt = $db->prepare($q);
+    $stmt->execute([
+        ':tec_regno' => $entityId
+    ]);
+
+    if ($stmt->rowCount() > 0) {
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (strlen(@$user['NIM']) == 8)
+            return substr($user['NIM'], 0, 5);
+        else
+            return "user";
+    } else {
+        return "default";
+    }
+}
+
+/**
+ * Groups entities by entityId
+ * @param $entityId
+ * @return string
+ */
+function _group__entityId(&$db, $entityId) {
+    if(substr($entityId, 0, 3) === "TEC") return "peserta";
+    else return "default";
+}
