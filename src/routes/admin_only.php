@@ -241,3 +241,38 @@ $app->post('/quiz', function(Request $request, Response $response, array $args) 
    return $response->withJson($error);
  }
 });
+
+// DELETE A QUIZ
+$app->delete('/quiz/{id}', function(Request $request, Response $response, array $args) {
+ if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+   $error = ['error' => ['text' => 'Permission denied']];
+   return $response->withJson($error);
+ }
+
+ $id = $args["id"];
+
+ if (empty($id) || filter_var($id, FILTER_VALIDATE_INT) === FALSE) {
+   die('Invalid ID');
+ } 
+
+ try {
+  $db = $this->get('db');
+  $db->beginTransaction();
+
+  $stmt = $db->prepare('DELETE FROM `quiz` WHERE `id` = :id');
+  $stmt->execute([':id' => $id]);
+
+  $stmt2 = $db->prepare('DELETE FROM `question_answer` WHERE `quiz_id` = :id');
+  $stmt2->execute([':id' => $id]);
+
+  $db->commit();
+  $data = ["notice"=>["type"=>"success", "text" => "Quiz sucessfully deleted"]];
+  return $response->withJson($data);
+ }
+ catch (PDOException $exception) {
+  $db->rollBack();
+   $error = ['error' => ['text' => $e->getMessage()]];
+   return $response->withJson($error);
+ }
+
+});

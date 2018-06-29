@@ -19,7 +19,7 @@ $app->get('/user/{id}',function(Request $request, Response $response, array $arg
         return $response->withJson($error);
     }
 
-    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture` FROM `users` WHERE id=:id OR `tec_regno`=:id";
+    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture`,`is_active` FROM `users` WHERE id=:id OR `tec_regno`=:id";
 
     try {
         $db = $this->get('db');
@@ -125,7 +125,7 @@ $app->get('/verify/{token}', function(Request $request, Response $response, arra
 });
 
 $app->post('/uploadImage', function(Request $request, Response $response, array $args) {
-    $directory = $this->get('settings')['upload_directory'];
+    $directory = $this->get('settings')['profile_directory'];
 
     $uploadedFiles = $request->getUploadedFiles();
 
@@ -164,4 +164,113 @@ $app->post('/uploadImage', function(Request $request, Response $response, array 
       return $response->withJson(['error'=>['text' => 'Upload failed']]);
     }
 
+});
+
+// UPDATE USER INFO
+$app->put('/user/{id}',function(Request $request, Response $response, array $args) {
+
+    if ($request->getAttribute("jwt")['id'] != $args['id']) {
+        $error = ['error' => ['text' => 'Permission denied']];
+        return $response->withJson($error);
+    }
+
+    $name = $request->getParam('name');
+    $email = $request->getParam('email');
+    $interests = $request->getParam('interests');
+    $nickname = $request->getParam('nickname');
+    $about_me = $request->getParam('about_me');
+    $line_id = $request->getParam('line_id');
+    $instagram = $request->getParam('instagram');
+    $mobile = $request->getParam('mobile');
+    $address = $request->getParam('address');
+
+    if(!isset($name, $email, $interests, $nickname, $about_me, $line_id, $instagram, $mobile, $address)) {
+      $error = ['error' => ['text' => 'Please fill in all fields']];
+      return $response->withJson($error);
+    }
+
+    $sql = "UPDATE `users` SET 
+            `name` = :name,
+            `email` = :email,
+            `interests` = :interests,
+            `nickname` = :nickname,
+            `about_me` = :about_me,
+            `line_id` = :line_id,
+            `instagram` = :instagram,
+            `mobile` = :mobile,
+            `address` = :address
+             WHERE id=:id";
+
+    try {
+     $db = $this->get('db');
+     $stmt = $db->prepare($sql);
+     $stmt->execute([
+       ':id' => $args['id'],
+       ':name' => $name,
+       ':email' => $email,
+       ':interests' => $interests,
+       ':nickname' => $nickname,
+       ':about_me' => $about_me,
+       ':line_id' => $line_id,
+       ':instagram' => $instagram,
+       ':mobile' => $mobile,
+       ':address' => $address
+     ]);
+     $rowCount = $stmt->rowCount();
+     if ($rowCount == 0) {
+       $error = ['error' => ['text' => 'Error, nothing updated.']];
+       return $response->withJson($error);
+     }
+     $result = ["notice"=>["type"=>"success", "text" => "User profile updated"]];
+     return $response->withJson($result);
+    }
+    catch (PDOException $e) {
+     $error = ['error' => ['text' => $e->getMessage()]];
+     return $response->withJson($error);
+    }
+});
+
+// USER PAKAI COUPON
+$app->post('/useCoupon', function(Request $request, Response $response, array $args) {
+  $coupon = $request->getParam('coupon');
+  $id = $request->getAttribute("jwt")['id'];
+
+  $sql = "SELECT EXISTS(SELECT * from coupons where coupon = :coupon) as ada_kupon";
+
+
+  $db = $this->get('db');
+  try {
+    $stmt = $db->prepare($sql);
+    $stmt->execute([
+      ':coupon' => $coupon
+    ]);
+    $result = $stmt->fetch();
+    
+    if($result['ada_kupon'] != 1) {
+      return $response->withJson(['error'=>['text' => 'Invalid coupon']]);
+    }
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+
+  try {
+    $db->beginTransaction();
+    $stmt = $db->prepare("UPDATE `users` SET `lunas` = 1 WHERE `id`=:id");
+    $stmt->execute([':id' => $id]);
+
+    $stmt = $db->prepare("DELETE FROM `coupons` WHERE `coupon`=:coupon");
+    $stmt->execute([':coupon' => $coupon]);
+
+    $db->commit();
+
+    $result = ["notice"=>["type"=>"success", "text" => "Coupon use successful. Status: lunas"]];
+    return $response->withJson($result);
+  }
+  catch (PDOException $e) {
+    $db->rollBack();
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
 });
