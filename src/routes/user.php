@@ -125,7 +125,7 @@ $app->get('/verify/{token}', function(Request $request, Response $response, arra
 });
 
 $app->post('/uploadImage', function(Request $request, Response $response, array $args) {
-    $directory = $this->get('settings')['upload_directory'];
+    $directory = $this->get('settings')['profile_directory'];
 
     $uploadedFiles = $request->getUploadedFiles();
 
@@ -230,6 +230,7 @@ $app->put('/user/{id}',function(Request $request, Response $response, array $arg
     }
 });
 
+// USER PAKAI COUPON
 $app->post('/useCoupon', function(Request $request, Response $response, array $args) {
   $coupon = $request->getParam('coupon');
   $id = $request->getAttribute("jwt")['id'];
@@ -272,7 +273,4 @@ $app->post('/useCoupon', function(Request $request, Response $response, array $a
     $error = ['error' => ['text' => $e->getMessage()]];
     return $response->withJson($error);
   }
-
-
-
 });

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 29, 2018 at 10:34 AM
+-- Generation Time: Jun 29, 2018 at 12:05 PM
 -- Server version: 5.6.35
 -- PHP Version: 7.1.1
 
@@ -19,6 +19,27 @@ SET time_zone = "+00:00";
 --
 -- Database: `kadertec`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `assignments`
+--
+
+CREATE TABLE `assignments` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `assignments`
+--
+
+INSERT INTO `assignments` (`id`, `title`, `description`) VALUES
+(1, 'Buatlah CV', 'Bikin CV semenarik mungkin'),
+(2, 'Buatlah Resume', 'Bikin resume pertemuan kemarin'),
+(3, 'Buatlah Portofolio', 'Bikin portfolio');
 
 -- --------------------------------------------------------
 
@@ -130,7 +151,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `NIM`, `created_at`, `updated_at`, `lunas`, `verified`, `isAdmin`, `interests`, `nickname`, `about_me`, `line_id`, `instagram`, `mobile`, `tec_regno`, `address`, `profile_picture`, `is_active`) VALUES
-(1, 'Terry Djony', 'demokader@tec.itb.ac.id', '$2y$10$W/sVuNC73RgVexLhMwRMj.jA2rN0th7owX7hrdxn.m2YuAoIAt29G', 13316014, '2018-05-24 01:10:00', '2018-05-24 01:10:48', 0, 'Yes', 1, '', '', '', '', '', '', 'A17001', '', 'user_1_adc4d8543c86a4fe.jpg', 1),
+(1, 'Terry Djony', 'demokader@tec.itb.ac.id', '$2y$10$4DCDPFLuyjMUWTbWQ382ReWkx2RedDG51sXoLSD9U2ca2SwKETNcK', 13316014, '2018-05-24 01:10:00', '2018-05-24 01:10:48', 0, 'Yes', 1, '', '', '', '', '', '', 'A17001', '', 'user_1_68373a4526de83d4.png', 1),
 (2, 'John Terry', 'johnterry@gmail.com', '$2y$10$AcfUvDusmZN5/ZRbWAFHZOswg22gD/UOt.8gFfJy8NAJwaIo0r8Z2', 0, '2018-05-25 10:39:53', '2018-05-25 16:39:54', 0, '659a6d82e0ec8cbb5ac3f60adb9fcaf4', 0, '', '', '', '', '', '', '', '', '', 1),
 (3, 'Terry Jhonny', 'terryjhonny@gmail.com', '$2y$10$tG/20YpUK9diSPB75aJfSu.yqr8POHssDIP6fGgb4kEdkxR6sQpDW', 0, '2018-05-25 13:48:49', '2018-05-25 19:48:50', 1, 'fb2206e6c003e65c3dfc00caefd67fcf', 0, '', '', '', '', '', '', '', '', '', 1),
 (4, 'Anggota kece', 'anggotakece@s.itb.ac.id', '$2y$10$B/vyDGkwqC9/M1E6hkf4nOvGU6NqAPIvdHEXsEThQ8qoihFHYTz2S', 16716070, '2018-06-28 16:57:27', '2018-06-28 22:57:28', 1, 'c0a7c5d8e459172919333b187de0e18b', 0, 'Badminton', 'Mr Cyber', 'Saya seorang mahasiswa yg  kadang happy', 'anggotakece12', '@anggotakece', '0812934203232', 'TEC001', 'Jl Kebon Mangga', '', 1),
@@ -157,6 +178,18 @@ CREATE TABLE `user_answer` (
 INSERT INTO `user_answer` (`id`, `answer`, `qa_id`, `user_id`) VALUES
 (1, 'Bill Gates', 1, 1),
 (2, 'Djarum', 2, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_assignment`
+--
+
+CREATE TABLE `user_assignment` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `assignment_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -223,6 +256,12 @@ INSERT INTO `user_score` (`id`, `score`, `quiz_id`, `user_id`) VALUES
 --
 
 --
+-- Indexes for table `assignments`
+--
+ALTER TABLE `assignments`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `coupons`
 --
 ALTER TABLE `coupons`
@@ -255,6 +294,12 @@ ALTER TABLE `user_answer`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `user_assignment`
+--
+ALTER TABLE `user_assignment`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `user_relations`
 --
 ALTER TABLE `user_relations`
@@ -276,6 +321,11 @@ ALTER TABLE `user_score`
 -- AUTO_INCREMENT for dumped tables
 --
 
+--
+-- AUTO_INCREMENT for table `assignments`
+--
+ALTER TABLE `assignments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `coupons`
 --
@@ -301,6 +351,11 @@ ALTER TABLE `users`
 --
 ALTER TABLE `user_answer`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT for table `user_assignment`
+--
+ALTER TABLE `user_assignment`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `user_relations`
 --
