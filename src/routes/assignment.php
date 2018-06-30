@@ -137,3 +137,99 @@ $app->get('/assignment/{id}', function(Request $request, Response $response, arr
  }
 
 });
+
+// SUBMIT AN ASSIGNMENT
+$app->post('/user/assignment/{id}', function(Request $request, Response $response, array $args) {
+  $directory = $this->get('settings')['assignment_directory'];
+  $id = $args["id"];
+  $user_id = $request->getAttribute("jwt")['id'];
+
+  $uploadedFiles = $request->getUploadedFiles();
+
+  $uploadedFile = $uploadedFiles['assignment'];
+  if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+      $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+      $basename = bin2hex(random_bytes(8)); 
+      $filename = 'assignment_' . $id . '_' . sprintf('%s.%0.8s', $basename, $extension);
+
+      $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+
+      try {
+        $db = $this->get('db');
+        $stmt = $db->prepare("INSERT INTO user_assignment(user_id, assignment_id, filename) VALUES (:user_id, :assignment_id, :filename)");
+        $stmt->execute([
+          ':user_id' => $user_id,
+          ':assignment_id' => $id,
+          ':filename' => $filename
+        ]);
+        $result = ["notice"=>["type"=>"success", "text" => "Assignment sucessfully uploaded"], "filename" => $filename];
+        return $response->withJson($result);
+      }
+      catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+      }
+  }
+  else {
+    return $response->withJson(['error'=>['text' => 'Upload failed']]);
+  }
+});
+
+// GET ALL USER ASSIGNMENT
+$app->get('/user/assignment', function(Request $request, Response $response, array $args) {
+  try {
+    $db = $this->get('db');
+    $user_id = $request->getAttribute("jwt")['id'];
+    $stmt = $db->prepare("SELECT assignment_id, title as assignment_title, filename FROM user_assignment INNER JOIN assignments WHERE user_id = :user_id");
+    $stmt->execute([
+      ':user_id' => $user_id
+    ]);
+    $assignments = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+    return $response->withJson($assignments);
+  }
+  catch (PDOException $e) {
+    return $response->withJson(['error'=>['text' => 'Something wrong happened']]);
+  }
+});
+
+// GET USER ASSIGNMENT By ASSIGNMENT ID
+
+$app->get('/user/assignment/{id}', function(Request $request, Response $response, array $args) {
+  try {
+    $db = $this->get('db');
+    $user_id = $request->getAttribute("jwt")['id'];
+    $stmt = $db->prepare("SELECT filename, title as assignment_title, filename FROM user_assignment INNER JOIN assignments WHERE user_id = :user_id AND assignment_id = :id");
+    $stmt->execute([
+      ':user_id' => $user_id,
+      ':id' => $args['id']
+    ]);
+    $assignments = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+    return $response->withJson($assignments);
+  }
+  catch (PDOException $e) {
+    return $response->withJson(['error'=>['text' => 'Something wrong happened']]);
+  }
+});
+
+// DOWNLOAD ASSIGNMENT
+$app->get('/download/assignment/{filename}', function(Request $request, Response $response, array $args) {
+    $directory = $this->get('settings')['assignment_directory'];
+    $filename = $args["filename"];
+    $file = $directory . DIRECTORY_SEPARATOR . $filename;
+    $fh = fopen($file, 'rb');
+
+    $stream = new \Slim\Http\Stream($fh); // create a stream instance for the response body
+
+    return $response->withHeader('Content-Type', 'application/force-download')
+                    ->withHeader('Content-Type', 'application/octet-stream')
+                    ->withHeader('Content-Type', 'application/download')
+                    ->withHeader('Content-Description', 'File Transfer')
+                    ->withHeader('Content-Transfer-Encoding', 'binary')
+                    ->withHeader('Content-Disposition', 'attachment; filename="' . basename($file) . '"')
+                    ->withHeader('Expires', '0')
+                    ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
+                    ->withHeader('Pragma', 'public')
+                    ->withBody($stream);
+})

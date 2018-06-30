@@ -398,3 +398,50 @@ Return :
 | id         | ID assignment                    |
 | title       | Judul assignment                |
 | description| Deskripsi assignment             |
+
+
+### Submit Assignment by user
+
+Location : `/api/user/assignment/:id`  
+Method : POST  
+Auth : User
+
+Return :
+
+| Parameter | Keterangan                        |
+| --------- | --------------------------------- |
+| assignment| File assignment                   |
+
+### Get All Own Submitted Assignments Filename
+
+Location : `/api/user/assignment`  
+Method : GET  
+Auth : User
+
+Return :
+
+| Parameter    | Keterangan                        |
+| ---------    | --------------------------------- |
+| assignment_id| ID assignment                     |
+| assignment_title | Judul assignment              |
+| filename     | Nama file                         |
+
+
+### Get User Assignment By Assignment ID
+
+Location : `/api/user/assignment/:id`  
+Method : GET  
+Auth : User
+
+Return :
+
+| Parameter    | Keterangan                        |
+| ---------    | --------------------------------- |
+| assignment_title | Judul assignment              |
+| filename     | Nama file                         |
+
+### Download Assignment
+
+Location: '/download/assignment/:filename'
+Method: GET
+Auth: User
