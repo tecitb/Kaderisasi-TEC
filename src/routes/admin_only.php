@@ -76,7 +76,7 @@ $app->get('/members', function(Request $request, Response $response, array $args
 });
 
 // GET ALL QUIZ RESULT
-$app->get('/quiz/{qid}/score', function(Request $request, Response $response, array $args) {
+$app->get('/quiz/{qid:[0-9]+}/score', function(Request $request, Response $response, array $args) {
   if ($request->getAttribute("jwt")['isAdmin'] != 1) {
      $error = ['error' => ['text' => 'Permission denied']];
      return $response->withJson($error);
@@ -124,7 +124,7 @@ $app->get('/quiz/{qid}/score', function(Request $request, Response $response, ar
 });
 
 // GET USER RESULT IN A QUIZ
-$app->get('/user/{uid}/quiz/{qid}', function(Request $request, Response $response, array $args) {
+$app->get('/user/{uid:[0-9]+}/quiz/{qid:[0-9]+}', function(Request $request, Response $response, array $args) {
    if ($request->getAttribute("jwt")['isAdmin'] != 1) {
      $error = ['error' => ['text' => 'Permission denied']];
      return $response->withJson($error);
@@ -150,7 +150,7 @@ $app->get('/user/{uid}/quiz/{qid}', function(Request $request, Response $respons
 });
 
 // GET COUPONS
-$app->get('/getCoupon/{num}', function (Request $request, Response $response, array $args) {
+$app->get('/getCoupon/{num:[0-9]+}', function (Request $request, Response $response, array $args) {
   if ($request->getAttribute("jwt")['isAdmin'] != 1) {
     $error = ['error' => ['text' => 'Permission denied']];
     return $response->withJson($error);
@@ -174,17 +174,13 @@ $app->get('/getCoupon/{num}', function (Request $request, Response $response, ar
 });
 
 // GENERATE COUPON
-$app->post('/generateCoupon/{num}', function (Request $request, Response $response, array $args) {
+$app->post('/generateCoupon/{num:[0-9]+}', function (Request $request, Response $response, array $args) {
  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
    $error = ['error' => ['text' => 'Permission denied']];
    return $response->withJson($error);
  }
 
  $number_of_coupons = $args["num"];
- if (filter_var($number_of_coupons, FILTER_VALIDATE_INT) === FALSE) {
-   $error = ['error' => ['text' => 'Invalid number of coupon']];
-   return $response->withJson($error);
- }
 
  if($number_of_coupons > 50 || $number_of_coupons < 1) {
    $error = ['error' => ['text' => 'Enter number between 1 and 50 only']];
@@ -279,7 +275,7 @@ $app->post('/quiz', function(Request $request, Response $response, array $args) 
 });
 
 // DELETE A QUIZ
-$app->delete('/quiz/{id}', function(Request $request, Response $response, array $args) {
+$app->delete('/quiz/{id:[0-9]+}', function(Request $request, Response $response, array $args) {
  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
    $error = ['error' => ['text' => 'Permission denied']];
    return $response->withJson($error);
@@ -307,6 +303,36 @@ $app->delete('/quiz/{id}', function(Request $request, Response $response, array 
  }
  catch (PDOException $exception) {
   $db->rollBack();
+   $error = ['error' => ['text' => $e->getMessage()]];
+   return $response->withJson($error);
+ }
+
+});
+
+
+// CORET MEMBER TEC, SET is_active ke 0
+$app->delete('/user/{id:[0-9]+}', function(Request $request, Response $response, array $args) {
+ if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+   $error = ['error' => ['text' => 'Permission denied']];
+   return $response->withJson($error);
+ }
+
+ $id = $args["id"];
+
+ if (empty($id) || filter_var($id, FILTER_VALIDATE_INT) === FALSE) {
+   die('Invalid ID');
+ } 
+
+ try {
+  $db = $this->get('db');
+
+  $stmt = $db->prepare('UPDATE users SET is_active = 0 WHERE id = :id AND isAdmin = 0');
+  $stmt->execute([':id' => $id]);
+
+  $data = ["notice"=>["type"=>"success", "text" => "Member sukses dicoret"]];
+  return $response->withJson($data);
+ }
+ catch (PDOException $exception) {
    $error = ['error' => ['text' => $e->getMessage()]];
    return $response->withJson($error);
  }

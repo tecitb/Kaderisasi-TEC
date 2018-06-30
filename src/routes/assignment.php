@@ -33,7 +33,7 @@ $app->post('/assignment', function(Request $request, Response $response, array $
 });
 
 // EDIT AN ASSIGNMENT
-$app->put('/assignment/{id}', function(Request $request, Response $response, array $args) {
+$app->put('/assignment/{id:[0-9]+}', function(Request $request, Response $response, array $args) {
  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
    $error = ['error' => ['text' => 'Permission denied']];
    return $response->withJson($error);
@@ -64,7 +64,7 @@ $app->put('/assignment/{id}', function(Request $request, Response $response, arr
 });
 
 // DELETE AN ASSIGNMENT
-$app->delete('/assignment/{id}', function(Request $request, Response $response, array $args) {
+$app->delete('/assignment/{id:[0-9]+}', function(Request $request, Response $response, array $args) {
  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
    $error = ['error' => ['text' => 'Permission denied']];
    return $response->withJson($error);
@@ -115,7 +115,7 @@ $app->get('/assignment', function(Request $request, Response $response, array $a
 
 // GET ASSIGNMENT
 
-$app->get('/assignment/{id}', function(Request $request, Response $response, array $args) {
+$app->get('/assignment/{id:[0-9]+}', function(Request $request, Response $response, array $args) {
 
  $id = $args['id'];
 
@@ -139,7 +139,7 @@ $app->get('/assignment/{id}', function(Request $request, Response $response, arr
 });
 
 // SUBMIT AN ASSIGNMENT
-$app->post('/user/assignment/{id}', function(Request $request, Response $response, array $args) {
+$app->post('/user/assignment/{id:[0-9]+}', function(Request $request, Response $response, array $args) {
   $directory = $this->get('settings')['assignment_directory'];
   $id = $args["id"];
   $user_id = $request->getAttribute("jwt")['id'];
@@ -180,7 +180,7 @@ $app->get('/user/assignment', function(Request $request, Response $response, arr
   try {
     $db = $this->get('db');
     $user_id = $request->getAttribute("jwt")['id'];
-    $stmt = $db->prepare("SELECT assignment_id, title as assignment_title, filename FROM user_assignment INNER JOIN assignments WHERE user_id = :user_id");
+    $stmt = $db->prepare("SELECT assignment_id, uploaded_at, title as assignment_title, filename FROM user_assignment INNER JOIN assignments WHERE user_id = :user_id");
     $stmt->execute([
       ':user_id' => $user_id
     ]);
@@ -195,11 +195,11 @@ $app->get('/user/assignment', function(Request $request, Response $response, arr
 
 // GET USER ASSIGNMENT By ASSIGNMENT ID
 
-$app->get('/user/assignment/{id}', function(Request $request, Response $response, array $args) {
+$app->get('/user/assignment/{id:[0-9]+}', function(Request $request, Response $response, array $args) {
   try {
     $db = $this->get('db');
     $user_id = $request->getAttribute("jwt")['id'];
-    $stmt = $db->prepare("SELECT filename, title as assignment_title, filename FROM user_assignment INNER JOIN assignments WHERE user_id = :user_id AND assignment_id = :id");
+    $stmt = $db->prepare("SELECT filename, uploaded_at, title as assignment_title, filename FROM user_assignment INNER JOIN assignments WHERE user_id = :user_id AND assignment_id = :id");
     $stmt->execute([
       ':user_id' => $user_id,
       ':id' => $args['id']
@@ -232,4 +232,4 @@ $app->get('/download/assignment/{filename}', function(Request $request, Response
                     ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
                     ->withHeader('Pragma', 'public')
                     ->withBody($stream);
-})
+});
