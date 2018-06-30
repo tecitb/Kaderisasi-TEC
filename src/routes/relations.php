@@ -268,7 +268,7 @@ $app->get('/relations/network/{tecregno}',  function(Request $request, Response 
         $ntrac = array();
         $nodes = array();
         $edges = array();
-        $node_info = array();
+        $nodes_info = array();
 
         foreach ($relations as $row) {
             $tno = $row['tec_regno'];
@@ -282,7 +282,8 @@ $app->get('/relations/network/{tecregno}',  function(Request $request, Response 
                 $node = array("id" => $tno, "label" => $tno, "group" => $group);
                 array_push($nodes, $node);
 
-                $node_info[$tno] = array("dn" => $row['entity_name']);
+                $node_info = array("entity_id" => $tno, "dn" => $row['entity_name']);
+                array_push($nodes_info, $node_info);
             }
 
             if(empty($ntrac[$rw])) {
@@ -292,14 +293,16 @@ $app->get('/relations/network/{tecregno}',  function(Request $request, Response 
 
                 $node = array("id" => $rw, "label" => $rw, "group" => $group);
                 array_push($nodes, $node);
-                $node_info[$rw] = array("dn" => $row['full_name']);
+
+                $node_info = array("entity_id" => $rw, "dn" => $row['full_name']);
+                array_push($nodes_info, $node_info);
             }
 
             $edge = array("from" => $tno, "to" => $rw, "arrows" => "to");
             array_push($edges, $edge);
         }
 
-        $aresp = ["nodes" => $nodes, "edges" => $edges, "node_info" => $node_info];
+        $aresp = ["nodes" => $nodes, "edges" => $edges, "node_info" => $nodes_info];
         return $response->withJson($aresp);
     }
     catch (PDOException $e) {
