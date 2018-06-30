@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 29, 2018 at 12:05 PM
+-- Generation Time: Jun 30, 2018 at 05:21 PM
 -- Server version: 5.6.35
 -- PHP Version: 7.1.1
 
@@ -155,8 +155,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `NIM`, `created_at`, `up
 (2, 'John Terry', 'johnterry@gmail.com', '$2y$10$AcfUvDusmZN5/ZRbWAFHZOswg22gD/UOt.8gFfJy8NAJwaIo0r8Z2', 0, '2018-05-25 10:39:53', '2018-05-25 16:39:54', 0, '659a6d82e0ec8cbb5ac3f60adb9fcaf4', 0, '', '', '', '', '', '', '', '', '', 1),
 (3, 'Terry Jhonny', 'terryjhonny@gmail.com', '$2y$10$tG/20YpUK9diSPB75aJfSu.yqr8POHssDIP6fGgb4kEdkxR6sQpDW', 0, '2018-05-25 13:48:49', '2018-05-25 19:48:50', 1, 'fb2206e6c003e65c3dfc00caefd67fcf', 0, '', '', '', '', '', '', '', '', '', 1),
 (4, 'Anggota kece', 'anggotakece@s.itb.ac.id', '$2y$10$B/vyDGkwqC9/M1E6hkf4nOvGU6NqAPIvdHEXsEThQ8qoihFHYTz2S', 16716070, '2018-06-28 16:57:27', '2018-06-28 22:57:28', 1, 'c0a7c5d8e459172919333b187de0e18b', 0, 'Badminton', 'Mr Cyber', 'Saya seorang mahasiswa yg  kadang happy', 'anggotakece12', '@anggotakece', '0812934203232', 'TEC001', 'Jl Kebon Mangga', '', 1),
-(5, 'Anggota keren', 'anggotakeren@s.itb.ac.id', '$2y$10$X5E0O.t/fjRn8aBmacbjyuahqYMMQHTJbeQkN0hK85QXOWyyusLJW', 13313313, '2018-06-28 18:13:44', '2018-06-29 00:13:45', 0, 'c70167263a73239b456a69d0ab5d253c', 0, 'Running', 'Mr Smith', '', '', '@anggotakeren', '0812934203232', 'TEC002', 'Jl Kebon Mangga 67 Babakan Jeruk Kota Atlantis', '', 1),
-(6, 'Anggota mantap', 'anggotamantap@s.itb.ac.id', '$2y$10$xSXF9Qa22h9u.AvM/e8K6e6VheRryy0ryWUN4nMdRFoCJ6AYSzQtS', 13316143, '2018-06-28 18:17:02', '2018-06-29 00:17:03', 1, '3995e827ecf37489af412a9a817dd2bd', 0, 'Jogging', 'Mr Smoke', '', '', '@anggotamantap', '08129324203232', 'TEC003', 'Jl Kebon Duren 67 Babakan Jeruk Kota Atlantis', '', 1);
+(5, 'Anggota keren', 'anggotakeren@s.itb.ac.id', '$2y$10$X5E0O.t/fjRn8aBmacbjyuahqYMMQHTJbeQkN0hK85QXOWyyusLJW', 13313313, '2018-06-28 18:13:44', '2018-06-29 00:13:45', 0, 'c70167263a73239b456a69d0ab5d253c', 0, 'Running', 'Mr Smith', '', '', '@anggotakeren', '0812934203232', 'TEC002', 'Jl Kebon Mangga 67 Babakan Jeruk Kota Atlantis', '', 0),
+(6, 'Anggota mantap', 'anggotamantap@s.itb.ac.id', '$2y$10$xSXF9Qa22h9u.AvM/e8K6e6VheRryy0ryWUN4nMdRFoCJ6AYSzQtS', 13316143, '2018-06-28 18:17:02', '2018-06-29 00:17:03', 1, '3995e827ecf37489af412a9a817dd2bd', 0, 'Jogging', 'Mr Smoke', '', '', '@anggotamantap', '08129324203232', 'TEC003', 'Jl Kebon Duren 67 Babakan Jeruk Kota Atlantis', '', 0);
 
 -- --------------------------------------------------------
 
@@ -188,7 +188,9 @@ INSERT INTO `user_answer` (`id`, `answer`, `qa_id`, `user_id`) VALUES
 CREATE TABLE `user_assignment` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `assignment_id` int(11) NOT NULL
+  `assignment_id` int(11) NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `uploaded_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
