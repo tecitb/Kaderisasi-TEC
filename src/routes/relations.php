@@ -236,13 +236,22 @@ $app->get('/relations/network/{tecregno}',  function(Request $request, Response 
         return $response->withJson($error);
     }
 
+    $groupBy = $request->getParam('grouping');
+    if(!empty($groupBy)) {
+        $groupBy = "_group__".$request->getParam('grouping');
+        if (!function_exists($groupBy)) {
+            $error = ['error' => ['text' => 'Invalid grouping method']];
+            return $response->withJson($error);
+        }
+    }
+
     $tecRegNo = $args['tecregno'];
     if($tecRegNo === "all") {
         // Filter is undefined, print all relations
-        $sql = "SELECT user_relations.id, relation_with, full_name, tec_regno, vcard FROM `user_relations` 
+        $sql = "SELECT user_relations.id, relation_with, full_name, tec_regno, vcard, users.name AS entity_name FROM `user_relations` 
             LEFT JOIN users ON user_relations.user_id = users.id";
     } else {
-        $sql = "SELECT user_relations.id, relation_with, full_name, tec_regno, vcard FROM `user_relations` 
+        $sql = "SELECT user_relations.id, relation_with, full_name, tec_regno, vcard, users.name AS entity_name FROM `user_relations` 
             LEFT JOIN users ON user_relations.user_id = users.id
             WHERE `tec_regno`=:tec_regno OR `relation_with`=:tec_regno";
     }
@@ -259,27 +268,41 @@ $app->get('/relations/network/{tecregno}',  function(Request $request, Response 
         $ntrac = array();
         $nodes = array();
         $edges = array();
+        $nodes_info = array();
 
         foreach ($relations as $row) {
             $tno = $row['tec_regno'];
             $rw = $row['relation_with'];
+
             if(empty($ntrac[$tno])) {
                 $ntrac[$tno] = true;
-                $node = array("id" => $tno, "label" => $tno);
+                if(!empty($groupBy)) $group = $groupBy($db, $tno);
+                else $group = "default";
+
+                $node = array("id" => $tno, "label" => $tno, "group" => $group);
                 array_push($nodes, $node);
+
+                $node_info = array("entity_id" => $tno, "dn" => $row['entity_name']);
+                array_push($nodes_info, $node_info);
             }
 
             if(empty($ntrac[$rw])) {
                 $ntrac[$rw] = true;
-                $node = array("id" => $rw, "label" => $rw);
+                if(!empty($groupBy)) $group = $groupBy($db, $rw);
+                else $group = "default";
+
+                $node = array("id" => $rw, "label" => $rw, "group" => $group);
                 array_push($nodes, $node);
+
+                $node_info = array("entity_id" => $rw, "dn" => $row['full_name']);
+                array_push($nodes_info, $node_info);
             }
 
-            $edge = array("from" => $tno, "to" => $rw);
+            $edge = array("from" => $tno, "to" => $rw, "arrows" => "to");
             array_push($edges, $edge);
         }
 
-        $aresp = ["nodes" => $nodes, "edges" => $edges];
+        $aresp = ["nodes" => $nodes, "edges" => $edges, "node_info" => $nodes_info];
         return $response->withJson($aresp);
     }
     catch (PDOException $e) {
@@ -287,3 +310,64 @@ $app->get('/relations/network/{tecregno}',  function(Request $request, Response 
         return $response->withJson($error);
     }
 });
+
+/* Relations grouping filters */
+/**
+ * Groups entities by NIM
+ * @param $entityId Entity ID
+ * @return bool|string
+ */
+function _group__nim(&$db, $entityId) {
+    $q = "SELECT `NIM` FROM `users` WHERE `tec_regno`=:tec_regno";
+    $stmt = $db->prepare($q);
+    $stmt->execute([
+        ':tec_regno' => $entityId
+    ]);
+
+    if ($stmt->rowCount() > 0) {
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (strlen(@$user['NIM']) == 8)
+            return substr($user['NIM'], 0, 5);
+        else
+            return "user";
+    } else {
+        return "default";
+    }
+}
+
+/**
+ * Groups entities by entityId
+ * @param $entityId
+ * @return string
+ */
+function _group__entityId(&$db, $entityId) {
+    if(substr($entityId, 0, 3) === "TEC") return "peserta";
+    else return "";
+}
+
+/**
+ * Groups entities by isActive status
+ * @param $entityId
+ * @return string
+ */
+function _group__in_training(&$db, $entityId) {
+    if(_group__entityId($db, $entityId) === "peserta") {
+        $q = "SELECT `is_active` FROM `users` WHERE `tec_regno`=:tec_regno";
+        $stmt = $db->prepare($q);
+        $stmt->execute([
+            ':tec_regno' => $entityId
+        ]);
+
+        if ($stmt->rowCount() > 0) {
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            if($user['is_active'] == 1)
+                return "active";
+            else
+                return "inactive";
+        } else {
+            return "default";
+        }
+    } else {
+        return "default";
+    }
+}
