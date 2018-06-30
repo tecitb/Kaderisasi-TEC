@@ -25,6 +25,7 @@ return [
         "jwt" => [
             'secret' => getenv('JWT_SECRET')
         ],
-        'upload_directory' =>  dirname(__DIR__) . '/uploads'
+        'profile_directory' =>  dirname(__DIR__) . '/uploads/profile',
+        'assignment_directory' =>  dirname(__DIR__) . '/uploads/assignment'
     ],
 ];
