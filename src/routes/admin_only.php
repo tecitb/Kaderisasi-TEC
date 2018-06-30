@@ -12,15 +12,51 @@ $app->get('/users', function(Request $request, Response $response, array $args) 
 
   $sortby = $request->getQueryParam("sort");
   if(($sortby == null)||($sortby == "")){
-    $sql = "SELECT id, name, email, created_at, updated_at, lunas, isAdmin FROM users";
+    $sql = "SELECT id, name, email, created_at, tec_regno, updated_at, lunas, isAdmin, is_active FROM users";
   }else if($sortby == "noTEC_asc"){
-    $sql = "SELECT id, name, email, created_at, updated_at, lunas, isAdmin FROM users ORDER BY tec_regno ASC";
+    $sql = "SELECT id, name, email, created_at, tec_regno, updated_at, lunas, isAdmin, is_active FROM users ORDER BY tec_regno ASC";
   }else if($sortby == "noTEC_desc"){
-    $sql = "SELECT id, name, email, created_at, updated_at, lunas, isAdmin FROM users ORDER BY tec_regno DESC";
+    $sql = "SELECT id, name, email, created_at, tec_regno, updated_at, lunas, isAdmin, is_active FROM users ORDER BY tec_regno DESC";
   }else if($sortby == "nama_asc"){
-    $sql = "SELECT id, name, email, created_at, updated_at, lunas, isAdmin FROM users ORDER BY name ASC";
+    $sql = "SELECT id, name, email, created_at, tec_regno, updated_at, lunas, isAdmin, is_active FROM users ORDER BY name ASC";
   }else if($sortby == "nama_desc"){
-    $sql = "SELECT id, name, email, created_at, updated_at, lunas, isAdmin FROM users ORDER BY name DESC";
+    $sql = "SELECT id, name, email, created_at, tec_regno, updated_at, lunas, isAdmin, is_active FROM users ORDER BY name DESC";
+  }else{
+    $error = ['error' => ['text' => 'invalid parameter']];
+    return $response->withJson($error);
+  }
+
+  try {
+    $db = $this->get('db');
+    $stmt = $db->query($sql);
+    $users = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+    return $response->withJson($users);
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+});
+
+// GET ALL ACTIVE MEMBERS (Not admin and active)
+$app->get('/members', function(Request $request, Response $response, array $args) {
+  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+     $error = ['error' => ['text' => 'Permission denied']];
+     return $response->withJson($error);
+  }
+
+  $sortby = $request->getQueryParam("sort");
+  if(($sortby == null)||($sortby == "")){
+    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1 AND isAdmin = 0";
+  }else if($sortby == "noTEC_asc"){
+    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 ORDER BY tec_regno ASC";
+  }else if($sortby == "noTEC_desc"){
+    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 ORDER BY tec_regno DESC";
+  }else if($sortby == "nama_asc"){
+    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 ORDER BY name ASC";
+  }else if($sortby == "nama_desc"){
+    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 ORDER BY name DESC";
   }else{
     $error = ['error' => ['text' => 'invalid parameter']];
     return $response->withJson($error);

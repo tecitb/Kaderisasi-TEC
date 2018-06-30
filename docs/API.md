@@ -82,11 +82,37 @@ Return (array):
 | Parameter | Keterangan        |
 | --------- | ----------------- |
 | id        | User id           |
+| tec_regno | Nomor tec         |
 | name      | Nama lengkap user |
 | email     | Email user        |
 | created_at| Waktu dibuat      |
 | updated_at| Waktu diupdate    |
 | isAdmin   | =1 jika admin     |
+| is_active | aktif/udah coret  |
+
+### Get Active Members
+
+Location : `/api/members`  
+Method : GET  
+Auth : Admin
+Description: Get all active non-admin user
+
+Parameter :
+
+| Parameter | Keterangan                                                   |
+| --------- | ------------------------------------------------------------ |
+| sort      | Sorting yang diinginkan :<br />noTEC_asc -> sorting berdasarkan no tec secara ascending<br />noTEC_desc -> sorting berdasarkan no tec secara descending<br />nama_asc -> sorting berdasarkan nama secara ascending<br />nama_desc -> sorting berdasarkan nama secara descending |
+
+Return (array):
+
+| Parameter | Keterangan        |
+| --------- | ----------------- |
+| id        | User id           |
+| tec_regno | Nomor tec         |
+| name      | Nama lengkap user |
+| email     | Email user        |
+| created_at| Waktu dibuat      |
+| updated_at| Waktu diupdate    |
 
 ### Get Spesific User by ID
 
