@@ -190,6 +190,12 @@ Data:
 | --------- | ------------------------------------------------------------ |
 | profile_picture      | File image sbg foto profil                        |
 
+### Delete / Coret member
+
+Location: `/api/user/:id`
+Method: DELETE
+Auth : Admin
+
 ## Quiz
 
 ### Get All Quiz
