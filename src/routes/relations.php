@@ -248,10 +248,10 @@ $app->get('/relations/network/{tecregno}',  function(Request $request, Response 
     $tecRegNo = $args['tecregno'];
     if($tecRegNo === "all") {
         // Filter is undefined, print all relations
-        $sql = "SELECT user_relations.id, relation_with, full_name, tec_regno, vcard FROM `user_relations` 
+        $sql = "SELECT user_relations.id, relation_with, full_name, tec_regno, vcard, users.name AS entity_name FROM `user_relations` 
             LEFT JOIN users ON user_relations.user_id = users.id";
     } else {
-        $sql = "SELECT user_relations.id, relation_with, full_name, tec_regno, vcard FROM `user_relations` 
+        $sql = "SELECT user_relations.id, relation_with, full_name, tec_regno, vcard, users.name AS entity_name FROM `user_relations` 
             LEFT JOIN users ON user_relations.user_id = users.id
             WHERE `tec_regno`=:tec_regno OR `relation_with`=:tec_regno";
     }
@@ -268,6 +268,7 @@ $app->get('/relations/network/{tecregno}',  function(Request $request, Response 
         $ntrac = array();
         $nodes = array();
         $edges = array();
+        $node_info = array();
 
         foreach ($relations as $row) {
             $tno = $row['tec_regno'];
@@ -280,6 +281,8 @@ $app->get('/relations/network/{tecregno}',  function(Request $request, Response 
 
                 $node = array("id" => $tno, "label" => $tno, "group" => $group);
                 array_push($nodes, $node);
+
+                $node_info[$tno] = array("dn" => $row['entity_name']);
             }
 
             if(empty($ntrac[$rw])) {
@@ -289,13 +292,14 @@ $app->get('/relations/network/{tecregno}',  function(Request $request, Response 
 
                 $node = array("id" => $rw, "label" => $rw, "group" => $group);
                 array_push($nodes, $node);
+                $node_info[$rw] = array("dn" => $row['full_name']);
             }
 
             $edge = array("from" => $tno, "to" => $rw, "arrows" => "to");
             array_push($edges, $edge);
         }
 
-        $aresp = ["nodes" => $nodes, "edges" => $edges];
+        $aresp = ["nodes" => $nodes, "edges" => $edges, "node_info" => $node_info];
         return $response->withJson($aresp);
     }
     catch (PDOException $e) {
