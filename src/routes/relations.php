@@ -310,7 +310,7 @@ $app->get('/relations/network/{tecregno}',  function(Request $request, Response 
  * @param $entityId Entity ID
  * @return bool|string
  */
-function _group__jurusan(&$db, $entityId) {
+function _group__nim(&$db, $entityId) {
     $q = "SELECT `NIM` FROM `users` WHERE `tec_regno`=:tec_regno";
     $stmt = $db->prepare($q);
     $stmt->execute([
@@ -336,4 +336,31 @@ function _group__jurusan(&$db, $entityId) {
 function _group__entityId(&$db, $entityId) {
     if(substr($entityId, 0, 3) === "TEC") return "peserta";
     else return "default";
+}
+
+/**
+ * Groups entities by isActive status
+ * @param $entityId
+ * @return string
+ */
+function _group__in_training(&$db, $entityId) {
+    if(_group__entityId($db, $entityId) === "peserta") {
+        $q = "SELECT `is_active` FROM `users` WHERE `tec_regno`=:tec_regno";
+        $stmt = $db->prepare($q);
+        $stmt->execute([
+            ':tec_regno' => $entityId
+        ]);
+
+        if ($stmt->rowCount() > 0) {
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            if($user['is_active'] == 1)
+                return "active";
+            else
+                return "inactive";
+        } else {
+            return "default";
+        }
+    } else {
+        return "default";
+    }
 }

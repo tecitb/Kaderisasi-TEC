@@ -60,7 +60,7 @@ $app->get('/user/search/{query}',function(Request $request, Response $response, 
         return $response->withJson($error);
     }
 
-    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture` FROM `users` 
+    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture`, `is_active` FROM `users` 
             WHERE `name` LIKE :sq OR `email` LIKE :sq OR `nickname` LIKE :sq OR `line_id` LIKE :sq OR `instagram` LIKE :sq OR `mobile` LIKE :sq OR `tec_regno` LIKE :sq OR `address` LIKE :sq OR `NIM` LIKE :sq";
 
     try {
@@ -183,8 +183,9 @@ $app->put('/user/{id}',function(Request $request, Response $response, array $arg
     $instagram = $request->getParam('instagram');
     $mobile = $request->getParam('mobile');
     $address = $request->getParam('address');
+    $isActive = $request->getParam('is_active');
 
-    if(!isset($name, $email, $interests, $nickname, $about_me, $line_id, $instagram, $mobile, $address)) {
+    if(!isset($name, $email, $interests, $nickname, $about_me, $line_id, $instagram, $mobile, $address, $isActive)) {
       $error = ['error' => ['text' => 'Please fill in all fields']];
       return $response->withJson($error);
     }
@@ -198,7 +199,8 @@ $app->put('/user/{id}',function(Request $request, Response $response, array $arg
             `line_id` = :line_id,
             `instagram` = :instagram,
             `mobile` = :mobile,
-            `address` = :address
+            `address` = :address,
+            `is_active` = :is_active
              WHERE id=:id";
 
     try {
@@ -214,7 +216,8 @@ $app->put('/user/{id}',function(Request $request, Response $response, array $arg
        ':line_id' => $line_id,
        ':instagram' => $instagram,
        ':mobile' => $mobile,
-       ':address' => $address
+       ':address' => $address,
+       ':is_active' => ($isActive == 1) ? 1 : 0
      ]);
      $rowCount = $stmt->rowCount();
      if ($rowCount == 0) {
