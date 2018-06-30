@@ -291,7 +291,7 @@ $app->get('/relations/network/{tecregno}',  function(Request $request, Response 
                 array_push($nodes, $node);
             }
 
-            $edge = array("from" => $tno, "to" => $rw);
+            $edge = array("from" => $tno, "to" => $rw, "arrows" => "to");
             array_push($edges, $edge);
         }
 
@@ -335,7 +335,7 @@ function _group__nim(&$db, $entityId) {
  */
 function _group__entityId(&$db, $entityId) {
     if(substr($entityId, 0, 3) === "TEC") return "peserta";
-    else return "default";
+    else return "";
 }
 
 /**
