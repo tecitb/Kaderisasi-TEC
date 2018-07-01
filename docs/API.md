@@ -432,6 +432,40 @@ Return :
 | assignment_title | Judul assignment              |
 | filename     | Nama file                         |
 
+### Get Submitted Assignments by User ID
+
+Location : `/api/user/:uid/assignment`  
+Method : GET  
+Auth : User(self) or admin
+
+Return (array) :
+
+| Parameter    | Keterangan                        |
+| ---------    | --------------------------------- |
+| assignment_id| ID assignment                     |
+| assignment_title | Judul assignment              |
+| filename     | Nama file                         |
+
+### Get Submitted Assignments by Assignment ID
+
+Location : `/api/assignment/{id}`  
+Method : GET  
+Auth : admin
+
+Parameter :
+
+| Parameter | Keterangan                                                   |
+| --------- | ------------------------------------------------------------ |
+| sort      | Sorting yang diinginkan :<br />noTEC_asc -> sorting berdasarkan no tec secara ascending<br />noTEC_desc -> sorting berdasarkan no tec secara descending<br />nama_asc -> sorting berdasarkan nama secara ascending<br />nama_desc -> sorting berdasarkan nama secara descending<br />waktu_asc -> sorting berdasarkan waktu upload secara ascending<br />waktu_desc -> sroting berdasarkan waktu upload secara descending |
+
+Return (array) :
+
+| Parameter   | Keterangan           |
+| ----------- | -------------------- |
+| tec_regno   | Nomor registrasi TEC |
+| name        | Nama user            |
+| filename    | Nama file            |
+| uploaded_at | Waktu upload         |
 
 ### Get User Assignment By Assignment ID
 

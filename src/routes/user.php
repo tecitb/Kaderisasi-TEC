@@ -170,8 +170,10 @@ $app->post('/uploadImage', function(Request $request, Response $response, array 
 $app->put('/user/{id:[0-9]+}',function(Request $request, Response $response, array $args) {
 
     if ($request->getAttribute("jwt")['id'] != $args['id']) {
-        $error = ['error' => ['text' => 'Permission denied']];
-        return $response->withJson($error);
+      if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+         $error = ['error' => ['text' => 'Permission denied']];
+         return $response->withJson($error);
+       }
     }
 
     $name = $request->getParam('name');
@@ -276,4 +278,6 @@ $app->post('/useCoupon', function(Request $request, Response $response, array $a
     $error = ['error' => ['text' => $e->getMessage()]];
     return $response->withJson($error);
   }
+
 });
+

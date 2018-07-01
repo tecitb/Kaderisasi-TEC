@@ -90,6 +90,56 @@ $app->delete('/assignment/{id:[0-9]+}', function(Request $request, Response $res
 
 });
 
+// GET USER ASSIGNMENT By ASSIGNMENT ID
+$app->get('/assignment/{id:[0-9]+}/submission', function(Request $request, Response $response, array $args) {
+   if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+   $error = ['error' => ['text' => 'Permission denied']];
+   return $response->withJson($error);
+ }
+
+  $sortby = $request->getQueryParam("sort");
+  if(($sortby == null)||($sortby == "")){
+    $sql = "SELECT tec_regno,NIM,name,filename, uploaded_at FROM user_assignment INNER JOIN users ON  users.id = user_assignment.user_id WHERE assignment_id = :id";
+  }
+  else if($sortby == "noTEC_asc"){
+    $sql = "SELECT tec_regno,NIM,name,filename, uploaded_at FROM user_assignment INNER JOIN users ON  users.id = user_assignment.user_id WHERE assignment_id = :id ORDER BY `tec_regno` ASC";
+  }
+  else if($sortby == "noTEC_desc"){
+     $sql = "SELECT tec_regno,NIM,name,filename, uploaded_at FROM user_assignment INNER JOIN users ON  users.id = user_assignment.user_id WHERE assignment_id = :id ORDER BY `tec_regno` DESC";
+  }
+  else if($sortby == "nama_asc"){
+     $sql = "SELECT tec_regno,NIM,name,filename, uploaded_at FROM user_assignment INNER JOIN users ON  users.id = user_assignment.user_id WHERE assignment_id = :id ORDER BY `name` ASC";
+  }
+  else if($sortby == "nama_desc"){
+     $sql = "SELECT tec_regno,NIM,name,filename, uploaded_at FROM user_assignment INNER JOIN users ON  users.id = user_assignment.user_id WHERE assignment_id = :id ORDER BY `name` DESC";
+  }
+  else if($sortby == "waktu_asc"){
+     $sql = "SELECT tec_regno,NIM,name,filename, uploaded_at FROM user_assignment INNER JOIN users ON  users.id = user_assignment.user_id WHERE assignment_id = :id ORDER BY `uploaded_at` ASC";
+  }
+  else if($sortby == "waktu_desc"){
+     $sql = "SELECT tec_regno,NIM,name,filename, uploaded_at FROM user_assignment INNER JOIN users ON  users.id = user_assignment.user_id WHERE assignment_id = :id ORDER BY `uploaded_at` DESC";
+  }
+  else{
+    $error = ['error' => ['text' => 'invalid parameter']];
+    return $response->withJson($error);
+  }
+
+  try {
+    $db = $this->get('db');
+    $stmt = $db->prepare($sql);
+    $stmt->execute([
+      ':id' => $args['id']
+    ]);
+    $assignments = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+    return $response->withJson($assignments);
+  }
+  catch (PDOException $e) {
+    return $response->withJson(['error'=>['text' => 'Something wrong happened']]);
+  }
+});
+
+
 // GET ALL ASSIGNMENT
 
 $app->get('/assignment', function(Request $request, Response $response, array $args) {
@@ -98,13 +148,27 @@ $app->get('/assignment', function(Request $request, Response $response, array $a
  try {
    $db = $this->get('db');
    $stmt = $db->prepare($sql);
-   $stmt->execute([
-     ':id' => $id
-   ]);
+   $stmt->execute();
 
-   $assignment = $stmt->fetchAll(PDO::FETCH_OBJ);
+   $assignments = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+   $user_id = $request->getAttribute("jwt")['id'];
+
+   foreach($assignments as $assignment){
+     $sql_check = "SELECT * FROM user_assignment WHERE user_id = :uid AND assignment_id = :aid";
+     $stmt = $db->prepare($sql_check);
+     $stmt->execute([':uid' => $user_id, ':aid'=>$assignment->id]);
+     $cek = $stmt->fetchAll(PDO::FETCH_ASSOC);
+     if(count($cek) !=0 ) {
+       $assignment->terkirim=1;
+     }else{
+       $assignment->terkirim=0;
+     }
+
+
+   }
    $db = null;
-   return $response->withJson($assignment);
+   return $response->withJson($assignments);
  }
  catch (PDOException $e) {
    $error = ['error' => ['text' => $e->getMessage()]];
@@ -155,13 +219,46 @@ $app->post('/user/assignment/{id:[0-9]+}', function(Request $request, Response $
       $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
 
       try {
+
+        //check if already submitted
+        $sql = "SELECT EXISTS(SELECT * FROM user_assignment WHERE user_id = :uid AND assignment_id = :aid) as sudah_kirim";
+
+        try {
+          $db = $this->get('db');
+          $stmt = $db->prepare($sql);
+          $stmt->execute([':uid' => $user_id, ':aid'=>$id]);
+          $result = $stmt->fetch();
+        }
+        catch (PDOException $e) {
+          $error = ['error' => ['text' => $e->getMessage()]];
+          return $response->withJson($error);
+        }
+
+        
         $db = $this->get('db');
-        $stmt = $db->prepare("INSERT INTO user_assignment(user_id, assignment_id, filename) VALUES (:user_id, :assignment_id, :filename)");
+
+        if($result['sudah_kirim'] == 1) {
+          //delete previous
+          $sql="SELECT filename FROM user_assignment WHERE user_id = :uid AND assignment_id = :aid";
+          $stmt = $db->prepare($sql);
+          $stmt->execute([':uid' => $user_id, ':aid'=>$id]);
+          $result = $stmt->fetch();
+          if(!unlink($directory . DIRECTORY_SEPARATOR . $result['filename'])){
+             return $response->withJson(['error'=>['text' => 'failed deleting previous file']]);
+          }
+          $sql="UPDATE `user_assignment` SET `filename` = :filename WHERE `user_id` = :user_id AND `assignment_id` = :assignment_id ";
+          
+        }else{
+          $sql="INSERT INTO user_assignment(user_id, assignment_id, filename) VALUES (:user_id, :assignment_id, :filename)";
+        }
+
+        $stmt = $db->prepare($sql);
         $stmt->execute([
           ':user_id' => $user_id,
           ':assignment_id' => $id,
           ':filename' => $filename
         ]);
+        
         $result = ["notice"=>["type"=>"success", "text" => "Assignment sucessfully uploaded"], "filename" => $filename];
         return $response->withJson($result);
       }
@@ -185,6 +282,18 @@ $app->get('/user/assignment', function(Request $request, Response $response, arr
       ':user_id' => $user_id
     ]);
     $assignments = $stmt->fetchAll(PDO::FETCH_OBJ);
+    foreach($assignments as $assignment){
+      $sql_check = "SELECT * FROM user_assignment WHERE user_id = :uid AND assignment_id = :aid";
+      $stmt = $db->prepare($sql_check);
+      $stmt->execute([':uid' => $user_id, ':aid'=>$assignment->id]);
+      $cek = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      if(count($cek) !=0 ) {
+        $assignment->terkirim=1;
+      }else{
+        $assignment->terkirim=0;
+      }
+
+    }
     $db = null;
     return $response->withJson($assignments);
   }
@@ -194,7 +303,6 @@ $app->get('/user/assignment', function(Request $request, Response $response, arr
 });
 
 // GET USER ASSIGNMENT By ASSIGNMENT ID
-
 $app->get('/user/assignment/{id:[0-9]+}', function(Request $request, Response $response, array $args) {
   try {
     $db = $this->get('db');
@@ -203,6 +311,31 @@ $app->get('/user/assignment/{id:[0-9]+}', function(Request $request, Response $r
     $stmt->execute([
       ':user_id' => $user_id,
       ':id' => $args['id']
+    ]);
+    $assignments = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+    return $response->withJson($assignments);
+  }
+  catch (PDOException $e) {
+    return $response->withJson(['error'=>['text' => 'Something wrong happened']]);
+  }
+});
+
+// GET USER ASSIGNMENT By User ID
+$app->get('/user/{id:[0-9]+}/assignment', function(Request $request, Response $response, array $args) {
+  try {
+    $db = $this->get('db');
+    $user_id = $request->getAttribute("jwt")['id'];
+    if($user_id != $args['id']){
+       if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+        $error = ['error' => ['text' => 'Permission denied']];
+        return $response->withJson($error);
+    }  
+
+    }
+    $stmt = $db->prepare("SELECT filename, uploaded_at, title as assignment_title FROM user_assignment INNER JOIN assignments ON assignments.id = user_assignment.assignment_id WHERE user_id = :user_id");
+    $stmt->execute([
+      ':user_id' => $args['id']
     ]);
     $assignments = $stmt->fetchAll(PDO::FETCH_OBJ);
     $db = null;
