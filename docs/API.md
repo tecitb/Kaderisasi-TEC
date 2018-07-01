@@ -432,6 +432,20 @@ Return :
 | assignment_title | Judul assignment              |
 | filename     | Nama file                         |
 
+### Get Submitted Assignments by User
+
+Location : `/api/user/:uid/assignment`  
+Method : GET  
+Auth : User(self) or admin
+
+Return (array) :
+
+| Parameter    | Keterangan                        |
+| ---------    | --------------------------------- |
+| assignment_id| ID assignment                     |
+| assignment_title | Judul assignment              |
+| filename     | Nama file                         |
+
 
 ### Get User Assignment By Assignment ID
 

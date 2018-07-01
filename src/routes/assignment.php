@@ -213,6 +213,32 @@ $app->get('/user/assignment/{id:[0-9]+}', function(Request $request, Response $r
   }
 });
 
+// GET USER ASSIGNMENT By User ID
+
+$app->get('/user/{id:[0-9]+}/assignment', function(Request $request, Response $response, array $args) {
+  try {
+    $db = $this->get('db');
+    $user_id = $request->getAttribute("jwt")['id'];
+    if($user_id != $args['id']){
+       if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+        $error = ['error' => ['text' => 'Permission denied']];
+        return $response->withJson($error);
+    }  
+
+    }
+    $stmt = $db->prepare("SELECT filename, uploaded_at, title as assignment_title FROM user_assignment INNER JOIN assignments ON assignments.id = user_assignment.assignment_id WHERE user_id = :user_id");
+    $stmt->execute([
+      ':user_id' => $args['id']
+    ]);
+    $assignments = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+    return $response->withJson($assignments);
+  }
+  catch (PDOException $e) {
+    return $response->withJson(['error'=>['text' => 'Something wrong happened']]);
+  }
+});
+
 // DOWNLOAD ASSIGNMENT
 $app->get('/download/assignment/{filename}', function(Request $request, Response $response, array $args) {
     $directory = $this->get('settings')['assignment_directory'];
