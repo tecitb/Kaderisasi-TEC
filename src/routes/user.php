@@ -276,4 +276,6 @@ $app->post('/useCoupon', function(Request $request, Response $response, array $a
     $error = ['error' => ['text' => $e->getMessage()]];
     return $response->withJson($error);
   }
+
 });
+

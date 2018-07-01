@@ -274,6 +274,70 @@ $app->post('/quiz', function(Request $request, Response $response, array $args) 
  }
 });
 
+// UPDATE USER INFO
+$app->put('/user/{id}',function(Request $request, Response $response, array $args) {
+
+    if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+      $error = ['error' => ['text' => 'Permission denied']];
+      return $response->withJson($error);
+    }
+
+    $name = $request->getParam('name');
+    $email = $request->getParam('email');
+    $interests = $request->getParam('interests');
+    $nickname = $request->getParam('nickname');
+    $about_me = $request->getParam('about_me');
+    $line_id = $request->getParam('line_id');
+    $instagram = $request->getParam('instagram');
+    $mobile = $request->getParam('mobile');
+    $address = $request->getParam('address');
+
+    if(!isset($name, $email, $interests, $nickname, $about_me, $line_id, $instagram, $mobile, $address)) {
+      $error = ['error' => ['text' => 'Please fill in all fields']];
+      return $response->withJson($error);
+    }
+
+    $sql = "UPDATE `users` SET 
+            `name` = :name,
+            `email` = :email,
+            `interests` = :interests,
+            `nickname` = :nickname,
+            `about_me` = :about_me,
+            `line_id` = :line_id,
+            `instagram` = :instagram,
+            `mobile` = :mobile,
+            `address` = :address
+             WHERE id=:id";
+
+    try {
+     $db = $this->get('db');
+     $stmt = $db->prepare($sql);
+     $stmt->execute([
+       ':id' => $args['id'],
+       ':name' => $name,
+       ':email' => $email,
+       ':interests' => $interests,
+       ':nickname' => $nickname,
+       ':about_me' => $about_me,
+       ':line_id' => $line_id,
+       ':instagram' => $instagram,
+       ':mobile' => $mobile,
+       ':address' => $address
+     ]);
+     $rowCount = $stmt->rowCount();
+     if ($rowCount == 0) {
+       $error = ['error' => ['text' => 'Error, nothing updated.']];
+       return $response->withJson($error);
+     }
+     $result = ["notice"=>["type"=>"success", "text" => "User profile updated"]];
+     return $response->withJson($result);
+    }
+    catch (PDOException $e) {
+     $error = ['error' => ['text' => $e->getMessage()]];
+     return $response->withJson($error);
+    }
+});
+
 // DELETE A QUIZ
 $app->delete('/quiz/{id:[0-9]+}', function(Request $request, Response $response, array $args) {
  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
