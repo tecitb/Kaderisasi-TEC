@@ -219,13 +219,46 @@ $app->post('/user/assignment/{id:[0-9]+}', function(Request $request, Response $
       $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
 
       try {
+
+        //check if already submitted
+        $sql = "SELECT EXISTS(SELECT * FROM user_assignment WHERE user_id = :uid AND assignment_id = :aid) as sudah_kirim";
+
+        try {
+          $db = $this->get('db');
+          $stmt = $db->prepare($sql);
+          $stmt->execute([':uid' => $user_id, ':aid'=>$id]);
+          $result = $stmt->fetch();
+        }
+        catch (PDOException $e) {
+          $error = ['error' => ['text' => $e->getMessage()]];
+          return $response->withJson($error);
+        }
+
+        
         $db = $this->get('db');
-        $stmt = $db->prepare("INSERT INTO user_assignment(user_id, assignment_id, filename) VALUES (:user_id, :assignment_id, :filename)");
+
+        if($result['sudah_kirim'] == 1) {
+          //delete previous
+          $sql="SELECT filename FROM user_assignment WHERE user_id = :uid AND assignment_id = :aid";
+          $stmt = $db->prepare($sql);
+          $stmt->execute([':uid' => $user_id, ':aid'=>$id]);
+          $result = $stmt->fetch();
+          if(!unlink($directory . DIRECTORY_SEPARATOR . $result['filename'])){
+             return $response->withJson(['error'=>['text' => 'failed deleting previous file']]);
+          }
+          $sql="UPDATE `user_assignment` SET `filename` = :filename WHERE `user_id` = :user_id AND `assignment_id` = :assignment_id ";
+          
+        }else{
+          $sql="INSERT INTO user_assignment(user_id, assignment_id, filename) VALUES (:user_id, :assignment_id, :filename)";
+        }
+
+        $stmt = $db->prepare($sql);
         $stmt->execute([
           ':user_id' => $user_id,
           ':assignment_id' => $id,
           ':filename' => $filename
         ]);
+        
         $result = ["notice"=>["type"=>"success", "text" => "Assignment sucessfully uploaded"], "filename" => $filename];
         return $response->withJson($result);
       }
