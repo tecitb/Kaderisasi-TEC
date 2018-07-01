@@ -148,13 +148,27 @@ $app->get('/assignment', function(Request $request, Response $response, array $a
  try {
    $db = $this->get('db');
    $stmt = $db->prepare($sql);
-   $stmt->execute([
-     ':id' => $id
-   ]);
+   $stmt->execute();
 
-   $assignment = $stmt->fetchAll(PDO::FETCH_OBJ);
+   $assignments = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+   $user_id = $request->getAttribute("jwt")['id'];
+
+   foreach($assignments as $assignment){
+     $sql_check = "SELECT * FROM user_assignment WHERE user_id = :uid AND assignment_id = :aid";
+     $stmt = $db->prepare($sql_check);
+     $stmt->execute([':uid' => $user_id, ':aid'=>$assignment->id]);
+     $cek = $stmt->fetchAll(PDO::FETCH_ASSOC);
+     if(count($cek) !=0 ) {
+       $assignment->terkirim=1;
+     }else{
+       $assignment->terkirim=0;
+     }
+
+
+   }
    $db = null;
-   return $response->withJson($assignment);
+   return $response->withJson($assignments);
  }
  catch (PDOException $e) {
    $error = ['error' => ['text' => $e->getMessage()]];
@@ -235,6 +249,18 @@ $app->get('/user/assignment', function(Request $request, Response $response, arr
       ':user_id' => $user_id
     ]);
     $assignments = $stmt->fetchAll(PDO::FETCH_OBJ);
+    foreach($assignments as $assignment){
+      $sql_check = "SELECT * FROM user_assignment WHERE user_id = :uid AND assignment_id = :aid";
+      $stmt = $db->prepare($sql_check);
+      $stmt->execute([':uid' => $user_id, ':aid'=>$assignment->id]);
+      $cek = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      if(count($cek) !=0 ) {
+        $assignment->terkirim=1;
+      }else{
+        $assignment->terkirim=0;
+      }
+
+    }
     $db = null;
     return $response->withJson($assignments);
   }
