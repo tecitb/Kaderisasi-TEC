@@ -4,7 +4,7 @@ use Slim\Http\Response;
 use \Firebase\JWT\JWT;
 
 // GET USER INFO
-$app->get('/user/{id:[0-9]+}',function(Request $request, Response $response, array $args) {
+$app->get('/user/{id:[a-zA-Z0-9]+}',function(Request $request, Response $response, array $args) {
 
     if($request->getAttribute("jwt")['isAdmin'] != 1){
         if ($request->getAttribute("jwt")['id'] != $args['id']) {
