@@ -1,0 +1,11 @@
+sudo: required
+
+language: php
+
+services:
+  - docker
+
+script:
+  - docker build -t tec/intern/rest-api-web .
+  - docker tag tec/intern/rest-api-web node2.didithilmy.com/tec/intern/rest-api-web
+  - docker push node2.didithilmy.com/tec/intern/rest-api-web
