@@ -4,7 +4,7 @@ use Slim\Http\Response;
 use \Firebase\JWT\JWT;
 
 // GET USER INFO
-$app->get('/user/{id}',function(Request $request, Response $response, array $args) {
+$app->get('/user/{id:[0-9]+}',function(Request $request, Response $response, array $args) {
 
     if($request->getAttribute("jwt")['isAdmin'] != 1){
         if ($request->getAttribute("jwt")['id'] != $args['id']) {
@@ -82,7 +82,7 @@ $app->get('/user/search/{query}',function(Request $request, Response $response, 
 
 
 // GET ALL SCORE OF A USER
-$app->get('/user/{id}/score', function(Request $request, Response $response, array $args) {
+$app->get('/user/{id:[0-9]+}/score', function(Request $request, Response $response, array $args) {
   $sql = "SELECT users.id as user_id, users.name, quiz.title, quiz.id as quiz_id, user_score.score as score FROM user_score INNER JOIN users ON user_score.user_id = users.id INNER JOIN quiz on user_score.quiz_id = quiz.id WHERE users.id = :id";
  try {
    $db = $this->get('db');
@@ -167,11 +167,13 @@ $app->post('/uploadImage', function(Request $request, Response $response, array 
 });
 
 // UPDATE USER INFO
-$app->put('/user/{id}',function(Request $request, Response $response, array $args) {
+$app->put('/user/{id:[0-9]+}',function(Request $request, Response $response, array $args) {
 
     if ($request->getAttribute("jwt")['id'] != $args['id']) {
-        $error = ['error' => ['text' => 'Permission denied']];
-        return $response->withJson($error);
+      if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+         $error = ['error' => ['text' => 'Permission denied']];
+         return $response->withJson($error);
+       }
     }
 
     $name = $request->getParam('name');
@@ -276,4 +278,6 @@ $app->post('/useCoupon', function(Request $request, Response $response, array $a
     $error = ['error' => ['text' => $e->getMessage()]];
     return $response->withJson($error);
   }
+
 });
+

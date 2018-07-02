@@ -82,11 +82,37 @@ Return (array):
 | Parameter | Keterangan        |
 | --------- | ----------------- |
 | id        | User id           |
+| tec_regno | Nomor tec         |
 | name      | Nama lengkap user |
 | email     | Email user        |
 | created_at| Waktu dibuat      |
 | updated_at| Waktu diupdate    |
 | isAdmin   | =1 jika admin     |
+| is_active | aktif/udah coret  |
+
+### Get Active Members
+
+Location : `/api/members`  
+Method : GET  
+Auth : Admin
+Description: Get all active non-admin user
+
+Parameter :
+
+| Parameter | Keterangan                                                   |
+| --------- | ------------------------------------------------------------ |
+| sort      | Sorting yang diinginkan :<br />noTEC_asc -> sorting berdasarkan no tec secara ascending<br />noTEC_desc -> sorting berdasarkan no tec secara descending<br />nama_asc -> sorting berdasarkan nama secara ascending<br />nama_desc -> sorting berdasarkan nama secara descending |
+
+Return (array):
+
+| Parameter | Keterangan        |
+| --------- | ----------------- |
+| id        | User id           |
+| tec_regno | Nomor tec         |
+| name      | Nama lengkap user |
+| email     | Email user        |
+| created_at| Waktu dibuat      |
+| updated_at| Waktu diupdate    |
 
 ### Get Spesific User by ID
 
@@ -163,6 +189,12 @@ Data:
 | Parameter | Keterangan                                                   |
 | --------- | ------------------------------------------------------------ |
 | profile_picture      | File image sbg foto profil                        |
+
+### Delete / Coret member
+
+Location: `/api/user/:id`
+Method: DELETE
+Auth : Admin
 
 ## Quiz
 
@@ -372,3 +404,84 @@ Return :
 | id         | ID assignment                    |
 | title       | Judul assignment                |
 | description| Deskripsi assignment             |
+
+
+### Submit Assignment by user
+
+Location : `/api/user/assignment/:id`  
+Method : POST  
+Auth : User
+
+Return :
+
+| Parameter | Keterangan                        |
+| --------- | --------------------------------- |
+| assignment| File assignment                   |
+
+### Get All Own Submitted Assignments Filename
+
+Location : `/api/user/assignment`  
+Method : GET  
+Auth : User
+
+Return :
+
+| Parameter    | Keterangan                        |
+| ---------    | --------------------------------- |
+| assignment_id| ID assignment                     |
+| assignment_title | Judul assignment              |
+| filename     | Nama file                         |
+
+### Get Submitted Assignments by User ID
+
+Location : `/api/user/:uid/assignment`  
+Method : GET  
+Auth : User(self) or admin
+
+Return (array) :
+
+| Parameter    | Keterangan                        |
+| ---------    | --------------------------------- |
+| assignment_id| ID assignment                     |
+| assignment_title | Judul assignment              |
+| filename     | Nama file                         |
+
+### Get Submitted Assignments by Assignment ID
+
+Location : `/api/assignment/{id}`  
+Method : GET  
+Auth : admin
+
+Parameter :
+
+| Parameter | Keterangan                                                   |
+| --------- | ------------------------------------------------------------ |
+| sort      | Sorting yang diinginkan :<br />noTEC_asc -> sorting berdasarkan no tec secara ascending<br />noTEC_desc -> sorting berdasarkan no tec secara descending<br />nama_asc -> sorting berdasarkan nama secara ascending<br />nama_desc -> sorting berdasarkan nama secara descending<br />waktu_asc -> sorting berdasarkan waktu upload secara ascending<br />waktu_desc -> sroting berdasarkan waktu upload secara descending |
+
+Return (array) :
+
+| Parameter   | Keterangan           |
+| ----------- | -------------------- |
+| tec_regno   | Nomor registrasi TEC |
+| name        | Nama user            |
+| filename    | Nama file            |
+| uploaded_at | Waktu upload         |
+
+### Get User Assignment By Assignment ID
+
+Location : `/api/user/assignment/:id`  
+Method : GET  
+Auth : User
+
+Return :
+
+| Parameter    | Keterangan                        |
+| ---------    | --------------------------------- |
+| assignment_title | Judul assignment              |
+| filename     | Nama file                         |
+
+### Download Assignment
+
+Location: '/download/assignment/:filename'
+Method: GET
+Auth: User
