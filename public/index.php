@@ -20,15 +20,6 @@ $dotenv->load();
 $settings = require __DIR__ . '/../src/settings.php';
 $app = new \Slim\App($settings);
 
-// Set up dependencies
-require __DIR__ . '/../src/dependencies.php';
-
-// Register middleware
-require __DIR__ . '/../src/middleware.php';
-
-// Register routes
-require __DIR__ . '/../src/routes.php';
-
 // Add default HTTP headers
 $app->add(function ($req, $res, $next) {
     $response = $next($req, $res);
@@ -37,6 +28,15 @@ $app->add(function ($req, $res, $next) {
         ->withHeader('Access-Control-Allow-Methods', "GET, POST, OPTIONS, PUT, DELETE")
         ->withHeader('Access-Control-Allow-Headers', 'Authorization');
 });
+
+// Set up dependencies
+require __DIR__ . '/../src/dependencies.php';
+
+// Register middleware
+require __DIR__ . '/../src/middleware.php';
+
+// Register routes
+require __DIR__ . '/../src/routes.php';
 
 // Run app
 $app->run();
