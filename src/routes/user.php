@@ -5,7 +5,6 @@ use \Firebase\JWT\JWT;
 
 // GET USER INFO
 $app->get('/user/{id:[0-9]+}',function(Request $request, Response $response, array $args) {
-
     if($request->getAttribute("jwt")['isAdmin'] != 1){
         if ($request->getAttribute("jwt")['id'] != $args['id']) {
             $error = ['error' => ['text' => 'Permission denied']];
@@ -19,7 +18,41 @@ $app->get('/user/{id:[0-9]+}',function(Request $request, Response $response, arr
         return $response->withJson($error);
     }
 
-    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture`,`is_active` FROM `users` WHERE id=:id OR `tec_regno`=:id";
+    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture`,`is_active` FROM `users` WHERE id=:id";
+
+    try {
+        $db = $this->get('db');
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+            ':id' => $args['id']
+        ]);
+        $user = $stmt->fetch(PDO::FETCH_OBJ);
+        $db = null;
+        return $response->withJson($user);
+    }
+    catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+    }
+});
+
+// GET USER INFO by TEC REG NO
+$app->get('/user/regno/{id}',function(Request $request, Response $response, array $args) {
+    if($request->getAttribute("jwt")['isAdmin'] != 1){
+        if ($request->getAttribute("jwt")['id'] != $args['id']) {
+            $error = ['error' => ['text' => 'Permission denied']];
+            return $response->withJson($error);
+        }
+    }
+
+    // Input validation
+    if(empty($args['id'])) {
+        $error = ['error' => ['text' => 'id cannot be empty']];
+        return $response->withJson($error);
+    }
+
+    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture`,`is_active` FROM `users` WHERE tec_regno=:id";
 
     try {
         $db = $this->get('db');
