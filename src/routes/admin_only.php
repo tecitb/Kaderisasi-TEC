@@ -338,3 +338,32 @@ $app->delete('/user/{id:[0-9]+}', function(Request $request, Response $response,
  }
 
 });
+
+// KEMBALIKAN MEMBER TEC, SET is_active ke 1
+$app->post('/user/restore', function(Request $request, Response $response, array $args) {
+ if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+   $error = ['error' => ['text' => 'Permission denied']];
+   return $response->withJson($error);
+ }
+
+ $id = $request->getParam('uid');
+
+ if (empty($id) || filter_var($id, FILTER_VALIDATE_INT) === FALSE) {
+   die('Invalid ID');
+ } 
+
+ try {
+  $db = $this->get('db');
+
+  $stmt = $db->prepare('UPDATE users SET is_active = 1 WHERE id = :id AND isAdmin = 0');
+  $stmt->execute([':id' => $id]);
+
+  $data = ["notice"=>["type"=>"success", "text" => "Member sukses dikembalikan"]];
+  return $response->withJson($data);
+ }
+ catch (PDOException $exception) {
+   $error = ['error' => ['text' => $e->getMessage()]];
+   return $response->withJson($error);
+ }
+
+});
