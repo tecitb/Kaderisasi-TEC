@@ -196,6 +196,20 @@ Location: `/api/user/:id`
 Method: DELETE
 Auth : Admin
 
+### Restore member status
+
+Location: `/api/user/restore`
+Method: POST
+Auth : Admin
+
+Data:
+
+| Parameter | Keterangan                                |
+| --------- | ----------------------------------------- |
+| uid       | User id yang ingin dikembalikan statusnya |
+
+
+
 ## Quiz
 
 ### Get All Quiz
