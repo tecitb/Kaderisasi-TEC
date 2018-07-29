@@ -1,13 +1,15 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.6
+-- version 4.8.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 30, 2018 at 05:21 PM
--- Server version: 5.6.35
--- PHP Version: 7.1.1
+-- Waktu pembuatan: 29 Jul 2018 pada 22.26
+-- Versi server: 5.7.22-0ubuntu18.04.1
+-- Versi PHP: 7.2.7-0ubuntu0.18.04.2
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -17,13 +19,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `kadertec`
+-- Database: `kader`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `assignments`
+-- Struktur dari tabel `assignments`
 --
 
 CREATE TABLE `assignments` (
@@ -33,7 +35,7 @@ CREATE TABLE `assignments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `assignments`
+-- Dumping data untuk tabel `assignments`
 --
 
 INSERT INTO `assignments` (`id`, `title`, `description`) VALUES
@@ -44,7 +46,7 @@ INSERT INTO `assignments` (`id`, `title`, `description`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `coupons`
+-- Struktur dari tabel `coupons`
 --
 
 CREATE TABLE `coupons` (
@@ -53,32 +55,127 @@ CREATE TABLE `coupons` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `coupons`
+-- Dumping data untuk tabel `coupons`
 --
 
 INSERT INTO `coupons` (`id`, `coupon`) VALUES
+(24, 'AFZBUKNT'),
+(58, 'AMLHYHVE'),
+(92, 'BDXZLFEB'),
+(64, 'BNGSNBZR'),
+(27, 'BNXOVCTQ'),
+(61, 'CENDLHLX'),
+(66, 'CHXQQJAK'),
+(31, 'CPJKOQCW'),
+(71, 'CYGHHMMS'),
+(84, 'DCIOXRRZ'),
+(65, 'DCKNWYDB'),
+(22, 'DMNEYLWB'),
+(88, 'DOGBCCEV'),
 (6, 'DTNHCESP'),
+(38, 'FSPPMJOA'),
+(28, 'FZBWCGIA'),
+(7, 'GYXOEGEX'),
 (5, 'HGDRKVTG'),
+(72, 'IFCIUOVA'),
 (3, 'IJUGYHOA'),
+(67, 'IMZGFLTG'),
+(46, 'ISOCFUUG'),
+(37, 'IYFTRKKZ'),
+(44, 'JDGAQBFQ'),
+(73, 'JJOGMRBS'),
 (1, 'JKZDXOPT'),
+(45, 'JOECIPBY'),
 (15, 'KJKHMGYA'),
+(42, 'KSDVBBGL'),
+(70, 'KWWYFAJW'),
 (17, 'LBEECWCN'),
+(63, 'LDBOLRTE'),
+(82, 'LDNQNEKS'),
 (9, 'LKAPRZRL'),
 (13, 'LLMVXWUH'),
+(51, 'LNJMNOBK'),
 (8, 'LVRFBAVF'),
+(56, 'MGSPEECR'),
+(85, 'MJUBXLRI'),
+(69, 'MSQQWMVV'),
+(34, 'MZILLJCM'),
 (12, 'MZQFHYKZ'),
+(93, 'NDEPTLPY'),
+(78, 'NFOXSURI'),
+(41, 'NFQZRRHH'),
+(91, 'NHMCMCNT'),
+(89, 'NQLQXUVO'),
+(21, 'OGLUQBDL'),
+(33, 'OPECIJZK'),
 (2, 'PLCKEBRL'),
+(52, 'POREOZVQ'),
+(57, 'PZIQVVWQ'),
+(30, 'QAAPMIYE'),
+(55, 'QFVWZGIA'),
 (20, 'QMLIOMJT'),
+(49, 'QYDWBMDA'),
+(79, 'RNOILHAH'),
 (19, 'RYAOWDOS'),
 (11, 'SDECIZDM'),
+(77, 'SNQFVAJV'),
+(47, 'SNUMWPFJ'),
+(39, 'SQXDTUOO'),
+(76, 'SYEVQXLF'),
+(90, 'THUUNDPH'),
+(23, 'TRIXDOZB'),
 (10, 'TUWJTCZY'),
+(48, 'UDWIACFF'),
+(54, 'UPLTNEFF'),
+(81, 'URKVLGCR'),
+(40, 'UUPKATVZ'),
+(36, 'UWIYKIFB'),
+(86, 'VIKMUHMO'),
+(87, 'VPGFCNCU'),
+(26, 'VRKANDFZ'),
+(62, 'VUGCAIKJ'),
+(53, 'VVDMOQNJ'),
+(74, 'WBBWZJAF'),
 (18, 'WDHYKIWW'),
-(16, 'XGZQZPAG');
+(29, 'WKDXPNIN'),
+(83, 'WMAHCSZT'),
+(50, 'WZFZXJXV'),
+(68, 'WZSXUIHO'),
+(35, 'XANIUXBK'),
+(80, 'XAWHZOSC'),
+(43, 'XDVSCAXN'),
+(16, 'XGZQZPAG'),
+(25, 'XMUWAWGC'),
+(32, 'XMWHKFIK'),
+(60, 'ZEKHELCH'),
+(59, 'ZFFECMIG'),
+(75, 'ZQEAZACZ');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `question_answer`
+-- Struktur dari tabel `groups`
+--
+
+CREATE TABLE `groups` (
+  `id` int(11) NOT NULL,
+  `name` varchar(25) NOT NULL,
+  `type` int(11) NOT NULL,
+  `head` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `groups`
+--
+
+INSERT INTO `groups` (`id`, `name`, `type`, `head`) VALUES
+(1, 'Lapangan', 2, 1),
+(2, 'Tim UNIX', 1, 5);
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `question_answer`
 --
 
 CREATE TABLE `question_answer` (
@@ -92,7 +189,7 @@ CREATE TABLE `question_answer` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `question_answer`
+-- Dumping data untuk tabel `question_answer`
 --
 
 INSERT INTO `question_answer` (`id`, `type`, `question`, `answer`, `decoy`, `created_at`, `quiz_id`) VALUES
@@ -102,7 +199,7 @@ INSERT INTO `question_answer` (`id`, `type`, `question`, `answer`, `decoy`, `cre
 -- --------------------------------------------------------
 
 --
--- Table structure for table `quiz`
+-- Struktur dari tabel `quiz`
 --
 
 CREATE TABLE `quiz` (
@@ -111,7 +208,7 @@ CREATE TABLE `quiz` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `quiz`
+-- Dumping data untuk tabel `quiz`
 --
 
 INSERT INTO `quiz` (`id`, `title`) VALUES
@@ -120,7 +217,7 @@ INSERT INTO `quiz` (`id`, `title`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Struktur dari tabel `users`
 --
 
 CREATE TABLE `users` (
@@ -134,34 +231,35 @@ CREATE TABLE `users` (
   `lunas` tinyint(1) NOT NULL,
   `verified` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `isAdmin` tinyint(1) NOT NULL DEFAULT '0',
+  `is_active` int(11) NOT NULL DEFAULT '1',
   `interests` text COLLATE utf8_unicode_ci NOT NULL,
-  `nickname` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `nickname` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `about_me` text COLLATE utf8_unicode_ci NOT NULL,
-  `line_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `instagram` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `mobile` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `line_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `instagram` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `mobile` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `tec_regno` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `address` text COLLATE utf8_unicode_ci NOT NULL,
-  `profile_picture` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `is_active` tinyint(1) NOT NULL DEFAULT '1'
+  `profile_picture` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `role` int(11) NOT NULL DEFAULT '1',
+  `gid` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `users`
+-- Dumping data untuk tabel `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `NIM`, `created_at`, `updated_at`, `lunas`, `verified`, `isAdmin`, `interests`, `nickname`, `about_me`, `line_id`, `instagram`, `mobile`, `tec_regno`, `address`, `profile_picture`, `is_active`) VALUES
-(1, 'Terry Djony', 'demokader@tec.itb.ac.id', '$2y$10$4DCDPFLuyjMUWTbWQ382ReWkx2RedDG51sXoLSD9U2ca2SwKETNcK', 13316014, '2018-05-24 01:10:00', '2018-05-24 01:10:48', 0, 'Yes', 1, '', '', '', '', '', '', 'A17001', '', 'user_1_68373a4526de83d4.png', 1),
-(2, 'John Terry', 'johnterry@gmail.com', '$2y$10$AcfUvDusmZN5/ZRbWAFHZOswg22gD/UOt.8gFfJy8NAJwaIo0r8Z2', 0, '2018-05-25 10:39:53', '2018-05-25 16:39:54', 0, '659a6d82e0ec8cbb5ac3f60adb9fcaf4', 0, '', '', '', '', '', '', '', '', '', 1),
-(3, 'Terry Jhonny', 'terryjhonny@gmail.com', '$2y$10$tG/20YpUK9diSPB75aJfSu.yqr8POHssDIP6fGgb4kEdkxR6sQpDW', 0, '2018-05-25 13:48:49', '2018-05-25 19:48:50', 1, 'fb2206e6c003e65c3dfc00caefd67fcf', 0, '', '', '', '', '', '', '', '', '', 1),
-(4, 'Anggota kece', 'anggotakece@s.itb.ac.id', '$2y$10$B/vyDGkwqC9/M1E6hkf4nOvGU6NqAPIvdHEXsEThQ8qoihFHYTz2S', 16716070, '2018-06-28 16:57:27', '2018-06-28 22:57:28', 1, 'c0a7c5d8e459172919333b187de0e18b', 0, 'Badminton', 'Mr Cyber', 'Saya seorang mahasiswa yg  kadang happy', 'anggotakece12', '@anggotakece', '0812934203232', 'TEC001', 'Jl Kebon Mangga', '', 1),
-(5, 'Anggota keren', 'anggotakeren@s.itb.ac.id', '$2y$10$X5E0O.t/fjRn8aBmacbjyuahqYMMQHTJbeQkN0hK85QXOWyyusLJW', 13313313, '2018-06-28 18:13:44', '2018-06-29 00:13:45', 0, 'c70167263a73239b456a69d0ab5d253c', 0, 'Running', 'Mr Smith', '', '', '@anggotakeren', '0812934203232', 'TEC002', 'Jl Kebon Mangga 67 Babakan Jeruk Kota Atlantis', '', 0),
-(6, 'Anggota mantap', 'anggotamantap@s.itb.ac.id', '$2y$10$xSXF9Qa22h9u.AvM/e8K6e6VheRryy0ryWUN4nMdRFoCJ6AYSzQtS', 13316143, '2018-06-28 18:17:02', '2018-06-29 00:17:03', 1, '3995e827ecf37489af412a9a817dd2bd', 0, 'Jogging', 'Mr Smoke', '', '', '@anggotamantap', '08129324203232', 'TEC003', 'Jl Kebon Duren 67 Babakan Jeruk Kota Atlantis', '', 0);
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `NIM`, `created_at`, `updated_at`, `lunas`, `verified`, `isAdmin`, `is_active`, `interests`, `nickname`, `about_me`, `line_id`, `instagram`, `mobile`, `tec_regno`, `address`, `profile_picture`, `role`, `gid`) VALUES
+(1, 'Terry Djony', 'demokader@tec.itb.ac.id', '$2y$10$W/sVuNC73RgVexLhMwRMj.jA2rN0th7owX7hrdxn.m2YuAoIAt29G', 13316014, '2018-05-24 01:10:00', '2018-05-24 01:10:48', 0, 'Yes', 1, 1, '', '', '', '', '', '', 'A17001', '', 'user_1_a74c598bcd7bc25f.png', 1, 1),
+(2, 'John Terry', 'johnterry@gmail.com', '$2y$10$AcfUvDusmZN5/ZRbWAFHZOswg22gD/UOt.8gFfJy8NAJwaIo0r8Z2', 0, '2018-05-25 10:39:53', '2018-05-25 16:39:54', 0, '659a6d82e0ec8cbb5ac3f60adb9fcaf4', 0, 1, '', '', '', '', '', '', '', '', '', 1, 1),
+(3, 'Terry Jhonny', 'terryjhonny@gmail.com', '$2y$10$tG/20YpUK9diSPB75aJfSu.yqr8POHssDIP6fGgb4kEdkxR6sQpDW', 0, '2018-05-25 13:48:49', '2018-05-25 19:48:50', 1, 'fb2206e6c003e65c3dfc00caefd67fcf', 0, 1, '', '', '', '', '', '', '', '', '', 1, 2),
+(4, 'Muhammad Aditya Hilmy', 'didithilmy@gmail.com', '$2y$10$nq6vUexGUmP.noqWQwjAAu05eunkqZ9cYriAYd0Wz.SHiKw4cmnHC', 16517292, '2018-06-23 03:27:06', '2018-06-23 03:27:06', 1, 'c4dd7ea1dd5f70f7ba7da117cb84c271', 0, 1, 'tech,financial', 'Didit', 'Technology enthusiast, problem solver, curious person.', 'webid', 'didithilmy', '087870408551', 'TEC001', 'Jl. Bogor', NULL, 1, 2),
+(5, 'Adyaksa Wisanggeni', 'adyaksa@iwa.ng', '$2y$10$GgJiXV0Wfn.57Je7ZWkFOePrtZ9iCEtPlL.vP1AHZ13APhe4SiTz2', 16517351, '2018-06-23 03:58:28', '2018-06-23 03:58:28', 1, 'ca2f4a7e9673829acde6eaacb1629912', 0, 1, 'tech,artsndesign', 'Iwang', 'Saya wibu', 'wangky', '-', '08111111111', 'TEC044', 'Tokopedia Tower', NULL, 1, 2);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_answer`
+-- Struktur dari tabel `user_answer`
 --
 
 CREATE TABLE `user_answer` (
@@ -171,18 +269,10 @@ CREATE TABLE `user_answer` (
   `user_id` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `user_answer`
---
-
-INSERT INTO `user_answer` (`id`, `answer`, `qa_id`, `user_id`) VALUES
-(1, 'Bill Gates', 1, 1),
-(2, 'Djarum', 2, 1);
-
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_assignment`
+-- Struktur dari tabel `user_assignment`
 --
 
 CREATE TABLE `user_assignment` (
@@ -193,10 +283,38 @@ CREATE TABLE `user_assignment` (
   `uploaded_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data untuk tabel `user_assignment`
+--
+
+INSERT INTO `user_assignment` (`id`, `user_id`, `assignment_id`, `filename`, `uploaded_at`) VALUES
+(1, 1, 1, 'assignment_1_3d388c5c305e9e64.pdf', '2018-07-02 12:56:48');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_relations`
+-- Struktur dari tabel `user_memories`
+--
+
+CREATE TABLE `user_memories` (
+  `id` bigint(20) NOT NULL,
+  `user_id` text COLLATE utf8_unicode_ci NOT NULL,
+  `memories_with` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Entity UID (TEC regno)',
+  `text` text COLLATE utf8_unicode_ci,
+  `img_path` text COLLATE utf8_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data untuk tabel `user_memories`
+--
+
+INSERT INTO `user_memories` (`id`, `user_id`, `memories_with`, `text`, `img_path`) VALUES
+(1, '1', 'TEC044', 'jhdsgf v bduwk gfkjhgwbfcjkhdsg icvkjheg fjyasg vkjs hhdla khjy bljh iluhflwe\r\njsd u chjas vc s\r\ns jukhysa gsuag diewu \r\n fluyqw ;jewn f;oiwq f\r\n ewjf hiluwe fh;weoi fj\'qw\r\niqo huew fwe \r\nqw iue i sme\r\n j bwasj cfnd\'\r\nfdwel fhewo \r\nqw fwq[pjwdflkdsjbgcyuew bcjkashgdf yd l hgl dhjcg h shgv ydhas vyua ckaswhvd ujwa fdlqw\r\ndrjufh wbwiuy v', 'memories://1_TEC044_5b5d69ded0f7ec87fc9f520dc4674.jpg');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `user_relations`
 --
 
 CREATE TABLE `user_relations` (
@@ -209,16 +327,27 @@ CREATE TABLE `user_relations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `user_relations`
+-- Dumping data untuk tabel `user_relations`
 --
 
 INSERT INTO `user_relations` (`id`, `user_id`, `relation_with`, `vcard`, `full_name`, `timestamp`) VALUES
-(1, '1', 'TEC002', 'BEGIN VCARD\n9y278t65frdtecfvhgjbhxckodueftwycsabhdnscubygsydstyfueyiwgyftvyxjusdgftyvhcyychvcfghvytfuytwfdjtgeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImRlbW9rYWRlckB0ZWMuaXRiLmFjLmlkIiwibmFtZSI6IlRlcnJ5IERqb255IiwiaXNBZG1pbiI6IjEifQ.AEnPXou8tvqJglqZPInjnrt6WvGIWPtRki3-NYGijsIeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImRlbW9rYWRlckB0ZWMuaXRiLmFjLmlkIiwibmFtZSI6IlRlcnJ5IERqb255IiwiaXNBZG1pbiI6IjEifQ.AEnPXou8tvqJglqZPInjnrt6WvGIWPtRki3-NYGijsIeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImRlbW9rYWRlckB0ZWMuaXRiLmFjLmlkIiwibmFtZSI6IlRlcnJ5IERqb255IiwiaXNBZG1pbiI6IjEifQ.AEnPXou8tvqJglqZPInjnrt6WvGIWPtRki3-NYGijsIeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImRlbW9rYWRlckB0ZWMuaXRiLmFjLmlkIiwibmFtZSI6IlRlcnJ5IERqb255IiwiaXNBZG1pbiI6IjEifQ.AEnPXou8tvqJglqZPInjnrt6WvGIWPtRki3-NYGijsIeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImRlbW9rYWRlckB0ZWMuaXRiLmFjLmlkIiwibmFtZSI6IlRlcnJ5IERqb255IiwiaXNBZG1pbiI6IjEifQ.AEnPXou8tvqJglqZPInjnrt6WvGIWPtRki3-NYGijsIeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImRlbW9rYWRlckB0ZWMuaXRiLmFjLmlkIiwibmFtZSI6IlRlcnJ5IERqb255IiwiaXNBZG1pbiI6IjEifQ.AEnPXou8tvqJglqZPInjnrt6WvGIWPtRki3-NYGijsIeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImRlbW9rYWRlckB0ZWMuaXRiLmFjLmlkIiwibmFtZSI6IlRlcnJ5IERqb255IiwiaXNBZG1pbiI6IjEifQ.AEnPXou8tvqJglqZPInjnrt6WvGIWPtRki3-NYGijsI\nEND VCARD', 'Muhammad Aditya Hilmy', '2018-06-07 12:46:47');
+(4, '1', 'PN012', 'BEGIN:VCARD\r\nFN:Umar Hilmi Fadhilah\r\nEMAIL;INTERNET=:umarhilmif@gmail.com\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:01234567899\r\nADR;HOME=:Kantor Pusat Ditjen Pajak; Jl. Gatot Subroto Kav. 40-43; Jakarta \r\n Selatan\r\nUID:PN012\r\nNOTE:Biochemistry addict; part-time trader; ultimate weaboo\r\nX-LINE:umarhilmif\r\nX-INSTAGRAM:@umarhilmif\r\nX-TWITTER:@umarhilmif\r\nEND:VCARD', 'Umar Hilmi Fadhilah', '2018-06-25 16:08:23'),
+(7, '1', 'TEC044', 'BEGIN:VCARD\r\nFN:Adyaksa Wisanggeni\r\nEMAIL;INTERNET=:adyaksa@iwa.ng\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:08774654134\r\nADR;HOME=:Jl. Cisitu Lama V No. 13; Bandung 40135\r\nUID:TEC044\r\nNOTE:Competitive programmer; absolute gaptek; part-time weaboo\r\nX-LINE:adyaksa.w\r\nX-INSTAGRAM:@adyaksa.w\r\nEND:VCARD', 'Adyaksa Wisanggeni', '2018-06-25 16:08:51'),
+(8, '1', 'TEC193', 'BEGIN:VCARD\r\nFN:Galih Fajar Fitra Ady\r\nEMAIL;INTERNET=:galih@tec.itb.ac.id\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:084456545657\r\nADR;HOME=:HQ DS Corp; Jl. Sangkuriang No. 13; Bandung 40135\r\nUID:TEC193\r\nNOTE:Math addict; Agus Yodi lover; fans of Hudang\r\nX-LINE:galihfajar\r\nX-INSTAGRAM:@galihfajar\r\nEND:VCARD', 'Galih Fajar Fitra Ady', '2018-06-25 16:15:44'),
+(15, '1', 'ITB001', 'BEGIN:VCARD\r\nFN:Kadarsah Suryadi\r\nEMAIL;INTERNET=:kadarsah@staff.itb.ac.id\r\nORG:Institut Teknologi Bandung\r\nTEL;CELL=:08123456554\r\nADR;HOME=:Jl. Tamansari No. 64; Bandung\r\nUID:ITB001\r\nNOTE:Mana saya tahu saya kan rektor\r\nEND:VCARD', 'Kadarsah Suryadi', '2018-06-28 11:26:40'),
+(22, '4', 'TEC204', 'BEGIN:VCARD\r\nFN:Almyra Ramadhina\r\nEMAIL;INTERNET=:almyra@tec.itb.ac.id\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:08123456554\r\nADR;HOME=:Perpustakaan Pusat ITB; Jl. Ganesha No. 10; Bandung 40135\r\nUID:TEC204\r\nNOTE:Queen of receh; ultrasonic expert; (Masjid) Salman resident\r\nX-LINE:sayareceh\r\nX-INSTAGRAM:@almyramadhina\r\nEND:VCARD', 'Almyra Ramadhina', '2018-06-28 12:25:38'),
+(23, '4', 'TEC054', 'BEGIN:VCARD\r\nFN:Bimo Adityarahman Wiraputra\r\nEMAIL;INTERNET=:b@imo-official.org\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087766545626\r\nADR;HOME=:Nasi Goreng Mafia; Jl. Dipatiukur No.51; Bandung  40132\r\nUID:TEC054\r\nNOTE:Bimo tanpa IMO; B aja\r\nX-LINE:bimoaw\r\nX-INSTAGRAM:@bimoaw\r\nEND:VCARD', 'Bimo Adityarahman Wiraputra', '2018-06-28 12:25:46'),
+(28, '4', 'TEC044', 'BEGIN:VCARD\r\nFN:Adyaksa Wisanggeni\r\nEMAIL;INTERNET=:adyaksa@iwa.ng\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:08774654134\r\nADR;HOME=:Jl. Cisitu Lama V No. 13; Bandung 40135\r\nUID:TEC044\r\nNOTE:Competitive programmer; absolute gaptek; part-time weaboo\r\nX-LINE:adyaksa.w\r\nX-INSTAGRAM:@adyaksa.w\r\nEND:VCARD', 'Adyaksa Wisanggeni', '2018-06-28 12:30:36'),
+(29, '4', 'TEC019', 'BEGIN:VCARD\r\nFN:Muhammad Aditya Hilmy\r\nEMAIL;INTERNET=:didithilmy@gmail.com\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087870408551\r\nADR;HOME=:Jl. Sangkuriang No. 13; Bandung 40135\r\nUID:TEC019\r\nNOTE:Digital-minded; problem solver; computer enthusiast\r\nX-LINE:webid\r\nX-INSTAGRAM:@didithilmy\r\nX-TWITTER:@didithilmy\r\nEND:VCARD', 'Muhammad Aditya Hilmy', '2018-06-28 15:34:42'),
+(30, '5', 'A17001', 'BEGIN:VCARD\r\nFN:Umar Hilmi Fadhilah\r\nEMAIL;INTERNET=:umarhilmif@gmail.com\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:01234567899\r\nADR;HOME=:Kantor Pusat Ditjen Pajak; Jl. Gatot Subroto Kav. 40-43; Jakarta \r\n Selatan\r\nUID:PN012\r\nNOTE:Biochemistry addict; part-time trader; ultimate weaboo\r\nX-LINE:umarhilmif\r\nX-INSTAGRAM:@umarhilmif\r\nX-TWITTER:@umarhilmif\r\nEND:VCARD', 'Umar Hilmi Fadhilah', '2018-06-29 12:24:34'),
+(31, '1', 'TEC204', 'BEGIN:VCARD\r\nFN:Almyra Ramadhina\r\nEMAIL;INTERNET=:almyra@tec.itb.ac.id\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:08123456554\r\nADR;HOME=:Perpustakaan Pusat ITB; Jl. Ganesha No. 10; Bandung 40135\r\nUID:TEC204\r\nNOTE:Queen of receh; ultrasonic expert; (Masjid) Salman resident\r\nX-LINE:sayareceh\r\nX-INSTAGRAM:@almyramadhina\r\nEND:VCARD', 'Almyra Ramadhina', '2018-07-26 03:21:18'),
+(36, '1', 'TEC054', 'BEGIN:VCARD\r\nFN:Bimo Adityarahman Wiraputra\r\nEMAIL;INTERNET=:b@imo-official.org\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087766545626\r\nADR;HOME=:Nasi Goreng Mafia; Jl. Dipatiukur No.51; Bandung  40132\r\nUID:TEC054\r\nNOTE:Bimo tanpa IMO; B aja\r\nX-LINE:bimoaw\r\nX-INSTAGRAM:@bimoaw\r\nEND:VCARD', 'Bimo Adityarahman Wiraputra', '2018-07-26 08:15:28'),
+(37, '1', 'TEC017', 'BEGIN:VCARD\r\nFN:Reyhan Naufal Hakim\r\nEMAIL;INTERNET=:reyhan_kim@icloud.com\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087744851546\r\nADR;HOME=:Jl. Cisitu Lama V No. 13;Bandung;40135\r\nUID:TEC017\r\nNOTE:Computer geek; entrepreneur wannabe; full-time weeabo\r\nX-LINE:reyhankim\r\nX-INSTAGRAM:@reyhankim\r\nX-TWITTER:@reyhankim\r\nEND:VCARD', 'Reyhan Naufal Hakim', '2018-07-28 03:08:09');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_reset`
+-- Struktur dari tabel `user_reset`
 --
 
 CREATE TABLE `user_reset` (
@@ -227,7 +356,7 @@ CREATE TABLE `user_reset` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `user_reset`
+-- Dumping data untuk tabel `user_reset`
 --
 
 INSERT INTO `user_reset` (`user_id`, `resetToken`) VALUES
@@ -236,7 +365,7 @@ INSERT INTO `user_reset` (`user_id`, `resetToken`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_score`
+-- Struktur dari tabel `user_score`
 --
 
 CREATE TABLE `user_score` (
@@ -247,7 +376,7 @@ CREATE TABLE `user_score` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `user_score`
+-- Dumping data untuk tabel `user_score`
 --
 
 INSERT INTO `user_score` (`id`, `score`, `quiz_id`, `user_id`) VALUES
@@ -258,116 +387,150 @@ INSERT INTO `user_score` (`id`, `score`, `quiz_id`, `user_id`) VALUES
 --
 
 --
--- Indexes for table `assignments`
+-- Indeks untuk tabel `assignments`
 --
 ALTER TABLE `assignments`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `coupons`
+-- Indeks untuk tabel `coupons`
 --
 ALTER TABLE `coupons`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `coupon` (`coupon`);
 
 --
--- Indexes for table `question_answer`
+-- Indeks untuk tabel `groups`
+--
+ALTER TABLE `groups`
+  ADD UNIQUE KEY `id` (`id`);
+
+--
+-- Indeks untuk tabel `question_answer`
 --
 ALTER TABLE `question_answer`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `quiz`
+-- Indeks untuk tabel `quiz`
 --
 ALTER TABLE `quiz`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `users`
+-- Indeks untuk tabel `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Indexes for table `user_answer`
+-- Indeks untuk tabel `user_answer`
 --
 ALTER TABLE `user_answer`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `user_assignment`
+-- Indeks untuk tabel `user_assignment`
 --
 ALTER TABLE `user_assignment`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `user_relations`
+-- Indeks untuk tabel `user_memories`
+--
+ALTER TABLE `user_memories`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `user_relations`
 --
 ALTER TABLE `user_relations`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `user_reset`
+-- Indeks untuk tabel `user_reset`
 --
 ALTER TABLE `user_reset`
   ADD PRIMARY KEY (`user_id`);
 
 --
--- Indexes for table `user_score`
+-- Indeks untuk tabel `user_score`
 --
 ALTER TABLE `user_score`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
 --
--- AUTO_INCREMENT for table `assignments`
+-- AUTO_INCREMENT untuk tabel `assignments`
 --
 ALTER TABLE `assignments`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
 --
--- AUTO_INCREMENT for table `coupons`
+-- AUTO_INCREMENT untuk tabel `coupons`
 --
 ALTER TABLE `coupons`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+
 --
--- AUTO_INCREMENT for table `question_answer`
+-- AUTO_INCREMENT untuk tabel `groups`
+--
+ALTER TABLE `groups`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT untuk tabel `question_answer`
 --
 ALTER TABLE `question_answer`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
 --
--- AUTO_INCREMENT for table `quiz`
+-- AUTO_INCREMENT untuk tabel `quiz`
 --
 ALTER TABLE `quiz`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
 --
--- AUTO_INCREMENT for table `user_answer`
+-- AUTO_INCREMENT untuk tabel `user_answer`
 --
 ALTER TABLE `user_answer`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
 --
--- AUTO_INCREMENT for table `user_assignment`
+-- AUTO_INCREMENT untuk tabel `user_assignment`
 --
 ALTER TABLE `user_assignment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
 --
--- AUTO_INCREMENT for table `user_relations`
+-- AUTO_INCREMENT untuk tabel `user_memories`
+--
+ALTER TABLE `user_memories`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT untuk tabel `user_relations`
 --
 ALTER TABLE `user_relations`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+
 --
--- AUTO_INCREMENT for table `user_score`
+-- AUTO_INCREMENT untuk tabel `user_score`
 --
 ALTER TABLE `user_score`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+COMMIT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
