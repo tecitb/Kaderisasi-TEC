@@ -93,7 +93,7 @@ $app->get('/user/search/{query}',function(Request $request, Response $response, 
         return $response->withJson($error);
     }
 
-    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture`, `is_active` FROM `users` 
+    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture`, `is_active` FROM `users`
             WHERE `name` LIKE :sq OR `email` LIKE :sq OR `nickname` LIKE :sq OR `line_id` LIKE :sq OR `instagram` LIKE :sq OR `mobile` LIKE :sq OR `tec_regno` LIKE :sq OR `address` LIKE :sq OR `NIM` LIKE :sq";
 
     try {
@@ -166,7 +166,7 @@ $app->post('/uploadImage', function(Request $request, Response $response, array 
     if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
         $user_id = $request->getAttribute("jwt")['id'];
         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-        $basename = bin2hex(random_bytes(8)); 
+        $basename = bin2hex(random_bytes(8));
         $filename = 'user_' . $user_id . '_' . sprintf('%s.%0.8s', $basename, $extension);
 
         $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
@@ -225,7 +225,7 @@ $app->put('/user/{id:[0-9]+}',function(Request $request, Response $response, arr
       return $response->withJson($error);
     }
 
-    $sql = "UPDATE `users` SET 
+    $sql = "UPDATE `users` SET
             `name` = :name,
             `email` = :email,
             `interests` = :interests,
@@ -283,7 +283,7 @@ $app->post('/useCoupon', function(Request $request, Response $response, array $a
       ':coupon' => $coupon
     ]);
     $result = $stmt->fetch();
-    
+
     if($result['ada_kupon'] != 1) {
       return $response->withJson(['error'=>['text' => 'Invalid coupon']]);
     }
@@ -314,3 +314,37 @@ $app->post('/useCoupon', function(Request $request, Response $response, array $a
 
 });
 
+$app->get('/group/{gid:[0-9]+}/members', function(Request $request, Response $response, array $args) {
+  $sql = "SELECT * FROM `groups` WHERE `id`=:gid";
+
+  $db = $this->get('db');
+  try {
+    $stmt = $db->prepare($sql);
+    $stmt->execute([":gid" => $args["gid"]]);
+    $result = $stmt->fetch();
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+
+  if($result["head"] != $request->getAttribute("jwt")["id"]){
+    $error = ['error' => ['text' => 'Not head of group']];
+    return $response->withJson($error);
+  }
+
+  $sql = "SELECT `id`,`NIM`,`tec_regno`,`name`,`profile_picture` FROM `users` WHERE gid=:gid";
+
+  try {
+    $stmt = $db->prepare($sql);
+    $stmt->execute([":gid" => $args["gid"]]);
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+
+  return $response->withJson($result);
+
+});
