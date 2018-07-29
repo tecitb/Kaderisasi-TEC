@@ -141,6 +141,23 @@ Return :
 | tec_regno | No registrasi TEC           |
 | address   | Alamat user                 |
 | is_active | masih aktif (1) / coret(0)  |
+| profile_picture | URL gambar profil |
+
+### Get Members of Group
+
+Location : `/api/group/:gid/members`  
+Method : GET  
+Auth : User(head)
+
+Return (array):
+
+| Parameter       | Keterangan        |
+| --------------- | ----------------- |
+| id              | User id           |
+| NIM             | NIM user          |
+| name            | Nama lengkap user |
+| tec_regno       | No registrasi TEC |
+| profile_picture | URL gambar profil |
 
 ### Get User Score
 
