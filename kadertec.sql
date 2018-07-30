@@ -2,6 +2,7 @@
 -- version 4.8.1
 -- https://www.phpmyadmin.net/
 --
+
 -- Host: localhost
 -- Waktu pembuatan: 29 Jul 2018 pada 22.26
 -- Versi server: 5.7.22-0ubuntu18.04.1
@@ -19,7 +20,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `kader`
+-- Database: `tec_intern_web`
 --
 
 -- --------------------------------------------------------
@@ -222,16 +223,17 @@ INSERT INTO `quiz` (`id`, `title`) VALUES
 
 CREATE TABLE `users` (
   `id` int(10) UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `NIM` int(11) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `lunas` tinyint(1) NOT NULL,
-  `verified` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `verified` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `isAdmin` tinyint(1) NOT NULL DEFAULT '0',
   `is_active` int(11) NOT NULL DEFAULT '1',
+
   `interests` text COLLATE utf8_unicode_ci NOT NULL,
   `nickname` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `about_me` text COLLATE utf8_unicode_ci NOT NULL,
@@ -249,12 +251,13 @@ CREATE TABLE `users` (
 -- Dumping data untuk tabel `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `NIM`, `created_at`, `updated_at`, `lunas`, `verified`, `isAdmin`, `is_active`, `interests`, `nickname`, `about_me`, `line_id`, `instagram`, `mobile`, `tec_regno`, `address`, `profile_picture`, `role`, `gid`) VALUES
-(1, 'Terry Djony', 'demokader@tec.itb.ac.id', '$2y$10$W/sVuNC73RgVexLhMwRMj.jA2rN0th7owX7hrdxn.m2YuAoIAt29G', 13316014, '2018-05-24 01:10:00', '2018-05-24 01:10:48', 0, 'Yes', 1, 1, '', '', '', '', '', '', 'A17001', '', 'user_1_a74c598bcd7bc25f.png', 1, 1),
-(2, 'John Terry', 'johnterry@gmail.com', '$2y$10$AcfUvDusmZN5/ZRbWAFHZOswg22gD/UOt.8gFfJy8NAJwaIo0r8Z2', 0, '2018-05-25 10:39:53', '2018-05-25 16:39:54', 0, '659a6d82e0ec8cbb5ac3f60adb9fcaf4', 0, 1, '', '', '', '', '', '', '', '', '', 1, 1),
-(3, 'Terry Jhonny', 'terryjhonny@gmail.com', '$2y$10$tG/20YpUK9diSPB75aJfSu.yqr8POHssDIP6fGgb4kEdkxR6sQpDW', 0, '2018-05-25 13:48:49', '2018-05-25 19:48:50', 1, 'fb2206e6c003e65c3dfc00caefd67fcf', 0, 1, '', '', '', '', '', '', '', '', '', 1, 2),
-(4, 'Muhammad Aditya Hilmy', 'didithilmy@gmail.com', '$2y$10$nq6vUexGUmP.noqWQwjAAu05eunkqZ9cYriAYd0Wz.SHiKw4cmnHC', 16517292, '2018-06-23 03:27:06', '2018-06-23 03:27:06', 1, 'c4dd7ea1dd5f70f7ba7da117cb84c271', 0, 1, 'tech,financial', 'Didit', 'Technology enthusiast, problem solver, curious person.', 'webid', 'didithilmy', '087870408551', 'TEC001', 'Jl. Bogor', NULL, 1, 2),
-(5, 'Adyaksa Wisanggeni', 'adyaksa@iwa.ng', '$2y$10$GgJiXV0Wfn.57Je7ZWkFOePrtZ9iCEtPlL.vP1AHZ13APhe4SiTz2', 16517351, '2018-06-23 03:58:28', '2018-06-23 03:58:28', 1, 'ca2f4a7e9673829acde6eaacb1629912', 0, 1, 'tech,artsndesign', 'Iwang', 'Saya wibu', 'wangky', '-', '08111111111', 'TEC044', 'Tokopedia Tower', NULL, 1, 2);
+
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `NIM`, `created_at`, `updated_at`, `lunas`, `verified`, `isAdmin`, `is_active`, `interests`, `nickname`, `about_me`, `line_id`, `instagram`, `mobile`, `tec_regno`, `address`, `profile_picture`) VALUES
+(1, 'Terry Djony', 'demokader@tec.itb.ac.id', '$2y$10$W/sVuNC73RgVexLhMwRMj.jA2rN0th7owX7hrdxn.m2YuAoIAt29G', 13316014, '2018-05-24 01:10:00', '2018-05-24 01:10:48', 0, 'Yes', 1, 1, '', '', '', '', '', '', 'A17001', '', 'user_1_a74c598bcd7bc25f.png'),
+(2, 'John Terry', 'johnterry@gmail.com', '$2y$10$AcfUvDusmZN5/ZRbWAFHZOswg22gD/UOt.8gFfJy8NAJwaIo0r8Z2', 0, '2018-05-25 10:39:53', '2018-05-25 16:39:54', 0, '659a6d82e0ec8cbb5ac3f60adb9fcaf4', 0, 1, '', '', '', '', '', '', '', '', ''),
+(3, 'Terry Jhonny', 'terryjhonny@gmail.com', '$2y$10$tG/20YpUK9diSPB75aJfSu.yqr8POHssDIP6fGgb4kEdkxR6sQpDW', 0, '2018-05-25 13:48:49', '2018-05-25 19:48:50', 1, 'fb2206e6c003e65c3dfc00caefd67fcf', 0, 1, '', '', '', '', '', '', '', '', ''),
+(4, 'Muhammad Aditya Hilmy', 'didithilmy@gmail.com', '$2y$10$nq6vUexGUmP.noqWQwjAAu05eunkqZ9cYriAYd0Wz.SHiKw4cmnHC', 16517292, '2018-06-23 03:27:06', '2018-06-23 03:27:06', 1, 'c4dd7ea1dd5f70f7ba7da117cb84c271', 0, 1, 'tech,financial', 'Didit', 'Technology enthusiast, problem solver, curious person.', 'webid', 'didithilmy', '087870408551', 'TEC001', 'Jl. Bogor', NULL),
+(5, 'Adyaksa Wisanggeni', 'adyaksa@iwa.ng', '$2y$10$GgJiXV0Wfn.57Je7ZWkFOePrtZ9iCEtPlL.vP1AHZ13APhe4SiTz2', 16517351, '2018-06-23 03:58:28', '2018-06-23 03:58:28', 1, 'ca2f4a7e9673829acde6eaacb1629912', 0, 1, 'tech,artsndesign', 'Iwang', 'Saya wibu', 'wangky', '-', '08111111111', 'TEC044', 'Tokopedia Tower', NULL);
 
 -- --------------------------------------------------------
 
@@ -289,6 +292,22 @@ CREATE TABLE `user_assignment` (
 
 INSERT INTO `user_assignment` (`id`, `user_id`, `assignment_id`, `filename`, `uploaded_at`) VALUES
 (1, 1, 1, 'assignment_1_3d388c5c305e9e64.pdf', '2018-07-02 12:56:48');
+
+
+CREATE TABLE `user_memories` (
+  `id` bigint(20) NOT NULL,
+  `user_id` text COLLATE utf8_unicode_ci NOT NULL,
+  `memories_with` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Entity UID (TEC regno)',
+  `text` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+  `img_path` text CHARACTER SET utf8 COLLATE utf8_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `user_memories`
+--
+
+INSERT INTO `user_memories` (`id`, `user_id`, `memories_with`, `text`, `img_path`) VALUES
+(1, '1', 'TEC044', 'jhdsgf v bduwk gfkjhgwbfcjkhdsg icvkjheg fjyasg vkjs hhdla khjy bljh iluhflwe\r\njsd u chjas vc s\r\ns jukhysa gsuag diewu \r\n fluyqw ;jewn f;oiwq f\r\n ewjf hiluwe fh;weoi fj\'qw\r\niqo huew fwe \r\nqw iue i sme\r\n j bwasj cfnd\'\r\nfdwel fhewo \r\nqw fwq[pjwdflkdsjbgcyuew bcjkashgdf yd l hgl dhjcg h shgv ydhas vyua ckaswhvd ujwa fdlqw\r\ndrjufh wbwiuy v', 'memories://1_TEC044_5b5d69ded0f7ec87fc9f520dc4674.jpg');
 
 -- --------------------------------------------------------
 
@@ -480,7 +499,6 @@ ALTER TABLE `coupons`
 -- AUTO_INCREMENT untuk tabel `groups`
 --
 ALTER TABLE `groups`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `question_answer`
@@ -499,6 +517,7 @@ ALTER TABLE `quiz`
 --
 ALTER TABLE `users`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `user_answer`
@@ -511,6 +530,7 @@ ALTER TABLE `user_answer`
 --
 ALTER TABLE `user_assignment`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
 
 --
 -- AUTO_INCREMENT untuk tabel `user_memories`
