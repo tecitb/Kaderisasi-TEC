@@ -25,6 +25,12 @@ return [
         "jwt" => [
             'secret' => getenv('JWT_SECRET')
         ],
+        "spaces" => [
+            "key" => getenv("DO_SPACES_KEY"),
+            "secret" => getenv("DO_SPACES_SECRET"),
+            "region" => getenv("DO_SPACES_REGION"),
+            "name" => getenv("DO_SPACES_BUCKET_NAME"),
+        ],
         'profile_directory' =>  dirname(__DIR__) . '/uploads/profile',
         'assignment_directory' =>  dirname(__DIR__) . '/uploads/assignment',
         'memories_directory' =>  dirname(__DIR__) . '/uploads/memories'
