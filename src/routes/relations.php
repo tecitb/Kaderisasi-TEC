@@ -17,7 +17,7 @@ $app->get('/relations/get',  function(Request $request, Response $response, arra
 
     $sql = "SELECT user_relations.id, relation_with, full_name, tec_regno, vcard FROM `user_relations` 
             LEFT JOIN users ON user_relations.user_id = users.id
-            WHERE `user_id`=:user_id";
+            WHERE `user_id`=:user_id AND `is_deleted`='0'";
 
     try {
         $db = $this->get('db');
@@ -39,19 +39,19 @@ $app->get('/relations/get',  function(Request $request, Response $response, arra
 /**
  * Get relation record details
  */
-$app->get('/relations/details/{id}',  function(Request $request, Response $response, array $args) {
+$app->get('/relations/details/{relation_with}',  function(Request $request, Response $response, array $args) {
     $userId = $request->getAttribute("jwt")['id'];
 
     $sql = "SELECT user_relations.*, users.tec_regno FROM `user_relations` 
             LEFT JOIN users ON user_relations.user_id = users.id
-            WHERE `user_id`=:user_id AND `user_relations`.`id`=:id";
+            WHERE `user_id`=:user_id AND `user_relations`.`relation_with`=:relation_with AND `is_deleted`='0'";
 
     try {
         $db = $this->get('db');
         $stmt = $db->prepare($sql);
         $stmt->execute([
             ':user_id' => $userId,
-            ':id' => $args['id']
+            ':relation_with' => $args['relation_with']
         ]);
 
         $relations = $stmt->fetch(PDO::FETCH_OBJ);
@@ -125,21 +125,123 @@ $app->put('/relations/put/{relation_with}', function(Request $request, Response 
 /**
  * Deletes relation
  */
-$app->delete('/relations/delete/{id}', function(Request $request, Response $response, array $args) {
+$app->delete('/relations/delete/{relation_with}', function(Request $request, Response $response, array $args) {
     $userId = $request->getAttribute("jwt")['id'];
 
     try {
-        $sql = "DELETE FROM `user_relations` WHERE `user_id`=:user_id AND `id`=:id";
+        $sql = "DELETE FROM `user_relations` WHERE `user_id`=:user_id AND `relation_with`=:relation_with";
 
         $db = $this->get('db');
         $stmt = $db->prepare($sql);
         $stmt->execute([
             ':user_id' => $userId,
-            ':id' => $args['id']
+            ':relation_with' => $args['relation_with']
         ]);
         return $response->withJson(array("success" => true));
     }
     catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+    }
+});
+
+/**
+ * Syncs relations record.
+ * JSON payload format:
+ *
+ * Array of
+ *  Object of
+ *      - timestamp
+ *      - relation_uid
+ *      - action [A, D]
+ *      - vcard_payload
+ *      - full_name
+ */
+$app->post('/relations/sync', function(Request $request, Response $response, array $args) {
+    $userId = $request->getAttribute("jwt")['id'];
+
+    $raw = $request->getParam("records");
+    $records = json_decode($raw, true);
+
+    try {
+
+        // Iterate through the Request to Modify records
+        foreach ($records as $record) {
+            $rUid = $record['relation_uid'];
+            $timestamp = $record['timestamp'];
+
+            // Check if record exists
+            $sql = "SELECT * FROM `user_relations` WHERE `user_id`=:user_id AND `relation_with`=:relation_with";
+
+            $db = $this->get('db');
+            $stmt = $db->prepare($sql);
+            $stmt->execute([
+                ':user_id' => $userId,
+                ':relation_with' => $rUid
+            ]);
+
+            $numRows = $stmt->rowCount();
+            $relation = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            switch ($record['action']) {
+                // Request to append
+                case 'A':
+                    $vcard = $record['vcard_payload'];
+                    $fullName = $record['full_name'];
+
+                    // Record exists
+                    if ($numRows > 0) {
+                        // Check if request to append is newer than the last modified
+                        if ($timestamp >= $relation['last_modified']) {
+                            // OK to modify
+                            // If row exists, update existing one
+                            $qi = "UPDATE `user_relations` SET `vcard`=:vcard, `full_name`=:full_name, `last_modified`=:last_modified, `is_deleted`='0' WHERE `user_id`=:user_id AND `relation_with`=:relation_with";
+
+                            $si = $db->prepare($qi);
+                            $si->execute([
+                                ':user_id' => $userId,
+                                ':relation_with' => $rUid,
+                                ':vcard' => $vcard,
+                                ':full_name' => $fullName,
+                                ':last_modified' => $timestamp
+                            ]);
+                        }
+                    } else {
+                        // If row does not exist, create new
+                        $qi = "INSERT INTO `user_relations` (`user_id`, `relation_with`, `vcard`, `full_name`, `last_modified`, `is_deleted`) VALUES (:user_id, :relation_with, :vcard, :full_name, :last_modified, '0')";
+
+                        $si = $db->prepare($qi);
+                        $si->execute([
+                            ':user_id' => $userId,
+                            ':relation_with' => $rUid,
+                            ':vcard' => $vcard,
+                            ':full_name' => $fullName,
+                            ':last_modified' => $timestamp
+                        ]);
+                    }
+                    break;
+                case 'D':
+                    // Record exists
+                    if ($numRows > 0) {
+                        // Check if request to append is newer than the last modified
+                        if ($timestamp >= $relation['last_modified']) {
+                            $sql = "UPDATE `user_relations` SET `is_deleted`='1', `last_modified`=:last_modified WHERE `user_id`=:user_id AND `relation_with`=:relation_with";
+
+                            $db = $this->get('db');
+                            $stmt = $db->prepare($sql);
+                            $stmt->execute([
+                                ':user_id' => $userId,
+                                ':relation_with' => $rUid,
+                                ':last_modified' => $timestamp
+                            ]);
+                        }
+                    }
+                    break;
+            }
+        }
+        $error = ['success' => true];
+        return $error;
+    } catch (PDOException $e) {
         $error = ['error' => ['text' => $e->getMessage()]];
         return $response->withJson($error);
     }

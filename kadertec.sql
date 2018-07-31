@@ -319,16 +319,17 @@ CREATE TABLE `user_memories` (
   `id` bigint(20) NOT NULL,
   `user_id` text COLLATE utf8_unicode_ci NOT NULL,
   `memories_with` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Entity UID (TEC regno)',
-  `text` text COLLATE utf8_unicode_ci,
-  `img_path` text COLLATE utf8_unicode_ci
+  `text` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+  `img_path` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+  `img_filename` text COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data untuk tabel `user_memories`
 --
 
-INSERT INTO `user_memories` (`id`, `user_id`, `memories_with`, `text`, `img_path`) VALUES
-(1, '1', 'TEC044', 'jhdsgf v bduwk gfkjhgwbfcjkhdsg icvkjheg fjyasg vkjs hhdla khjy bljh iluhflwe\r\njsd u chjas vc s\r\ns jukhysa gsuag diewu \r\n fluyqw ;jewn f;oiwq f\r\n ewjf hiluwe fh;weoi fj\'qw\r\niqo huew fwe \r\nqw iue i sme\r\n j bwasj cfnd\'\r\nfdwel fhewo \r\nqw fwq[pjwdflkdsjbgcyuew bcjkashgdf yd l hgl dhjcg h shgv ydhas vyua ckaswhvd ujwa fdlqw\r\ndrjufh wbwiuy v', 'memories://1_TEC044_5b5d69ded0f7ec87fc9f520dc4674.jpg');
+INSERT INTO `user_memories` (`id`, `user_id`, `memories_with`, `text`, `img_path`, `img_filename`) VALUES
+(1, '1', 'TEC044', 'Iwang is probably the most unusual person I have ever met. As far as I know, he is the most *gaptek* person in STEI 2017, despite having a medal on Computer Science. Yes, computer science. One day he told me that there was a day when he could not get a glass of water just because he was unable to operate the water dispenser in his workplace. A freakin water dispenser. So, my impression to Iwang would be the guy is very much gaptek. He is really smart, though. He was able to solve a CP problem just by brushing his infamous beard. But a guy like that does not go without weakness, as he is very very gaptek.\r\n\r\nNice one wang!', 'https://tec-test.sgp1.digitaloceanspaces.com/memories/1_TEC044_5b5f3a21dd8599f0944e32a5be614.jpg', 'memories/1_TEC044_5b5f3a21dd8599f0944e32a5be614.jpg');
 
 -- --------------------------------------------------------
 
@@ -342,26 +343,28 @@ CREATE TABLE `user_relations` (
   `relation_with` text NOT NULL COMMENT 'TEC ID no',
   `vcard` text NOT NULL,
   `full_name` text NOT NULL,
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_deleted` int(11) NOT NULL DEFAULT '0',
+  `last_modified` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data untuk tabel `user_relations`
 --
 
-INSERT INTO `user_relations` (`id`, `user_id`, `relation_with`, `vcard`, `full_name`, `timestamp`) VALUES
-(4, '1', 'PN012', 'BEGIN:VCARD\r\nFN:Umar Hilmi Fadhilah\r\nEMAIL;INTERNET=:umarhilmif@gmail.com\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:01234567899\r\nADR;HOME=:Kantor Pusat Ditjen Pajak; Jl. Gatot Subroto Kav. 40-43; Jakarta \r\n Selatan\r\nUID:PN012\r\nNOTE:Biochemistry addict; part-time trader; ultimate weaboo\r\nX-LINE:umarhilmif\r\nX-INSTAGRAM:@umarhilmif\r\nX-TWITTER:@umarhilmif\r\nEND:VCARD', 'Umar Hilmi Fadhilah', '2018-06-25 16:08:23'),
-(7, '1', 'TEC044', 'BEGIN:VCARD\r\nFN:Adyaksa Wisanggeni\r\nEMAIL;INTERNET=:adyaksa@iwa.ng\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:08774654134\r\nADR;HOME=:Jl. Cisitu Lama V No. 13; Bandung 40135\r\nUID:TEC044\r\nNOTE:Competitive programmer; absolute gaptek; part-time weaboo\r\nX-LINE:adyaksa.w\r\nX-INSTAGRAM:@adyaksa.w\r\nEND:VCARD', 'Adyaksa Wisanggeni', '2018-06-25 16:08:51'),
-(8, '1', 'TEC193', 'BEGIN:VCARD\r\nFN:Galih Fajar Fitra Ady\r\nEMAIL;INTERNET=:galih@tec.itb.ac.id\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:084456545657\r\nADR;HOME=:HQ DS Corp; Jl. Sangkuriang No. 13; Bandung 40135\r\nUID:TEC193\r\nNOTE:Math addict; Agus Yodi lover; fans of Hudang\r\nX-LINE:galihfajar\r\nX-INSTAGRAM:@galihfajar\r\nEND:VCARD', 'Galih Fajar Fitra Ady', '2018-06-25 16:15:44'),
-(15, '1', 'ITB001', 'BEGIN:VCARD\r\nFN:Kadarsah Suryadi\r\nEMAIL;INTERNET=:kadarsah@staff.itb.ac.id\r\nORG:Institut Teknologi Bandung\r\nTEL;CELL=:08123456554\r\nADR;HOME=:Jl. Tamansari No. 64; Bandung\r\nUID:ITB001\r\nNOTE:Mana saya tahu saya kan rektor\r\nEND:VCARD', 'Kadarsah Suryadi', '2018-06-28 11:26:40'),
-(22, '4', 'TEC204', 'BEGIN:VCARD\r\nFN:Almyra Ramadhina\r\nEMAIL;INTERNET=:almyra@tec.itb.ac.id\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:08123456554\r\nADR;HOME=:Perpustakaan Pusat ITB; Jl. Ganesha No. 10; Bandung 40135\r\nUID:TEC204\r\nNOTE:Queen of receh; ultrasonic expert; (Masjid) Salman resident\r\nX-LINE:sayareceh\r\nX-INSTAGRAM:@almyramadhina\r\nEND:VCARD', 'Almyra Ramadhina', '2018-06-28 12:25:38'),
-(23, '4', 'TEC054', 'BEGIN:VCARD\r\nFN:Bimo Adityarahman Wiraputra\r\nEMAIL;INTERNET=:b@imo-official.org\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087766545626\r\nADR;HOME=:Nasi Goreng Mafia; Jl. Dipatiukur No.51; Bandung  40132\r\nUID:TEC054\r\nNOTE:Bimo tanpa IMO; B aja\r\nX-LINE:bimoaw\r\nX-INSTAGRAM:@bimoaw\r\nEND:VCARD', 'Bimo Adityarahman Wiraputra', '2018-06-28 12:25:46'),
-(28, '4', 'TEC044', 'BEGIN:VCARD\r\nFN:Adyaksa Wisanggeni\r\nEMAIL;INTERNET=:adyaksa@iwa.ng\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:08774654134\r\nADR;HOME=:Jl. Cisitu Lama V No. 13; Bandung 40135\r\nUID:TEC044\r\nNOTE:Competitive programmer; absolute gaptek; part-time weaboo\r\nX-LINE:adyaksa.w\r\nX-INSTAGRAM:@adyaksa.w\r\nEND:VCARD', 'Adyaksa Wisanggeni', '2018-06-28 12:30:36'),
-(29, '4', 'TEC019', 'BEGIN:VCARD\r\nFN:Muhammad Aditya Hilmy\r\nEMAIL;INTERNET=:didithilmy@gmail.com\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087870408551\r\nADR;HOME=:Jl. Sangkuriang No. 13; Bandung 40135\r\nUID:TEC019\r\nNOTE:Digital-minded; problem solver; computer enthusiast\r\nX-LINE:webid\r\nX-INSTAGRAM:@didithilmy\r\nX-TWITTER:@didithilmy\r\nEND:VCARD', 'Muhammad Aditya Hilmy', '2018-06-28 15:34:42'),
-(30, '5', 'A17001', 'BEGIN:VCARD\r\nFN:Umar Hilmi Fadhilah\r\nEMAIL;INTERNET=:umarhilmif@gmail.com\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:01234567899\r\nADR;HOME=:Kantor Pusat Ditjen Pajak; Jl. Gatot Subroto Kav. 40-43; Jakarta \r\n Selatan\r\nUID:PN012\r\nNOTE:Biochemistry addict; part-time trader; ultimate weaboo\r\nX-LINE:umarhilmif\r\nX-INSTAGRAM:@umarhilmif\r\nX-TWITTER:@umarhilmif\r\nEND:VCARD', 'Umar Hilmi Fadhilah', '2018-06-29 12:24:34'),
-(31, '1', 'TEC204', 'BEGIN:VCARD\r\nFN:Almyra Ramadhina\r\nEMAIL;INTERNET=:almyra@tec.itb.ac.id\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:08123456554\r\nADR;HOME=:Perpustakaan Pusat ITB; Jl. Ganesha No. 10; Bandung 40135\r\nUID:TEC204\r\nNOTE:Queen of receh; ultrasonic expert; (Masjid) Salman resident\r\nX-LINE:sayareceh\r\nX-INSTAGRAM:@almyramadhina\r\nEND:VCARD', 'Almyra Ramadhina', '2018-07-26 03:21:18'),
-(36, '1', 'TEC054', 'BEGIN:VCARD\r\nFN:Bimo Adityarahman Wiraputra\r\nEMAIL;INTERNET=:b@imo-official.org\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087766545626\r\nADR;HOME=:Nasi Goreng Mafia; Jl. Dipatiukur No.51; Bandung  40132\r\nUID:TEC054\r\nNOTE:Bimo tanpa IMO; B aja\r\nX-LINE:bimoaw\r\nX-INSTAGRAM:@bimoaw\r\nEND:VCARD', 'Bimo Adityarahman Wiraputra', '2018-07-26 08:15:28'),
-(37, '1', 'TEC017', 'BEGIN:VCARD\r\nFN:Reyhan Naufal Hakim\r\nEMAIL;INTERNET=:reyhan_kim@icloud.com\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087744851546\r\nADR;HOME=:Jl. Cisitu Lama V No. 13;Bandung;40135\r\nUID:TEC017\r\nNOTE:Computer geek; entrepreneur wannabe; full-time weeabo\r\nX-LINE:reyhankim\r\nX-INSTAGRAM:@reyhankim\r\nX-TWITTER:@reyhankim\r\nEND:VCARD', 'Reyhan Naufal Hakim', '2018-07-28 03:08:09');
+INSERT INTO `user_relations` (`id`, `user_id`, `relation_with`, `vcard`, `full_name`, `timestamp`, `is_deleted`, `last_modified`) VALUES
+(4, '1', 'PN012', 'BEGIN:VCARD\r\nFN:Umar Hilmi Fadhilah\r\nEMAIL;INTERNET=:umarhilmif@gmail.com\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:01234567899\r\nADR;HOME=:Kantor Pusat Ditjen Pajak; Jl. Gatot Subroto Kav. 40-43; Jakarta \r\n Selatan\r\nUID:PN012\r\nNOTE:Biochemistry addict; part-time trader; ultimate weaboo\r\nX-LINE:umarhilmif\r\nX-INSTAGRAM:@umarhilmif\r\nX-TWITTER:@umarhilmif\r\nEND:VCARD', 'Umar Hilmi Fadhilah', '2018-06-25 16:08:23', 0, 0),
+(8, '1', 'TEC193', 'BEGIN:VCARD\r\nFN:Galih Fajar Fitra Ady\r\nEMAIL;INTERNET=:galih@tec.itb.ac.id\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:084456545657\r\nADR;HOME=:HQ DS Corp; Jl. Sangkuriang No. 13; Bandung 40135\r\nUID:TEC193\r\nNOTE:Math addict; Agus Yodi lover; fans of Hudang\r\nX-LINE:galihfajar\r\nX-INSTAGRAM:@galihfajar\r\nEND:VCARD', 'Galih Fajar Fitra Ady', '2018-06-25 16:15:44', 0, 0),
+(22, '4', 'TEC204', 'BEGIN:VCARD\r\nFN:Almyra Ramadhina\r\nEMAIL;INTERNET=:almyra@tec.itb.ac.id\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:08123456554\r\nADR;HOME=:Perpustakaan Pusat ITB; Jl. Ganesha No. 10; Bandung 40135\r\nUID:TEC204\r\nNOTE:Queen of receh; ultrasonic expert; (Masjid) Salman resident\r\nX-LINE:sayareceh\r\nX-INSTAGRAM:@almyramadhina\r\nEND:VCARD', 'Almyra Ramadhina', '2018-06-28 12:25:38', 0, 0),
+(23, '4', 'TEC054', 'BEGIN:VCARD\r\nFN:Bimo Adityarahman Wiraputra\r\nEMAIL;INTERNET=:b@imo-official.org\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087766545626\r\nADR;HOME=:Nasi Goreng Mafia; Jl. Dipatiukur No.51; Bandung  40132\r\nUID:TEC054\r\nNOTE:Bimo tanpa IMO; B aja\r\nX-LINE:bimoaw\r\nX-INSTAGRAM:@bimoaw\r\nEND:VCARD', 'Bimo Adityarahman Wiraputra', '2018-06-28 12:25:46', 0, 0),
+(28, '4', 'TEC044', 'BEGIN:VCARD\r\nFN:Adyaksa Wisanggeni\r\nEMAIL;INTERNET=:adyaksa@iwa.ng\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:08774654134\r\nADR;HOME=:Jl. Cisitu Lama V No. 13; Bandung 40135\r\nUID:TEC044\r\nNOTE:Competitive programmer; absolute gaptek; part-time weaboo\r\nX-LINE:adyaksa.w\r\nX-INSTAGRAM:@adyaksa.w\r\nEND:VCARD', 'Adyaksa Wisanggeni', '2018-06-28 12:30:36', 0, 0),
+(29, '4', 'TEC019', 'BEGIN:VCARD\r\nFN:Muhammad Aditya Hilmy\r\nEMAIL;INTERNET=:didithilmy@gmail.com\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087870408551\r\nADR;HOME=:Jl. Sangkuriang No. 13; Bandung 40135\r\nUID:TEC019\r\nNOTE:Digital-minded; problem solver; computer enthusiast\r\nX-LINE:webid\r\nX-INSTAGRAM:@didithilmy\r\nX-TWITTER:@didithilmy\r\nEND:VCARD', 'Muhammad Aditya Hilmy', '2018-06-28 15:34:42', 0, 0),
+(30, '5', 'A17001', 'BEGIN:VCARD\r\nFN:Umar Hilmi Fadhilah\r\nEMAIL;INTERNET=:umarhilmif@gmail.com\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:01234567899\r\nADR;HOME=:Kantor Pusat Ditjen Pajak; Jl. Gatot Subroto Kav. 40-43; Jakarta \r\n Selatan\r\nUID:PN012\r\nNOTE:Biochemistry addict; part-time trader; ultimate weaboo\r\nX-LINE:umarhilmif\r\nX-INSTAGRAM:@umarhilmif\r\nX-TWITTER:@umarhilmif\r\nEND:VCARD', 'Umar Hilmi Fadhilah', '2018-06-29 12:24:34', 0, 0),
+(31, '1', 'TEC204', 'BEGIN:VCARD\r\nFN:Almyra Ramadhina\r\nEMAIL;INTERNET=:almyra@tec.itb.ac.id\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:08123456554\r\nADR;HOME=:Perpustakaan Pusat ITB; Jl. Ganesha No. 10; Bandung 40135\r\nUID:TEC204\r\nNOTE:Queen of receh; ultrasonic expert; (Masjid) Salman resident\r\nX-LINE:sayareceh\r\nX-INSTAGRAM:@almyramadhina\r\nEND:VCARD', 'Almyra Ramadhina', '2018-07-26 03:21:18', 0, 1532966487),
+(36, '1', 'TEC054', 'BEGIN:VCARD\r\nFN:Bimo Adityarahman Wiraputra\r\nEMAIL;INTERNET=:b@imo-official.org\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087766545626\r\nADR;HOME=:Nasi Goreng Mafia; Jl. Dipatiukur No.51; Bandung  40132\r\nUID:TEC054\r\nNOTE:Bimo tanpa IMO; B aja\r\nX-LINE:bimoaw\r\nX-INSTAGRAM:@bimoaw\r\nEND:VCARD', 'Bimo Adityarahman Wiraputra', '2018-07-26 08:15:28', 0, 1532964276),
+(37, '1', 'TEC017', 'BEGIN:VCARD\r\nFN:Reyhan Naufal Hakim\r\nEMAIL;INTERNET=:reyhan_kim@icloud.com\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087744851546\r\nADR;HOME=:Jl. Cisitu Lama V No. 13;Bandung;40135\r\nUID:TEC017\r\nNOTE:Computer geek; entrepreneur wannabe; full-time weeabo\r\nX-LINE:reyhankim\r\nX-INSTAGRAM:@reyhankim\r\nX-TWITTER:@reyhankim\r\nEND:VCARD', 'Reyhan Naufal Hakim', '2018-07-28 03:08:09', 0, 1532965984),
+(42, '1', 'TEC085', 'BEGIN:VCARD\r\nFN:Muhammad Fathiyakan Ramadhan\r\nEMAIL;INTERNET=:fathi@tec.itb.ac.id\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087744851546\r\nADR;HOME=:Labtek XIV\\, Kampus ITB Ganesha;Jl. Ganesha No. 10;Bandung 40135\r\nUID:TEC085\r\nNOTE:Future businessman; open-minded; decision maker\r\nX-LINE:fathiyakan.r\r\nX-INSTAGRAM:@fathiyakan.r\r\nX-TWITTER:@fathiyakan.r\r\nEND:VCARD', 'Muhammad Fathiyakan Ramadhan', '2018-07-29 11:06:53', 1, 1532964087),
+(44, '1', 'TEC044', 'BEGIN:VCARD\r\nFN:Adyaksa Wisanggeni\r\nEMAIL;INTERNET=:adyaksa@iwa.ng\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:08774654134\r\nADR;HOME=:Jl. Cisitu Lama V No. 13; Bandung 40135\r\nUID:TEC044\r\nNOTE:Competitive programmer; absolute gaptek; part-time weaboo\r\nX-LINE:adyaksa.w\r\nX-INSTAGRAM:@adyaksa.w\r\nEND:VCARD', 'Adyaksa Wisanggeni', '2018-07-30 03:53:15', 0, 1532966469);
 
 -- --------------------------------------------------------
 
@@ -542,7 +545,7 @@ ALTER TABLE `user_memories`
 -- AUTO_INCREMENT untuk tabel `user_relations`
 --
 ALTER TABLE `user_relations`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT untuk tabel `user_score`
