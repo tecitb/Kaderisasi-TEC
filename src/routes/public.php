@@ -4,24 +4,24 @@ use Slim\Http\Response;
 use \Firebase\JWT\JWT;
 
 $app->post('/login', function (Request $request, Response $response, array $args) {
- 
+
     $input = $request->getParsedBody();
     $sql = "SELECT * FROM users WHERE email= :email";
     $sth = $this->db->prepare($sql);
     $sth->bindParam("email", $input['email']);
     $sth->execute();
     $user = $sth->fetchObject();
- 
+
     // verify email address.
     if(!$user) {
         return $this->response->withJson(['error' => true, 'message' => 'These credentials do not match our records.']);
     }
- 
+
     // verify password.
     if (!password_verify($input['password'],$user->password)) {
-        return $this->response->withJson(['error' => true, 'message' => 'These credentials do not match our records.']); 
+        return $this->response->withJson(['error' => true, 'message' => 'These credentials do not match our records.']);
     }
- 
+
     $settings = $this->get('settings'); // get settings array.
     $token = JWT::encode([
       'id' => $user->id,
@@ -30,8 +30,20 @@ $app->post('/login', function (Request $request, Response $response, array $args
       'isAdmin' => $user->isAdmin,
       'tec_regno' => $user->tec_regno
     ], $settings['jwt']['secret'], "HS256");
- 
+
     return $this->response->withJson(['token' => $token,'id' => $user->id]);
+});
+
+$app->get('/verifyToken/{uid:[0-9]+}', function (Request $request, Response $response, array $args) {
+
+    $uid = $args["uid"];
+    $tokenUid = $request->getAttribute("jwt")['id'];
+
+    if ($uid == $tokenUid){
+      return $this->response->withJson(['status' => "valid"]);
+    }else {
+      return $this->response->withJson(['status' => "invalid"]);
+    }
 });
 
 
@@ -61,7 +73,7 @@ $app->post('/registration', function(Request $request, Response $response, array
         ':coupon' => $coupon
       ]);
       $result = $stmt->fetch();
-      
+
       if($result['ada_kupon'] == 1) {
         $lunas = 1;
       }
@@ -75,12 +87,12 @@ $app->post('/registration', function(Request $request, Response $response, array
     }
 
   }
-  
+
   $verified = md5(uniqid(rand(),true));
   $isAdmin = 0;
 
   $sql = "INSERT INTO `users`
-          (`name`, `email`, `password`, `nim`, `created_at`, `lunas`, `verified`, `isAdmin`, `interests`, `nickname`, `about_me`, `line_id`, `instagram`, `mobile`, `tec_regno`, `address`) 
+          (`name`, `email`, `password`, `nim`, `created_at`, `lunas`, `verified`, `isAdmin`, `interests`, `nickname`, `about_me`, `line_id`, `instagram`, `mobile`, `tec_regno`, `address`)
           VALUES (:name,:email,:password,:nim,:created_at,:lunas,:verified, :isAdmin, :interests, :nickname, :about_me, :line_id, :instagram, :mobile, :tec_regno, :address)";
 
   /* Informational fields */
@@ -155,7 +167,7 @@ $app->post('/registration', function(Request $request, Response $response, array
       'email' => $email,
       'isAdmin' => $isAdmin
     ], $settings['jwt']['secret'], "HS256");
-    
+
     return $this->response->withJson(['token' => $token,'id' => $user_id]);
   }
   catch (PDOException $e) {
@@ -179,7 +191,7 @@ $app->post('/reset', function(Request $request, Response $response, array $args)
     $error = ['error' => ['text' => 'Invalid email address']];
     return $response->withJson($error);
   }
-  
+
   try {
     $token = md5(uniqid(rand(),true));
 
