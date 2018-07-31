@@ -293,24 +293,6 @@ CREATE TABLE `user_assignment` (
 INSERT INTO `user_assignment` (`id`, `user_id`, `assignment_id`, `filename`, `uploaded_at`) VALUES
 (1, 1, 1, 'assignment_1_3d388c5c305e9e64.pdf', '2018-07-02 12:56:48');
 
-
-CREATE TABLE `user_memories` (
-  `id` bigint(20) NOT NULL,
-  `user_id` text COLLATE utf8_unicode_ci NOT NULL,
-  `memories_with` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Entity UID (TEC regno)',
-  `text` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
-  `img_path` text CHARACTER SET utf8 COLLATE utf8_unicode_ci
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Dumping data for table `user_memories`
---
-
-INSERT INTO `user_memories` (`id`, `user_id`, `memories_with`, `text`, `img_path`) VALUES
-(1, '1', 'TEC044', 'jhdsgf v bduwk gfkjhgwbfcjkhdsg icvkjheg fjyasg vkjs hhdla khjy bljh iluhflwe\r\njsd u chjas vc s\r\ns jukhysa gsuag diewu \r\n fluyqw ;jewn f;oiwq f\r\n ewjf hiluwe fh;weoi fj\'qw\r\niqo huew fwe \r\nqw iue i sme\r\n j bwasj cfnd\'\r\nfdwel fhewo \r\nqw fwq[pjwdflkdsjbgcyuew bcjkashgdf yd l hgl dhjcg h shgv ydhas vyua ckaswhvd ujwa fdlqw\r\ndrjufh wbwiuy v', 'memories://1_TEC044_5b5d69ded0f7ec87fc9f520dc4674.jpg');
-
--- --------------------------------------------------------
-
 --
 -- Struktur dari tabel `user_memories`
 --
