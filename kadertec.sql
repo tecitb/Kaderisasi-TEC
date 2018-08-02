@@ -1,15 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.1
+-- version 4.6.6
 -- https://www.phpmyadmin.net/
 --
--- Host: mysql
--- Generation Time: Aug 02, 2018 at 02:45 AM
--- Server version: 8.0.12
--- PHP Version: 7.2.5
+-- Host: localhost
+-- Generation Time: Aug 02, 2018 at 06:32 PM
+-- Server version: 5.6.35
+-- PHP Version: 7.1.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -19,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `tec_intern_web`
+-- Database: `kadertec`
 --
 
 -- --------------------------------------------------------
@@ -175,6 +173,27 @@ INSERT INTO `groups` (`id`, `name`, `type`, `head`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `peer_to_peer`
+--
+
+CREATE TABLE `peer_to_peer` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `penilai` int(10) UNSIGNED NOT NULL,
+  `dinilai` int(10) UNSIGNED NOT NULL,
+  `nilai` int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `peer_to_peer`
+--
+
+INSERT INTO `peer_to_peer` (`id`, `penilai`, `dinilai`, `nilai`) VALUES
+(1, 1, 3, 5),
+(3, 1, 2, 1);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `question_answer`
 --
 
@@ -222,25 +241,25 @@ INSERT INTO `quiz` (`id`, `title`) VALUES
 
 CREATE TABLE `users` (
   `id` int(10) UNSIGNED NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `email` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `NIM` int(11) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `lunas` tinyint(1) NOT NULL,
-  `verified` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `verified` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `isAdmin` tinyint(1) NOT NULL DEFAULT '0',
   `is_active` int(11) NOT NULL DEFAULT '1',
-  `interests` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `nickname` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `about_me` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `line_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `instagram` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `mobile` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `tec_regno` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `address` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `profile_picture` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `interests` text COLLATE utf8_unicode_ci NOT NULL,
+  `nickname` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `about_me` text COLLATE utf8_unicode_ci NOT NULL,
+  `line_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `instagram` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `mobile` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `tec_regno` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `address` text COLLATE utf8_unicode_ci NOT NULL,
+  `profile_picture` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `profile_picture_url` text COLLATE utf8_unicode_ci NOT NULL,
   `role` int(11) NOT NULL DEFAULT '1',
   `gid` int(11) DEFAULT NULL
@@ -299,11 +318,11 @@ INSERT INTO `user_assignment` (`id`, `user_id`, `assignment_id`, `filename`, `up
 
 CREATE TABLE `user_memories` (
   `id` bigint(20) NOT NULL,
-  `user_id` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `memories_with` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Entity UID (TEC regno)',
-  `text` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
-  `img_path` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
-  `img_filename` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+  `user_id` text COLLATE utf8_unicode_ci NOT NULL,
+  `memories_with` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Entity UID (TEC regno)',
+  `text` text COLLATE utf8_unicode_ci,
+  `img_path` text COLLATE utf8_unicode_ci,
+  `img_filename` text COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -409,6 +428,13 @@ ALTER TABLE `groups`
   ADD UNIQUE KEY `id` (`id`);
 
 --
+-- Indexes for table `peer_to_peer`
+--
+ALTER TABLE `peer_to_peer`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `p2p_idx` (`penilai`,`dinilai`);
+
+--
 -- Indexes for table `question_answer`
 --
 ALTER TABLE `question_answer`
@@ -472,44 +498,41 @@ ALTER TABLE `user_score`
 --
 ALTER TABLE `assignments`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
 --
 -- AUTO_INCREMENT for table `coupons`
 --
 ALTER TABLE `coupons`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
-
 --
 -- AUTO_INCREMENT for table `groups`
 --
 ALTER TABLE `groups`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
+--
+-- AUTO_INCREMENT for table `peer_to_peer`
+--
+ALTER TABLE `peer_to_peer`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `quiz`
 --
 ALTER TABLE `quiz`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
 --
 -- AUTO_INCREMENT for table `user_answer`
 --
 ALTER TABLE `user_answer`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
 --
 -- AUTO_INCREMENT for table `user_assignment`
 --
 ALTER TABLE `user_assignment`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-COMMIT;
-
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
