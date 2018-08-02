@@ -365,6 +365,24 @@ $app->post('/useCoupon', function(Request $request, Response $response, array $a
 
 });
 
+$app->get('/group/{gid:[0-9]+}', function(Request $request, Response $response, array $args) {
+  $sql = "SELECT * FROM `groups` WHERE `id`=:gid";
+
+  $db = $this->get('db');
+  try {
+    $stmt = $db->prepare($sql);
+    $stmt->execute([":gid" => $args["gid"]]);
+    $result = $stmt->fetch();
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+
+  return $response->withJson($result);
+
+});
+
 $app->get('/group/{gid:[0-9]+}/members', function(Request $request, Response $response, array $args) {
   $sql = "SELECT * FROM `groups` WHERE `id`=:gid";
 
