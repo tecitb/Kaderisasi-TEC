@@ -2,6 +2,8 @@
 use Slim\Http\Request;
 use Slim\Http\Response;
 use \Firebase\JWT\JWT;
+use Slim\Http\UploadedFile;
+use Aws\S3\S3Client;
 
 // GET USER INFO
 $app->get('/user/{id:[0-9]+}',function(Request $request, Response $response, array $args) {
@@ -18,7 +20,7 @@ $app->get('/user/{id:[0-9]+}',function(Request $request, Response $response, arr
         return $response->withJson($error);
     }
 
-    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture`,`is_active`,`gid` FROM `users` WHERE id=:id";
+    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture`, `profile_picture_url`, `is_active`,`gid` FROM `users` WHERE id=:id";
 
     try {
         $db = $this->get('db');
@@ -93,7 +95,7 @@ $app->get('/user/search/{query}',function(Request $request, Response $response, 
         return $response->withJson($error);
     }
 
-    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture`, `is_active`,`gid` FROM `users`
+    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture`, `profile_picture_url`, `is_active`,`gid` FROM `users`
             WHERE `name` LIKE :sq OR `email` LIKE :sq OR `nickname` LIKE :sq OR `line_id` LIKE :sq OR `instagram` LIKE :sq OR `mobile` LIKE :sq OR `tec_regno` LIKE :sq OR `address` LIKE :sq OR `NIM` LIKE :sq";
 
     try {
@@ -158,45 +160,94 @@ $app->get('/verify/{token}', function(Request $request, Response $response, arra
 });
 
 $app->post('/uploadImage', function(Request $request, Response $response, array $args) {
-    $directory = $this->get('settings')['profile_directory'];
+    $userId = $request->getAttribute("jwt")['id'];
+    try {
+        // Try to find user
+        $sql = "SELECT * FROM `users` WHERE `id`=:id";
+        $db = $this->get('db');
 
-    $uploadedFiles = $request->getUploadedFiles();
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+            ':id' => $userId
+        ]);
+        $user = $stmt->fetch(PDO::FETCH_OBJ);
 
-    $uploadedFile = $uploadedFiles['profile_picture'];
-    if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-        $user_id = $request->getAttribute("jwt")['id'];
-        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-        $basename = bin2hex(random_bytes(8));
-        $filename = 'user_' . $user_id . '_' . sprintf('%s.%0.8s', $basename, $extension);
-
-        $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
-
-        $sql = "UPDATE users SET profile_picture=:pp WHERE id = :id";
-
-        try {
-          $db = $this->get('db');
-          $stmt = $db->prepare($sql);
-          $stmt->execute([
-            ':pp' => $filename,
-            ':id' => $user_id
-          ]);
-          $rowCount = $stmt->rowCount();
-          if ($rowCount == 0) {
-            $error = ['error' => ['text' => 'Error, nothing updated.']];
+        if($user == false) {
+            $error = ['error' => ['text' => 'User not found']];
             return $response->withJson($error);
-          }
-          $result = ["notice"=>["type"=>"success", "text" => "Profile picture updated"], "filename" => $filename];
-          return $response->withJson($result);
         }
-        catch (PDOException $e) {
-          $error = ['error' => ['text' => $e->getMessage()]];
-          return $response->withJson($error);
-        }
-    }
-    else {
-      return $response->withJson(['error'=>['text' => 'Upload failed']]);
-    }
 
+        $uploadedFiles = $request->getUploadedFiles();
+
+        $uploadedFile = $uploadedFiles['profile_picture'];
+        if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+            // Try to save image
+            $uploadedFiles = $request->getUploadedFiles();
+
+            if(array_key_exists("profile_picture", $uploadedFiles)) {
+                /** @var UploadedFile $uploadedFile */
+                $uploadedFile = $uploadedFiles['profile_picture'];
+                if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+                    /** @var Aws\S3\S3Client $spaces */
+                    $spaces = $this->spaces;
+
+                    $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+                    $basename = bin2hex(random_bytes(8));
+                    $filename = 'userpic/user_' . $userId . '_' . sprintf('%s.%0.8s', $basename, $extension);
+
+                    $spaces->deleteObject([
+                        'Bucket' => $this->get('settings')['spaces']['name'],
+                        'Key'    => $user->profile_picture
+                    ]);
+
+                    // Upload a file to the Space
+
+                    /** @var \Aws\Result $insert */
+                    $insert = $spaces->putObject([
+                        'Bucket' => $this->get('settings')['spaces']['name'],
+                        'Key'    => $filename,
+                        'ACL'    => 'public-read',
+                        'Body'   => $uploadedFile->getStream()->getContents()
+                    ]);
+
+                    $objectUrl = $insert->get("ObjectURL");
+
+                    $file_dbentry = $objectUrl;
+                } else {
+                    $file_dbentry = $user->profile_picture_url;
+                    $filename = $user->profile_picture_url;
+                }
+            } else {
+                $file_dbentry = $user->profile_picture_url;
+                $filename = $user->profile_picture_url;
+            }
+
+            //$uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+
+            $sql = "UPDATE users SET profile_picture=:pp, profile_picture_url=:pp_url WHERE id = :id";
+
+              $db = $this->get('db');
+              $stmt = $db->prepare($sql);
+              $stmt->execute([
+                ':pp' => $filename,
+                ':pp_url' => $file_dbentry,
+                ':id' => $userId
+              ]);
+              $rowCount = $stmt->rowCount();
+              if ($rowCount == 0) {
+                $error = ['error' => ['text' => 'Error, nothing updated.']];
+                return $response->withJson($error);
+              }
+              $result = ["notice"=>["type"=>"success", "text" => "Profile picture updated"], "filename" => $filename, "url" => $file_dbentry];
+              return $response->withJson($result);
+        }
+        else {
+          return $response->withJson(['error'=>['text' => 'Upload failed']]);
+        }
+    } catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+    }
 });
 
 // UPDATE USER INFO
