@@ -274,6 +274,7 @@ $app->get('/relations/vcard', function(Request $request, Response $response, arr
         if($user->line_id != '') $vcard .= "X-LINE:".$user->line_id."\n";
         if($user->instagram != '') $vcard .= "X-INSTAGRAM:".$user->instagram."\n";
         if($user->interests != '') $vcard .= "X-INTERESTS:".$user->interests."\n";
+        $vcard .= "PHOTO:".BASE_URL."/api/dp/".$user->id."\n";
         $vcard .= "END:VCARD";
 
         return $response->withJson(array("vcard" => utf8_encode($vcard)));

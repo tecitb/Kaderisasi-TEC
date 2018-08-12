@@ -4,7 +4,7 @@
 // e.g: $app->add(new \Slim\Csrf\Guard);
 $app->add(new \Tuupola\Middleware\JwtAuthentication([
     "path" => "/api",
-    "ignore" => ["/api/registration", "/api/login", "/api/reset"],
+    "ignore" => ["/api/registration", "/api/login", "/api/reset", "/api/dp"],
     "secret" => $app->getContainer()->get('settings')['jwt']["secret"],
     "algorithm" => ["HS256"],
     "attribute" => "jwt",

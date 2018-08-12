@@ -12,6 +12,8 @@ if (PHP_SAPI == 'cli-server') {
     }
 }
 
+define("BASE_URL", getenv("BASE_URL") ?: "http://localhost");
+
 require __DIR__ . '/../vendor/autoload.php';
 
 session_start();
