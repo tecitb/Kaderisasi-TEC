@@ -195,10 +195,12 @@ $app->post('/uploadImage', function(Request $request, Response $response, array 
                     $basename = bin2hex(random_bytes(8));
                     $filename = 'userpic/user_' . $userId . '_' . sprintf('%s.%0.8s', $basename, $extension);
 
-                    $spaces->deleteObject([
-                        'Bucket' => $this->get('settings')['spaces']['name'],
-                        'Key'    => $user->profile_picture
-                    ]);
+                    if(!empty($user->profile_picture)) {
+                        $spaces->deleteObject([
+                            'Bucket' => $this->get('settings')['spaces']['name'],
+                            'Key' => $user->profile_picture
+                        ]);
+                    }
 
                     // Upload a file to the Space
 
