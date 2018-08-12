@@ -340,6 +340,12 @@ Location : `/api/generateCoupon/:jumlah`
 Method : POST  
 Auth : Admin
 
+Parameter :
+
+| Parameter | Keterangan |
+| --------- | ---------- |
+| type      | tipe kupon (untuk pelunasan atau tidak) |
+
 Data : -
 
 ### Get Coupons
@@ -347,6 +353,12 @@ Data : -
 Location : `/api/getCoupon/:jumlah`  
 Method : GET  
 Auth : Admin
+
+Parameter :
+
+| Parameter | Keterangan |
+| --------- | ---------- |
+| type      | tipe kupon (untuk pelunasan atau tidak) |
 
 Return (array):
 
