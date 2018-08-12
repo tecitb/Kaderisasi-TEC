@@ -122,10 +122,13 @@ $app->post('/memories/put/{id}',  function(Request $request, Response $response,
                 if ($memories != false) {
                     $existing_filenm = str_replace("memories://", $directory, $memories->img_path);
                     if (@file_exists($existing_filenm)) unlink($existing_filenm);
-                    $spaces->deleteObject([
-                        'Bucket' => $this->get('settings')['spaces']['name'],
-                        'Key'    => $memories->img_filename
-                    ]);
+
+                    if(!empty($memories->img_filename)) {
+                        $spaces->deleteObject([
+                            'Bucket' => $this->get('settings')['spaces']['name'],
+                            'Key' => $memories->img_filename
+                        ]);
+                    }
                 }
 
                 // Upload a file to the Space

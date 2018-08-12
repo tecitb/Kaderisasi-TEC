@@ -298,3 +298,39 @@ $app->put('/reset/{token}', function(Request $request, Response $response, array
     return $response->withJson($error);
   }
 });
+
+/**
+ * Redirects to user display picture
+ */
+$app->get("/dp/{id}",  function(Request $request, Response $response, array $args) {
+    // Input validation
+    if(empty($args['id'])) {
+        return $response->withStatus(400);
+    }
+
+    $sql = "SELECT `profile_picture_url` FROM `users` WHERE id=:id";
+
+    try {
+        $db = $this->get('db');
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+            ':id' => $args['id']
+        ]);
+        $user = $stmt->fetch(PDO::FETCH_OBJ);
+        $db = null;
+
+        if($user == false) {
+            return $response->withStatus(404);
+        }
+
+        if(empty($user->profile_picture_url)) {
+            return $response->withStatus(404);
+        } else {
+            return $response->withRedirect($user->profile_picture_url);
+        }
+    }
+    catch (PDOException $e) {
+        return $response->withStatus(500);
+    }
+});

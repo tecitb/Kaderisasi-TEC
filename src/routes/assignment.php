@@ -243,10 +243,12 @@ $app->post('/user/assignment/{id:[0-9]+}', function(Request $request, Response $
 
             if($result != false) {
                 //delete previous
-                $spaces->deleteObject([
-                    'Bucket' => $this->get('settings')['spaces']['name'],
-                    'Key'    => $result['filename']
-                ]);
+                if(!empty($result['filename'])) {
+                    $spaces->deleteObject([
+                        'Bucket' => $this->get('settings')['spaces']['name'],
+                        'Key' => $result['filename']
+                    ]);
+                }
                 $sql="UPDATE `user_assignment` SET `filename` = :filename, `file_url`=:furl WHERE `user_id` = :user_id AND `assignment_id` = :assignment_id ";
             }else {
                 $sql="INSERT INTO user_assignment(user_id, assignment_id, filename, file_url) VALUES (:user_id, :assignment_id, :filename, :furl)";
