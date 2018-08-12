@@ -181,6 +181,35 @@ $app->get('/getCoupon/{num:[0-9]+}', function (Request $request, Response $respo
  }
 });
 
+// CHANGE COUPONS
+$app->post('/changeCoupon', function (Request $request, Response $response, array $args) {
+  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+    $error = ['error' => ['text' => 'Permission denied']];
+    return $response->withJson($error);
+  }
+
+  $type = $request->getParam('type');
+  $cid = $request->getParam('cid');
+
+  $sql = "UPDATE `coupons` SET `lunas` = :type WHERE `coupons`.`coupon` = :cid";
+
+  try {
+    $db = $this->get("db");
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':type', (int)($type), PDO::PARAM_INT);
+    $stmt->bindValue(":cid", $cid ,PDO::PARAM_STR);
+    $stmt->execute();
+    $db = null;
+    $success = ["notice"=>["type"=>"success"]];
+    return $response->withJson($success);
+ }
+ catch (PDOException $e) {
+   $error = ['error' => ['text' => $e->getMessage()]];
+   return $response->withJson($error);
+ }
+});
+
 // GENERATE COUPON
 $app->post('/generateCoupon/{num:[0-9]+}', function (Request $request, Response $response, array $args) {
  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
