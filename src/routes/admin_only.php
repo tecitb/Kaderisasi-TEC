@@ -129,7 +129,7 @@ $app->get('/user/{uid:[0-9]+}/quiz/{qid:[0-9]+}', function(Request $request, Res
      $error = ['error' => ['text' => 'Permission denied']];
      return $response->withJson($error);
    }
-   
+
   $sql = "SELECT user_answer.answer, user_score.score as quiz_score, quiz.title as quiz_title, question, question_answer.type as question_type, question_answer.answer as correct_answer, decoy FROM user_answer INNER JOIN question_answer ON user_answer.qa_id = question_answer.id INNER JOIN users ON user_answer.user_id = users.id INNER JOIN quiz ON quiz.id = question_answer.quiz_id INNER JOIN user_score on user_score.quiz_id = quiz.id WHERE quiz.id = :qid AND users.id = :uid";
  try {
    $db = $this->get('db');
@@ -155,7 +155,15 @@ $app->get('/getCoupon/{num:[0-9]+}', function (Request $request, Response $respo
     $error = ['error' => ['text' => 'Permission denied']];
     return $response->withJson($error);
   }
-  $sql = "SELECT `coupon` FROM `coupons` ORDER BY `id` ASC LIMIT :couponNum";
+  $couponType = $request->getQueryParam("type");
+
+  if(($couponType == null)||($couponType == "")){
+    $sql = "SELECT `coupon` FROM `coupons` WHERE `lunas`=1 ORDER BY `id` ASC LIMIT :couponNum";
+  }else if($couponType == 0){
+    $sql = "SELECT `coupon` FROM `coupons` WHERE `lunas`=0 ORDER BY `id` ASC LIMIT :couponNum";
+  }else{
+    $sql = "SELECT `coupon` FROM `coupons` WHERE `lunas`=1 ORDER BY `id` ASC LIMIT :couponNum";
+  }
 
   try {
     $db = $this->get("db");
@@ -188,10 +196,19 @@ $app->post('/generateCoupon/{num:[0-9]+}', function (Request $request, Response 
  }
 
  require_once dirname(__DIR__) . '/class.coupon.php';
- $sql = "INSERT INTO `coupons`(`coupon`) VALUES ";
+
+ $couponType = $request->getQueryParam("type");
+
+ $sql = "INSERT INTO `coupons`(`coupon`,`lunas`) VALUES ";
  $pieces = [];
- for ($i=0; $i < $number_of_coupons; $i++) { 
-   $pieces[] = "('" . coupon::generate(8) . "')";
+ for ($i=0; $i < $number_of_coupons; $i++) {
+   if(($couponType == null)||($couponType == "")){
+     $pieces[] = "('" . coupon::generate(8) . "',1)";
+   }else if($couponType == 0){
+     $pieces[] = "('" . coupon::generate(8) . "',0)";
+   }else{
+     $pieces[] = "('" . coupon::generate(8) . "',1)";
+   }
  }
  $sql .= implode(',', $pieces);
 
@@ -248,14 +265,14 @@ $app->post('/quiz', function(Request $request, Response $response, array $args) 
    }elseif($qa['type']=="pilgan"){
      $data[] = implode(", ", $qa['decoy']);
    }
-   
+
    $data[] = date("Y-m-d H:i:s");
    $data[] = $db->lastInsertId();
  }
 
  $count = count($data);
  $add = [];
- for ($i=0; $i < $count; $i = $i + 6) { 
+ for ($i=0; $i < $count; $i = $i + 6) {
    $add[] = "(?, ?, ?, ?, ?, ?)";
  }
 
@@ -285,7 +302,7 @@ $app->delete('/quiz/{id:[0-9]+}', function(Request $request, Response $response,
 
  if (empty($id) || filter_var($id, FILTER_VALIDATE_INT) === FALSE) {
    die('Invalid ID');
- } 
+ }
 
  try {
   $db = $this->get('db');
@@ -321,7 +338,7 @@ $app->delete('/user/{id:[0-9]+}', function(Request $request, Response $response,
 
  if (empty($id) || filter_var($id, FILTER_VALIDATE_INT) === FALSE) {
    die('Invalid ID');
- } 
+ }
 
  try {
   $db = $this->get('db');
@@ -350,7 +367,7 @@ $app->post('/user/restore', function(Request $request, Response $response, array
 
  if (empty($id) || filter_var($id, FILTER_VALIDATE_INT) === FALSE) {
    die('Invalid ID');
- } 
+ }
 
  try {
   $db = $this->get('db');
