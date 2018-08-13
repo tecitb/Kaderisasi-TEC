@@ -210,6 +210,33 @@ $app->post('/changeCoupon', function (Request $request, Response $response, arra
  }
 });
 
+// DELETE COUPONS
+$app->post('/deleteCoupon', function (Request $request, Response $response, array $args) {
+  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+    $error = ['error' => ['text' => 'Permission denied']];
+    return $response->withJson($error);
+  }
+
+  $cid = $request->getParam('cid');
+
+  $sql = "DELETE FROM `coupons` WHERE `coupons`.`coupon` = :cid";
+
+  try {
+    $db = $this->get("db");
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(":cid", $cid ,PDO::PARAM_STR);
+    $stmt->execute();
+    $db = null;
+    $success = ["notice"=>["type"=>"success"]];
+    return $response->withJson($success);
+ }
+ catch (PDOException $e) {
+   $error = ['error' => ['text' => $e->getMessage()]];
+   return $response->withJson($error);
+ }
+});
+
 // GENERATE COUPON
 $app->post('/generateCoupon/{num:[0-9]+}', function (Request $request, Response $response, array $args) {
  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
