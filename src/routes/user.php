@@ -326,18 +326,17 @@ $app->post('/useCoupon', function(Request $request, Response $response, array $a
   $coupon = $request->getParam('coupon');
   $id = $request->getAttribute("jwt")['id'];
 
-  $sql = "SELECT EXISTS(SELECT * from coupons where coupon = :coupon) as ada_kupon";
+  $sql = "SELECT * from coupons where coupon = :coupon";
 
-
-  $db = $this->get('db');
   try {
+    $db = $this->get('db');
     $stmt = $db->prepare($sql);
     $stmt->execute([
       ':coupon' => $coupon
     ]);
     $result = $stmt->fetch();
 
-    if($result['ada_kupon'] != 1) {
+    if($stmt->rowCount() == 0 OR $result['lunas'] == 0) {
       return $response->withJson(['error'=>['text' => 'Invalid coupon']]);
     }
   }
@@ -364,6 +363,24 @@ $app->post('/useCoupon', function(Request $request, Response $response, array $a
     $error = ['error' => ['text' => $e->getMessage()]];
     return $response->withJson($error);
   }
+
+});
+
+$app->get('/group/{gid:[0-9]+}', function(Request $request, Response $response, array $args) {
+  $sql = "SELECT * FROM `groups` WHERE `id`=:gid";
+
+  $db = $this->get('db');
+  try {
+    $stmt = $db->prepare($sql);
+    $stmt->execute([":gid" => $args["gid"]]);
+    $result = $stmt->fetch();
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+
+  return $response->withJson($result);
 
 });
 

@@ -62,9 +62,11 @@ $app->post('/registration', function(Request $request, Response $response, array
   $created_at = date("Y-m-d H:i:s");
   $lunas = 0;
 
+  $deleteCoupon = false;
+
   if ($request->getParam('coupon')) {
     $coupon = $request->getParam('coupon');
-    $sql = "SELECT EXISTS(SELECT * from coupons where coupon = :coupon) as ada_kupon";
+    $sql = "SELECT * from coupons where coupon = :coupon";
 
     try {
       $db = $this->get('db');
@@ -74,8 +76,9 @@ $app->post('/registration', function(Request $request, Response $response, array
       ]);
       $result = $stmt->fetch();
 
-      if($result['ada_kupon'] == 1) {
-        $lunas = 1;
+      if($stmt->rowCount() > 0) {
+          $lunas = $result['lunas'];
+          $deleteCoupon = true;
       }
       else {
         return $response->withJson(['error'=>['text' => 'Invalid coupon']]);
@@ -150,7 +153,7 @@ $app->post('/registration', function(Request $request, Response $response, array
 
     $user_id = $db->lastInsertId();
 
-    if($lunas == 1) {
+    if($deleteCoupon) {
       $delcouponsql = "DELETE FROM coupons WHERE coupon = :coupon";
       $stmt = $db->prepare($delcouponsql);
       $stmt->execute([
