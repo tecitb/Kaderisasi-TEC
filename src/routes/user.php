@@ -136,21 +136,38 @@ $app->get('/user/{id:[0-9]+}/score', function(Request $request, Response $respon
  }
 });
 
-// VERIFY USER EMAIL
-$app->get('/verify/{token}', function(Request $request, Response $response, array $args) {
-  $sql = "UPDATE users SET verified = 'YES' WHERE verified = :token";
+// CHANGE PASSWORD
+$app->post('/change-password', function(Request $request, Response $response, array $args) {
+  $db = $this->get('db');
+  $sql = "SELECT password FROM users WHERE id = :id";
   try {
-    $db = $this->get('db');
     $stmt = $db->prepare($sql);
     $stmt->execute([
-      ':token' => $args['token']
+      ':id' => $request->getAttribute("jwt")['id']
+    ]);
+    $result = $stmt->fetch();
+    if (!password_verify($request->getParam('old_password'),$result['password'])) {
+        return $response->withJson(['error' => ['text' => 'Invalid old password']]);
+    }
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+
+  $sql = "UPDATE users SET password = :password WHERE id = :id";
+  try {
+    $stmt = $db->prepare($sql);
+    $stmt->execute([
+      ':password' => password_hash($request->getParam('password'), PASSWORD_DEFAULT),
+      ':id' => $request->getAttribute("jwt")['id']
     ]);
     $rowCount = $stmt->rowCount();
     if ($rowCount == 0) {
-      $error = ['error' => ['text' => 'Invalid token.']];
+      $error = ['error' => ['text' => 'Change password failed.']];
       return $response->withJson($error);
     }
-    $result = ["notice"=>["type"=>"success", "text" => "Verification successful"]];
+    $result = ["notice"=>["type"=>"success", "text" => "Password successfully changed"]];
     return $response->withJson($result);
   }
   catch (PDOException $e) {
