@@ -2,10 +2,10 @@
 -- version 4.8.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Waktu pembuatan: 12 Agu 2018 pada 20.52
--- Versi server: 5.7.23-0ubuntu0.18.04.1
--- Versi PHP: 7.2.7-0ubuntu0.18.04.2
+-- Host: mysql
+-- Generation Time: Aug 15, 2018 at 02:02 PM
+-- Server version: 8.0.12
+-- PHP Version: 7.2.5
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,13 +19,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `kader`
+-- Database: `tec_intern_web`
 --
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `assignments`
+-- Table structure for table `assignments`
 --
 
 CREATE TABLE `assignments` (
@@ -35,7 +35,7 @@ CREATE TABLE `assignments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data untuk tabel `assignments`
+-- Dumping data for table `assignments`
 --
 
 INSERT INTO `assignments` (`id`, `title`, `description`) VALUES
@@ -46,7 +46,7 @@ INSERT INTO `assignments` (`id`, `title`, `description`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `coupons`
+-- Table structure for table `coupons`
 --
 
 CREATE TABLE `coupons` (
@@ -56,7 +56,7 @@ CREATE TABLE `coupons` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data untuk tabel `coupons`
+-- Dumping data for table `coupons`
 --
 
 INSERT INTO `coupons` (`id`, `coupon`, `lunas`) VALUES
@@ -155,7 +155,7 @@ INSERT INTO `coupons` (`id`, `coupon`, `lunas`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `groups`
+-- Table structure for table `groups`
 --
 
 CREATE TABLE `groups` (
@@ -166,7 +166,7 @@ CREATE TABLE `groups` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data untuk tabel `groups`
+-- Dumping data for table `groups`
 --
 
 INSERT INTO `groups` (`id`, `name`, `type`, `head`) VALUES
@@ -176,7 +176,7 @@ INSERT INTO `groups` (`id`, `name`, `type`, `head`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `peer_to_peer`
+-- Table structure for table `peer_to_peer`
 --
 
 CREATE TABLE `peer_to_peer` (
@@ -187,7 +187,7 @@ CREATE TABLE `peer_to_peer` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data untuk tabel `peer_to_peer`
+-- Dumping data for table `peer_to_peer`
 --
 
 INSERT INTO `peer_to_peer` (`id`, `penilai`, `dinilai`, `nilai`) VALUES
@@ -197,7 +197,7 @@ INSERT INTO `peer_to_peer` (`id`, `penilai`, `dinilai`, `nilai`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `question_answer`
+-- Table structure for table `question_answer`
 --
 
 CREATE TABLE `question_answer` (
@@ -211,7 +211,7 @@ CREATE TABLE `question_answer` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data untuk tabel `question_answer`
+-- Dumping data for table `question_answer`
 --
 
 INSERT INTO `question_answer` (`id`, `type`, `question`, `answer`, `decoy`, `created_at`, `quiz_id`) VALUES
@@ -221,7 +221,7 @@ INSERT INTO `question_answer` (`id`, `type`, `question`, `answer`, `decoy`, `cre
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `quiz`
+-- Table structure for table `quiz`
 --
 
 CREATE TABLE `quiz` (
@@ -230,7 +230,7 @@ CREATE TABLE `quiz` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data untuk tabel `quiz`
+-- Dumping data for table `quiz`
 --
 
 INSERT INTO `quiz` (`id`, `title`) VALUES
@@ -239,37 +239,37 @@ INSERT INTO `quiz` (`id`, `title`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
   `id` int(10) UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `NIM` int(11) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `lunas` tinyint(1) NOT NULL,
-  `verified` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `verified` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `isAdmin` tinyint(1) NOT NULL DEFAULT '0',
   `is_active` int(11) NOT NULL DEFAULT '1',
-  `interests` text COLLATE utf8_unicode_ci NOT NULL,
-  `nickname` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `about_me` text COLLATE utf8_unicode_ci NOT NULL,
-  `line_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `instagram` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `mobile` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `tec_regno` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `address` text COLLATE utf8_unicode_ci NOT NULL,
-  `profile_picture` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `profile_picture_url` text COLLATE utf8_unicode_ci NOT NULL,
+  `interests` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `nickname` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `about_me` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `line_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `instagram` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `mobile` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `tec_regno` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `address` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `profile_picture` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `profile_picture_url` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `role` int(11) NOT NULL DEFAULT '1',
   `gid` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data untuk tabel `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `NIM`, `created_at`, `updated_at`, `lunas`, `verified`, `isAdmin`, `is_active`, `interests`, `nickname`, `about_me`, `line_id`, `instagram`, `mobile`, `tec_regno`, `address`, `profile_picture`, `profile_picture_url`, `role`, `gid`) VALUES
@@ -282,7 +282,7 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `NIM`, `created_at`, `up
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `user_answer`
+-- Table structure for table `user_answer`
 --
 
 CREATE TABLE `user_answer` (
@@ -295,7 +295,7 @@ CREATE TABLE `user_answer` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `user_assignment`
+-- Table structure for table `user_assignment`
 --
 
 CREATE TABLE `user_assignment` (
@@ -303,33 +303,27 @@ CREATE TABLE `user_assignment` (
   `user_id` int(11) NOT NULL,
   `assignment_id` int(11) NOT NULL,
   `filename` varchar(255) NOT NULL,
+  `file_url` text NOT NULL,
   `uploaded_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data untuk tabel `user_assignment`
---
-
-INSERT INTO `user_assignment` (`id`, `user_id`, `assignment_id`, `filename`, `uploaded_at`) VALUES
-(1, 1, 1, 'assignment_1_3d388c5c305e9e64.pdf', '2018-07-02 12:56:48');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `user_memories`
+-- Table structure for table `user_memories`
 --
 
 CREATE TABLE `user_memories` (
   `id` bigint(20) NOT NULL,
-  `user_id` text COLLATE utf8_unicode_ci NOT NULL,
-  `memories_with` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Entity UID (TEC regno)',
-  `text` text COLLATE utf8_unicode_ci,
-  `img_path` text COLLATE utf8_unicode_ci,
-  `img_filename` text COLLATE utf8_unicode_ci NOT NULL
+  `user_id` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `memories_with` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Entity UID (TEC regno)',
+  `text` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+  `img_path` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+  `img_filename` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data untuk tabel `user_memories`
+-- Dumping data for table `user_memories`
 --
 
 INSERT INTO `user_memories` (`id`, `user_id`, `memories_with`, `text`, `img_path`, `img_filename`) VALUES
@@ -338,7 +332,7 @@ INSERT INTO `user_memories` (`id`, `user_id`, `memories_with`, `text`, `img_path
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `user_relations`
+-- Table structure for table `user_relations`
 --
 
 CREATE TABLE `user_relations` (
@@ -353,7 +347,7 @@ CREATE TABLE `user_relations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data untuk tabel `user_relations`
+-- Dumping data for table `user_relations`
 --
 
 INSERT INTO `user_relations` (`id`, `user_id`, `relation_with`, `vcard`, `full_name`, `timestamp`, `is_deleted`, `last_modified`) VALUES
@@ -372,7 +366,7 @@ INSERT INTO `user_relations` (`id`, `user_id`, `relation_with`, `vcard`, `full_n
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `user_reset`
+-- Table structure for table `user_reset`
 --
 
 CREATE TABLE `user_reset` (
@@ -381,7 +375,7 @@ CREATE TABLE `user_reset` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data untuk tabel `user_reset`
+-- Dumping data for table `user_reset`
 --
 
 INSERT INTO `user_reset` (`user_id`, `resetToken`) VALUES
@@ -390,7 +384,7 @@ INSERT INTO `user_reset` (`user_id`, `resetToken`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `user_score`
+-- Table structure for table `user_score`
 --
 
 CREATE TABLE `user_score` (
@@ -401,7 +395,7 @@ CREATE TABLE `user_score` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data untuk tabel `user_score`
+-- Dumping data for table `user_score`
 --
 
 INSERT INTO `user_score` (`id`, `score`, `quiz_id`, `user_id`) VALUES
@@ -412,137 +406,137 @@ INSERT INTO `user_score` (`id`, `score`, `quiz_id`, `user_id`) VALUES
 --
 
 --
--- Indeks untuk tabel `assignments`
+-- Indexes for table `assignments`
 --
 ALTER TABLE `assignments`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `coupons`
+-- Indexes for table `coupons`
 --
 ALTER TABLE `coupons`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `coupon` (`coupon`);
 
 --
--- Indeks untuk tabel `groups`
+-- Indexes for table `groups`
 --
 ALTER TABLE `groups`
   ADD UNIQUE KEY `id` (`id`);
 
 --
--- Indeks untuk tabel `peer_to_peer`
+-- Indexes for table `peer_to_peer`
 --
 ALTER TABLE `peer_to_peer`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `p2p_idx` (`penilai`,`dinilai`);
 
 --
--- Indeks untuk tabel `question_answer`
+-- Indexes for table `question_answer`
 --
 ALTER TABLE `question_answer`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `quiz`
+-- Indexes for table `quiz`
 --
 ALTER TABLE `quiz`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Indeks untuk tabel `user_answer`
+-- Indexes for table `user_answer`
 --
 ALTER TABLE `user_answer`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `user_assignment`
+-- Indexes for table `user_assignment`
 --
 ALTER TABLE `user_assignment`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `user_memories`
+-- Indexes for table `user_memories`
 --
 ALTER TABLE `user_memories`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `user_relations`
+-- Indexes for table `user_relations`
 --
 ALTER TABLE `user_relations`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `user_reset`
+-- Indexes for table `user_reset`
 --
 ALTER TABLE `user_reset`
   ADD PRIMARY KEY (`user_id`);
 
 --
--- Indeks untuk tabel `user_score`
+-- Indexes for table `user_score`
 --
 ALTER TABLE `user_score`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT untuk tabel yang dibuang
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT untuk tabel `assignments`
+-- AUTO_INCREMENT for table `assignments`
 --
 ALTER TABLE `assignments`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT untuk tabel `coupons`
+-- AUTO_INCREMENT for table `coupons`
 --
 ALTER TABLE `coupons`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
 
 --
--- AUTO_INCREMENT untuk tabel `groups`
+-- AUTO_INCREMENT for table `groups`
 --
 ALTER TABLE `groups`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT untuk tabel `peer_to_peer`
+-- AUTO_INCREMENT for table `peer_to_peer`
 --
 ALTER TABLE `peer_to_peer`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT untuk tabel `quiz`
+-- AUTO_INCREMENT for table `quiz`
 --
 ALTER TABLE `quiz`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT untuk tabel `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT untuk tabel `user_answer`
+-- AUTO_INCREMENT for table `user_answer`
 --
 ALTER TABLE `user_answer`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `user_assignment`
+-- AUTO_INCREMENT for table `user_assignment`
 --
 ALTER TABLE `user_assignment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
