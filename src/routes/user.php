@@ -136,7 +136,7 @@ $app->get('/user/{id:[0-9]+}/score', function(Request $request, Response $respon
  }
 });
 
-// VERIFY USER EMAIL
+// CHANGE PASSWORD
 $app->post('/change-password', function(Request $request, Response $response, array $args) {
   $db = $this->get('db');
   $sql = "SELECT password FROM users WHERE id = :id";
@@ -174,40 +174,6 @@ $app->post('/change-password', function(Request $request, Response $response, ar
     $error = ['error' => ['text' => $e->getMessage()]];
     return $response->withJson($error);
   }
-})
-
-// GET USER INFO
-$app->get('/user/{id:[0-9]+}',function(Request $request, Response $response, array $args) {
-    if($request->getAttribute("jwt")['isAdmin'] != 1){
-        if ($request->getAttribute("jwt")['id'] != $args['id']) {
-            $error = ['error' => ['text' => 'Permission denied']];
-            return $response->withJson($error);
-        }
-    }
-
-    // Input validation
-    if(empty($args['id'])) {
-        $error = ['error' => ['text' => 'id cannot be empty']];
-        return $response->withJson($error);
-    }
-
-    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture`, `profile_picture_url`, `is_active`,`gid` FROM `users` WHERE id=:id";
-
-    try {
-        $db = $this->get('db');
-
-        $stmt = $db->prepare($sql);
-        $stmt->execute([
-            ':id' => $args['id']
-        ]);
-        $user = $stmt->fetch(PDO::FETCH_OBJ);
-        $db = null;
-        return $response->withJson($user);
-    }
-    catch (PDOException $e) {
-        $error = ['error' => ['text' => $e->getMessage()]];
-        return $response->withJson($error);
-    }
 });
 
 $app->post('/uploadImage', function(Request $request, Response $response, array $args) {
