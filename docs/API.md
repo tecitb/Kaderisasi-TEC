@@ -195,6 +195,23 @@ Data :
 | mobile    | nomor hape                                                   |
 | address   | alamat                                                       |
 
+### Change password
+
+Location : `/api/change-password`  
+Method : POST  
+Auth : User (self)
+
+Data :
+
+| Parameter | Keterangan              |
+| --------- | ----------------------- |
+| old_password  | password lama       |
+| password  | password baru           |
+
+Return :
+
+Success message or error
+
 ### Upload profile picture
 
 Location: `/api/uploadImage`
