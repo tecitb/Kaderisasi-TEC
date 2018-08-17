@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Aug 15, 2018 at 02:02 PM
+-- Generation Time: Aug 17, 2018 at 01:51 PM
 -- Server version: 8.0.12
 -- PHP Version: 7.2.5
 
@@ -273,11 +273,11 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `NIM`, `created_at`, `updated_at`, `lunas`, `verified`, `isAdmin`, `is_active`, `interests`, `nickname`, `about_me`, `line_id`, `instagram`, `mobile`, `tec_regno`, `address`, `profile_picture`, `profile_picture_url`, `role`, `gid`) VALUES
-(1, 'Terry Djony', 'demokader@tec.itb.ac.id', '$2y$10$W/sVuNC73RgVexLhMwRMj.jA2rN0th7owX7hrdxn.m2YuAoIAt29G', 13316014, '2018-05-24 01:10:00', '2018-05-24 01:10:48', 0, 'Yes', 1, 1, '', '', '', '', '', '', 'A17001', '', 'userpic/user_1_71f02111cf64d7a5.png', 'https://tec-test.sgp1.digitaloceanspaces.com/userpic/user_1_71f02111cf64d7a5.png', 1, NULL),
+(1, 'Terry Djony', 'demokader@tec.itb.ac.id', '$2y$10$nsAWzVA4SZi.Df9INWS.g.EyJKtuHjKugZSYttjwxXtoYJ57UEKpq', 13316014, '2018-05-24 01:10:00', '2018-05-24 01:10:48', 0, 'Yes', 1, 1, '', '', '', '', '', '', 'A17001', '', 'userpic/user_1_71f02111cf64d7a5.png', 'https://tec-test.sgp1.digitaloceanspaces.com/userpic/user_1_71f02111cf64d7a5.png', 1, NULL),
 (2, 'John Terry', 'johnterry@gmail.com', '$2y$10$AcfUvDusmZN5/ZRbWAFHZOswg22gD/UOt.8gFfJy8NAJwaIo0r8Z2', 0, '2018-05-25 10:39:53', '2018-05-25 16:39:54', 0, '659a6d82e0ec8cbb5ac3f60adb9fcaf4', 0, 1, '', '', '', '', '', '', '', '', '', '', 1, NULL),
 (3, 'Terry Jhonny', 'terryjhonny@gmail.com', '$2y$10$tG/20YpUK9diSPB75aJfSu.yqr8POHssDIP6fGgb4kEdkxR6sQpDW', 0, '2018-05-25 13:48:49', '2018-05-25 19:48:50', 1, 'fb2206e6c003e65c3dfc00caefd67fcf', 0, 1, '', '', '', '', '', '', '', '', '', '', 1, NULL),
 (4, 'Muhammad Aditya Hilmy', 'didithilmy@gmail.com', '$2y$10$nq6vUexGUmP.noqWQwjAAu05eunkqZ9cYriAYd0Wz.SHiKw4cmnHC', 16517292, '2018-06-23 03:27:06', '2018-06-23 03:27:06', 1, 'c4dd7ea1dd5f70f7ba7da117cb84c271', 0, 1, 'tech,financial', 'Didit', 'Technology enthusiast, problem solver, curious person.', 'webid', 'didithilmy', '087870408551', 'TEC001', 'Jl. Bogor', NULL, '', 1, NULL),
-(5, 'Adyaksa Wisanggeni', 'adyaksa@iwa.ng', '$2y$10$GgJiXV0Wfn.57Je7ZWkFOePrtZ9iCEtPlL.vP1AHZ13APhe4SiTz2', 16517351, '2018-06-23 03:58:28', '2018-06-23 03:58:28', 1, 'ca2f4a7e9673829acde6eaacb1629912', 0, 1, 'tech,artsndesign', 'Iwang', 'Saya wibu', 'wangky', '-', '08111111111', 'TEC044', 'Tokopedia Tower', NULL, '', 1, NULL);
+(5, 'Adyaksa Wisanggeni', 'adyaksa@iwa.ng', '$2y$10$W/sVuNC73RgVexLhMwRMj.jA2rN0th7owX7hrdxn.m2YuAoIAt29G', 16517351, '2018-06-23 03:58:28', '2018-06-23 03:58:28', 1, 'ca2f4a7e9673829acde6eaacb1629912', 0, 1, 'tech,artsndesign', 'Iwang', 'Saya wibu', 'wangky', '-', '08111111111', 'TEC044', 'Tokopedia Tower', 'userpic/user_5_029a1395072f3e1c.jpg', 'https://tec-test.sgp1.digitaloceanspaces.com/userpic/user_5_029a1395072f3e1c.jpg', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -307,6 +307,13 @@ CREATE TABLE `user_assignment` (
   `uploaded_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `user_assignment`
+--
+
+INSERT INTO `user_assignment` (`id`, `user_id`, `assignment_id`, `filename`, `file_url`, `uploaded_at`) VALUES
+(1, 1, 1, 'assignment/assignment_1_ab31739c3f709ffb.docx', 'https://tec-test.sgp1.digitaloceanspaces.com/assignment/assignment_1_ab31739c3f709ffb.docx', '2018-08-15 14:06:02');
+
 -- --------------------------------------------------------
 
 --
@@ -327,7 +334,7 @@ CREATE TABLE `user_memories` (
 --
 
 INSERT INTO `user_memories` (`id`, `user_id`, `memories_with`, `text`, `img_path`, `img_filename`) VALUES
-(1, '1', 'TEC044', 'Iwang is probably the most unusual person I have ever met. As far as I know, he is the most *gaptek* person in STEI 2017, despite having a medal on Computer Science. Yes, computer science. One day he told me that there was a day when he could not get a glass of water just because he was unable to operate the water dispenser in his workplace. A freakin water dispenser. So, my impression to Iwang would be the guy is very much gaptek. He is really smart, though. He was able to solve a CP problem just by brushing his infamous beard. But a guy like that does not go without weakness, as he is very very gaptek.\r\n\r\nNice one wang!', 'https://tec-test.sgp1.digitaloceanspaces.com/memories/1_TEC044_5b5f3a21dd8599f0944e32a5be614.jpg', 'memories/1_TEC044_5b5f3a21dd8599f0944e32a5be614.jpg');
+(1, '1', 'TEC044', 'Iwang is probably the most unusual person I have ever met. As far as I know, he is the most *gaptek* person in STEI 2017, despite having a medal on Computer Science. Yes, computer science. One day he told me that there was a day when he could not get a glass of water just because he was unable to operate the water dispenser in his workplace. A freakin water dispenser. So, my impression to Iwang would be the guy is very much gaptek. He is really smart, though. He was able to solve a CP problem just by brushing his infamous beard. But a guy like that does not go without weakness, as he is very very gaptek.\r\n\r\nNice one wang!', 'https://tec-test.sgp1.digitaloceanspaces.com/memories/1_TEC044_5b744d4eb9bbcb3fd24ae44bed054.jpg', 'memories/1_TEC044_5b744d4eb9bbcb3fd24ae44bed054.jpg');
 
 -- --------------------------------------------------------
 
@@ -361,7 +368,8 @@ INSERT INTO `user_relations` (`id`, `user_id`, `relation_with`, `vcard`, `full_n
 (36, '1', 'TEC054', 'BEGIN:VCARD\r\nFN:Bimo Adityarahman Wiraputra\r\nEMAIL;INTERNET=:b@imo-official.org\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087766545626\r\nADR;HOME=:Nasi Goreng Mafia; Jl. Dipatiukur No.51; Bandung  40132\r\nUID:TEC054\r\nNOTE:Bimo tanpa IMO; B aja\r\nX-LINE:bimoaw\r\nX-INSTAGRAM:@bimoaw\r\nEND:VCARD', 'Bimo Adityarahman Wiraputra', '2018-07-26 08:15:28', 0, 1532964276),
 (37, '1', 'TEC017', 'BEGIN:VCARD\r\nFN:Reyhan Naufal Hakim\r\nEMAIL;INTERNET=:reyhan_kim@icloud.com\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087744851546\r\nADR;HOME=:Jl. Cisitu Lama V No. 13;Bandung;40135\r\nUID:TEC017\r\nNOTE:Computer geek; entrepreneur wannabe; full-time weeabo\r\nX-LINE:reyhankim\r\nX-INSTAGRAM:@reyhankim\r\nX-TWITTER:@reyhankim\r\nEND:VCARD', 'Reyhan Naufal Hakim', '2018-07-28 03:08:09', 0, 1532965984),
 (42, '1', 'TEC085', 'BEGIN:VCARD\r\nFN:Muhammad Fathiyakan Ramadhan\r\nEMAIL;INTERNET=:fathi@tec.itb.ac.id\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:087744851546\r\nADR;HOME=:Labtek XIV\\, Kampus ITB Ganesha;Jl. Ganesha No. 10;Bandung 40135\r\nUID:TEC085\r\nNOTE:Future businessman; open-minded; decision maker\r\nX-LINE:fathiyakan.r\r\nX-INSTAGRAM:@fathiyakan.r\r\nX-TWITTER:@fathiyakan.r\r\nEND:VCARD', 'Muhammad Fathiyakan Ramadhan', '2018-07-29 11:06:53', 1, 1532964087),
-(44, '1', 'TEC044', 'BEGIN:VCARD\r\nFN:Adyaksa Wisanggeni\r\nEMAIL;INTERNET=:adyaksa@iwa.ng\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:08774654134\r\nADR;HOME=:Jl. Cisitu Lama V No. 13; Bandung 40135\r\nUID:TEC044\r\nNOTE:Competitive programmer; absolute gaptek; part-time weaboo\r\nX-LINE:adyaksa.w\r\nX-INSTAGRAM:@adyaksa.w\r\nEND:VCARD', 'Adyaksa Wisanggeni', '2018-07-30 03:53:15', 0, 1532966469);
+(44, '1', 'TEC044', 'BEGIN:VCARD\r\nFN:Adyaksa Wisanggeni\r\nORG:Techno Entrepreneur Club ITB\r\nTEL;CELL=:08111111111\r\nADR;HOME=:Tokopedia Tower\r\nUID:TEC044\r\nEMAIL:adyaksa@iwa.ng\r\nNOTE:Saya wibu\r\nX-LINE:wangky\r\nX-INSTAGRAM:-\r\nX-INTERESTS:tech;artsndesign\r\nPHOTO:https://intern.tec.or.id/restsvc/public/api/dp/5\r\nEND:VCARD', 'Adyaksa Wisanggeni', '2018-07-30 03:53:15', 0, 1534509151),
+(45, '1', 'A17001', 'BEGIN:VCARD\r\nFN:Terry Djony\r\nORG:Techno Entrepreneur Club ITB\r\nUID:A17001\r\nEMAIL:demokader@tec.itb.ac.id\r\nPHOTO:https://intern.tec.or.id/restsvc/public/api/dp/1\r\nEND:VCARD', 'Terry Djony', '2018-08-17 13:47:14', 0, 1534513726);
 
 -- --------------------------------------------------------
 
@@ -536,7 +544,13 @@ ALTER TABLE `user_answer`
 -- AUTO_INCREMENT for table `user_assignment`
 --
 ALTER TABLE `user_assignment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `user_relations`
+--
+ALTER TABLE `user_relations`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

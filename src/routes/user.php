@@ -177,6 +177,7 @@ $app->post('/change-password', function(Request $request, Response $response, ar
 });
 
 $app->post('/uploadImage', function(Request $request, Response $response, array $args) {
+    set_time_limit(0);
     $userId = $request->getAttribute("jwt")['id'];
     try {
         // Try to find user
@@ -208,7 +209,7 @@ $app->post('/uploadImage', function(Request $request, Response $response, array 
                     /** @var Aws\S3\S3Client $spaces */
                     $spaces = $this->spaces;
 
-                    $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+                    $extension = "jpg"; //pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
                     $basename = bin2hex(random_bytes(8));
                     $filename = 'userpic/user_' . $userId . '_' . sprintf('%s.%0.8s', $basename, $extension);
 
@@ -220,13 +221,20 @@ $app->post('/uploadImage', function(Request $request, Response $response, array 
                     }
 
                     // Upload a file to the Space
+                    // Try to compress the image
+                    $img = imagecreatefromstring($uploadedFile->getStream()->getContents());
+
+                    ob_start();
+                    imagejpeg($img, null, 50);
+                    $data = ob_get_clean();
 
                     /** @var \Aws\Result $insert */
                     $insert = $spaces->putObject([
                         'Bucket' => $this->get('settings')['spaces']['name'],
                         'Key'    => $filename,
                         'ACL'    => 'public-read',
-                        'Body'   => $uploadedFile->getStream()->getContents()
+                        'Body'   => $data,
+                        'ContentType' => "image/jpeg"
                     ]);
 
                     $objectUrl = $insert->get("ObjectURL");
@@ -268,6 +276,7 @@ $app->post('/uploadImage', function(Request $request, Response $response, array 
         return $response->withJson($error);
     }
 });
+
 
 // UPDATE USER INFO
 $app->put('/user/{id:[0-9]+}',function(Request $request, Response $response, array $args) {
