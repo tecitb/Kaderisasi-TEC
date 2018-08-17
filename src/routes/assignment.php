@@ -100,26 +100,27 @@ $app->get('/assignment/{id:[0-9]+}/submission', function(Request $request, Respo
     }
 
     $sortby = $request->getQueryParam("sort");
+    $sql = "SELECT users.tec_regno AS tec_regno, users.NIM AS NIM, users.name AS name, user_assignment.* FROM user_assignment INNER JOIN users ON  users.id = user_assignment.user_id WHERE assignment_id = :id";
     if(($sortby == null)||($sortby == "")){
-        $sql = "SELECT tec_regno,NIM,name,filename, uploaded_at FROM user_assignment INNER JOIN users ON  users.id = user_assignment.user_id WHERE assignment_id = :id";
+        $sql .= "";
     }
     else if($sortby == "noTEC_asc"){
-        $sql = "SELECT tec_regno,NIM,name,filename, uploaded_at FROM user_assignment INNER JOIN users ON  users.id = user_assignment.user_id WHERE assignment_id = :id ORDER BY `tec_regno` ASC";
+        $sql .= " ORDER BY `tec_regno` ASC";
     }
     else if($sortby == "noTEC_desc"){
-        $sql = "SELECT tec_regno,NIM,name,filename, uploaded_at FROM user_assignment INNER JOIN users ON  users.id = user_assignment.user_id WHERE assignment_id = :id ORDER BY `tec_regno` DESC";
+        $sql .= " ORDER BY `tec_regno` DESC";
     }
     else if($sortby == "nama_asc"){
-        $sql = "SELECT tec_regno,NIM,name,filename, uploaded_at FROM user_assignment INNER JOIN users ON  users.id = user_assignment.user_id WHERE assignment_id = :id ORDER BY `name` ASC";
+        $sql .= " ORDER BY `name` ASC";
     }
     else if($sortby == "nama_desc"){
-        $sql = "SELECT tec_regno,NIM,name,filename, uploaded_at FROM user_assignment INNER JOIN users ON  users.id = user_assignment.user_id WHERE assignment_id = :id ORDER BY `name` DESC";
+        $sql .= " ORDER BY `name` DESC";
     }
     else if($sortby == "waktu_asc"){
-        $sql = "SELECT tec_regno,NIM,name,filename, uploaded_at FROM user_assignment INNER JOIN users ON  users.id = user_assignment.user_id WHERE assignment_id = :id ORDER BY `uploaded_at` ASC";
+        $sql .= " ORDER BY `uploaded_at` ASC";
     }
     else if($sortby == "waktu_desc"){
-        $sql = "SELECT tec_regno,NIM,name,filename, uploaded_at FROM user_assignment INNER JOIN users ON  users.id = user_assignment.user_id WHERE assignment_id = :id ORDER BY `uploaded_at` DESC";
+        $sql .= " ORDER BY `uploaded_at` DESC";
     }
     else{
         $error = ['error' => ['text' => 'invalid parameter']];
@@ -347,25 +348,4 @@ $app->get('/user/{id:[0-9]+}/assignment', function(Request $request, Response $r
     catch (PDOException $e) {
         return $response->withJson(['error'=>['text' => 'Something wrong happened']]);
     }
-});
-
-// DOWNLOAD ASSIGNMENT
-$app->get('/download/assignment/{filename}', function(Request $request, Response $response, array $args) {
-    $directory = $this->get('settings')['assignment_directory'];
-    $filename = $args["filename"];
-    $file = $directory . DIRECTORY_SEPARATOR . $filename;
-    $fh = fopen($file, 'rb');
-
-    $stream = new \Slim\Http\Stream($fh); // create a stream instance for the response body
-
-    return $response->withHeader('Content-Type', 'application/force-download')
-        ->withHeader('Content-Type', 'application/octet-stream')
-        ->withHeader('Content-Type', 'application/download')
-        ->withHeader('Content-Description', 'File Transfer')
-        ->withHeader('Content-Transfer-Encoding', 'binary')
-        ->withHeader('Content-Disposition', 'attachment; filename="' . basename($file) . '"')
-        ->withHeader('Expires', '0')
-        ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
-        ->withHeader('Pragma', 'public')
-        ->withBody($stream);
 });
