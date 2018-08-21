@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Aug 17, 2018 at 01:51 PM
+-- Generation Time: Aug 21, 2018 at 03:42 PM
 -- Server version: 8.0.12
 -- PHP Version: 7.2.5
 
@@ -54,103 +54,6 @@ CREATE TABLE `coupons` (
   `coupon` varchar(255) NOT NULL,
   `lunas` int(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `coupons`
---
-
-INSERT INTO `coupons` (`id`, `coupon`, `lunas`) VALUES
-(1, 'JKZDXOPT', 1),
-(2, 'PLCKEBRL', 1),
-(3, 'IJUGYHOA', 1),
-(5, 'HGDRKVTG', 1),
-(6, 'DTNHCESP', 1),
-(7, 'GYXOEGEX', 1),
-(8, 'LVRFBAVF', 1),
-(9, 'LKAPRZRL', 1),
-(10, 'TUWJTCZY', 1),
-(11, 'SDECIZDM', 1),
-(12, 'MZQFHYKZ', 1),
-(13, 'LLMVXWUH', 1),
-(15, 'KJKHMGYA', 1),
-(16, 'XGZQZPAG', 1),
-(17, 'LBEECWCN', 1),
-(18, 'WDHYKIWW', 1),
-(19, 'RYAOWDOS', 1),
-(20, 'QMLIOMJT', 1),
-(21, 'OGLUQBDL', 1),
-(22, 'DMNEYLWB', 1),
-(23, 'TRIXDOZB', 1),
-(24, 'AFZBUKNT', 1),
-(25, 'XMUWAWGC', 1),
-(26, 'VRKANDFZ', 1),
-(27, 'BNXOVCTQ', 1),
-(28, 'FZBWCGIA', 1),
-(29, 'WKDXPNIN', 1),
-(30, 'QAAPMIYE', 1),
-(31, 'CPJKOQCW', 1),
-(32, 'XMWHKFIK', 1),
-(33, 'OPECIJZK', 1),
-(34, 'MZILLJCM', 1),
-(35, 'XANIUXBK', 1),
-(36, 'UWIYKIFB', 1),
-(37, 'IYFTRKKZ', 1),
-(38, 'FSPPMJOA', 1),
-(39, 'SQXDTUOO', 1),
-(40, 'UUPKATVZ', 1),
-(41, 'NFQZRRHH', 1),
-(42, 'KSDVBBGL', 1),
-(43, 'XDVSCAXN', 1),
-(44, 'JDGAQBFQ', 1),
-(45, 'JOECIPBY', 1),
-(46, 'ISOCFUUG', 1),
-(47, 'SNUMWPFJ', 1),
-(48, 'UDWIACFF', 1),
-(49, 'QYDWBMDA', 1),
-(50, 'WZFZXJXV', 1),
-(51, 'LNJMNOBK', 1),
-(52, 'POREOZVQ', 1),
-(53, 'VVDMOQNJ', 1),
-(54, 'UPLTNEFF', 1),
-(55, 'QFVWZGIA', 1),
-(56, 'MGSPEECR', 1),
-(57, 'PZIQVVWQ', 1),
-(58, 'AMLHYHVE', 1),
-(59, 'ZFFECMIG', 1),
-(60, 'ZEKHELCH', 1),
-(61, 'CENDLHLX', 1),
-(62, 'VUGCAIKJ', 1),
-(63, 'LDBOLRTE', 1),
-(64, 'BNGSNBZR', 1),
-(65, 'DCKNWYDB', 1),
-(66, 'CHXQQJAK', 1),
-(67, 'IMZGFLTG', 1),
-(68, 'WZSXUIHO', 1),
-(69, 'MSQQWMVV', 1),
-(70, 'KWWYFAJW', 1),
-(71, 'CYGHHMMS', 1),
-(72, 'IFCIUOVA', 1),
-(73, 'JJOGMRBS', 1),
-(74, 'WBBWZJAF', 1),
-(75, 'ZQEAZACZ', 1),
-(76, 'SYEVQXLF', 1),
-(77, 'SNQFVAJV', 1),
-(78, 'NFOXSURI', 1),
-(79, 'RNOILHAH', 1),
-(80, 'XAWHZOSC', 1),
-(81, 'URKVLGCR', 1),
-(82, 'LDNQNEKS', 1),
-(83, 'WMAHCSZT', 1),
-(84, 'DCIOXRRZ', 1),
-(85, 'MJUBXLRI', 1),
-(86, 'VIKMUHMO', 1),
-(87, 'VPGFCNCU', 1),
-(88, 'DOGBCCEV', 1),
-(89, 'NQLQXUVO', 1),
-(90, 'THUUNDPH', 1),
-(91, 'NHMCMCNT', 1),
-(92, 'BDXZLFEB', 1),
-(93, 'NDEPTLPY', 1);
 
 -- --------------------------------------------------------
 
@@ -263,7 +166,7 @@ CREATE TABLE `users` (
   `tec_regno` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `address` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `profile_picture` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
-  `profile_picture_url` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `profile_picture_url` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
   `role` int(11) NOT NULL DEFAULT '1',
   `gid` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -273,11 +176,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `NIM`, `created_at`, `updated_at`, `lunas`, `verified`, `isAdmin`, `is_active`, `interests`, `nickname`, `about_me`, `line_id`, `instagram`, `mobile`, `tec_regno`, `address`, `profile_picture`, `profile_picture_url`, `role`, `gid`) VALUES
-(1, 'Terry Djony', 'demokader@tec.itb.ac.id', '$2y$10$nsAWzVA4SZi.Df9INWS.g.EyJKtuHjKugZSYttjwxXtoYJ57UEKpq', 13316014, '2018-05-24 01:10:00', '2018-05-24 01:10:48', 0, 'Yes', 1, 1, '', '', '', '', '', '', 'A17001', '', 'userpic/user_1_71f02111cf64d7a5.png', 'https://tec-test.sgp1.digitaloceanspaces.com/userpic/user_1_71f02111cf64d7a5.png', 1, NULL),
-(2, 'John Terry', 'johnterry@gmail.com', '$2y$10$AcfUvDusmZN5/ZRbWAFHZOswg22gD/UOt.8gFfJy8NAJwaIo0r8Z2', 0, '2018-05-25 10:39:53', '2018-05-25 16:39:54', 0, '659a6d82e0ec8cbb5ac3f60adb9fcaf4', 0, 1, '', '', '', '', '', '', '', '', '', '', 1, NULL),
+(1, 'Terry Djony', 'demokader@tec.itb.ac.id', '$2y$10$nsAWzVA4SZi.Df9INWS.g.EyJKtuHjKugZSYttjwxXtoYJ57UEKpq', 13316014, '2018-05-24 01:10:00', '2018-05-24 01:10:48', 0, 'Yes', 1, 1, 'fnb,artsndesign', 'Terry', 'testetstewttestetsettststes', 'test', 'test', '0818888888', 'A17001', 'Test', 'userpic/user_1_7ce0168cfad5a1c4.jpg', 'https://tec-test.sgp1.digitaloceanspaces.com/userpic/user_1_7ce0168cfad5a1c4.jpg', 1, NULL),
+(2, 'John Terry', 'johnterry@gmail.com', '$2y$10$AcfUvDusmZN5/ZRbWAFHZOswg22gD/UOt.8gFfJy8NAJwaIo0r8Z2', 0, '2018-05-25 10:39:53', '2018-05-25 16:39:54', 0, '659a6d82e0ec8cbb5ac3f60adb9fcaf4', 0, 1, 'tech,financial', 'Terry', 'testt te ste ts et est', 'test', 'test', '09975564250', '', 'testtetstetset', '', '', 1, NULL),
 (3, 'Terry Jhonny', 'terryjhonny@gmail.com', '$2y$10$tG/20YpUK9diSPB75aJfSu.yqr8POHssDIP6fGgb4kEdkxR6sQpDW', 0, '2018-05-25 13:48:49', '2018-05-25 19:48:50', 1, 'fb2206e6c003e65c3dfc00caefd67fcf', 0, 1, '', '', '', '', '', '', '', '', '', '', 1, NULL),
 (4, 'Muhammad Aditya Hilmy', 'didithilmy@gmail.com', '$2y$10$nq6vUexGUmP.noqWQwjAAu05eunkqZ9cYriAYd0Wz.SHiKw4cmnHC', 16517292, '2018-06-23 03:27:06', '2018-06-23 03:27:06', 1, 'c4dd7ea1dd5f70f7ba7da117cb84c271', 0, 1, 'tech,financial', 'Didit', 'Technology enthusiast, problem solver, curious person.', 'webid', 'didithilmy', '087870408551', 'TEC001', 'Jl. Bogor', NULL, '', 1, NULL),
-(5, 'Adyaksa Wisanggeni', 'adyaksa@iwa.ng', '$2y$10$W/sVuNC73RgVexLhMwRMj.jA2rN0th7owX7hrdxn.m2YuAoIAt29G', 16517351, '2018-06-23 03:58:28', '2018-06-23 03:58:28', 1, 'ca2f4a7e9673829acde6eaacb1629912', 0, 1, 'tech,artsndesign', 'Iwang', 'Saya wibu', 'wangky', '-', '08111111111', 'TEC044', 'Tokopedia Tower', 'userpic/user_5_029a1395072f3e1c.jpg', 'https://tec-test.sgp1.digitaloceanspaces.com/userpic/user_5_029a1395072f3e1c.jpg', 1, NULL);
+(5, 'Adyaksa Wisanggeni', 'adyaksa@iwa.ng', '$2y$10$W/sVuNC73RgVexLhMwRMj.jA2rN0th7owX7hrdxn.m2YuAoIAt29G', 16517351, '2018-06-23 03:58:28', '2018-06-23 03:58:28', 1, 'ca2f4a7e9673829acde6eaacb1629912', 0, 1, 'tech,artsndesign', 'Iwang', 'Saya wibu', 'wangky', '-', '08111111111', 'TEC044', 'Tokopedia Tower', 'userpic/user_5_029a1395072f3e1c.jpg', 'https://tec-test.sgp1.digitaloceanspaces.com/userpic/user_5_029a1395072f3e1c.jpg', 1, NULL),
+(9, 'Hermawansyah Hidayat', 'erwan@tec.or.id', '$2y$10$yAhBPe/BY2bd1KSAlQHMHOdzIWJHtcGl3.DHba3uQkXrZ3gbzucAC', 10516010, '2018-08-20 14:11:00', '2018-08-20 14:11:00', 0, 'f2975d4d49e1209ff0754838da8f3877', 0, 1, 'fashion,artsndesign', 'Erwan', 'Meh', 'idtec', 'idtec', '086516625617', 'TEC045', 'Jl. Bandung', NULL, NULL, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -334,7 +238,7 @@ CREATE TABLE `user_memories` (
 --
 
 INSERT INTO `user_memories` (`id`, `user_id`, `memories_with`, `text`, `img_path`, `img_filename`) VALUES
-(1, '1', 'TEC044', 'Iwang is probably the most unusual person I have ever met. As far as I know, he is the most *gaptek* person in STEI 2017, despite having a medal on Computer Science. Yes, computer science. One day he told me that there was a day when he could not get a glass of water just because he was unable to operate the water dispenser in his workplace. A freakin water dispenser. So, my impression to Iwang would be the guy is very much gaptek. He is really smart, though. He was able to solve a CP problem just by brushing his infamous beard. But a guy like that does not go without weakness, as he is very very gaptek.\r\n\r\nNice one wang!', 'https://tec-test.sgp1.digitaloceanspaces.com/memories/1_TEC044_5b744d4eb9bbcb3fd24ae44bed054.jpg', 'memories/1_TEC044_5b744d4eb9bbcb3fd24ae44bed054.jpg');
+(1, '1', 'TEC044', 'Iwang is probably the most unusual person I have ever met. As far as I know, he is the most *gaptek* person in STEI 2017, despite having a medal on Computer Science. Yes, computer science. One day he told me that there was a day when he could not get a glass of water just because he was unable to operate the water dispenser in his workplace. A freakin water dispenser. So, my impression to Iwang would be the guy is very much gaptek. He is really smart, though. He was able to solve a CP problem just by brushing his infamous beard. But a guy like that does not go without weakness, as he is very very gaptek.\r\n\r\nNice one wang! Test', 'https://tec-test.sgp1.digitaloceanspaces.com/memories/1_TEC044_5b7a94262d10b885b8d29c981dddb.jpg', 'memories/1_TEC044_5b7a94262d10b885b8d29c981dddb.jpg');
 
 -- --------------------------------------------------------
 
@@ -508,7 +412,7 @@ ALTER TABLE `assignments`
 -- AUTO_INCREMENT for table `coupons`
 --
 ALTER TABLE `coupons`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `groups`
@@ -532,7 +436,7 @@ ALTER TABLE `quiz`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `user_answer`
