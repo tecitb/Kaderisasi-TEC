@@ -349,3 +349,34 @@ $app->get('/user/{id:[0-9]+}/assignment', function(Request $request, Response $r
         return $response->withJson(['error'=>['text' => 'Something wrong happened']]);
     }
 });
+
+
+// GET ALL USERS ASSIGNMENT
+$app->get('/users/assignments', function(Request $request, Response $response, array $args) {
+
+    if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+      $error = ['error' => ['text' => 'Permission denied']];
+      return $response->withJson($error);
+    }
+
+    try {
+        $db = $this->get('db');
+        $sql = "SELECT `NIM`, `users`.`name`, `tec_regno`, `assignment_id`, `uploaded_at`, `title` as `assignment_title`, `filename`, `file_url` FROM user_assignment INNER JOIN assignments ON `assignments`.`id` = `user_assignment`.`assignment_id` INNER JOIN users ON `user_assignment`.`user_id` = `users`.`id` ORDER BY `uploaded_at` DESC";
+
+        $page = (int) $request->getQueryParam("page");
+        $number_per_items = (int) $request->getQueryParam("items_per_page") ?? 5;
+        if (isset($page)) {
+          $sql .= " LIMIT :limit OFFSET :offset";
+        }
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':limit', $number_per_items, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $number_per_items * ($page - 1), PDO::PARAM_INT);
+        $stmt->execute();
+        $assignments = $stmt->fetchAll();
+        return $response->withJson($assignments);
+    }
+    catch (PDOException $e) {
+        die($e->getMessage());
+        return $response->withJson(['error'=>['text' => 'Something wrong happened']]);
+    }
+});
