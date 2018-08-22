@@ -2,6 +2,8 @@
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Authorization");
+header("X-Env-Hostname: ".gethostname());
+
 if (PHP_SAPI == 'cli-server') {
     // To help the built-in PHP dev server, check if the request was actually for
     // something which should probably be served as a static file
