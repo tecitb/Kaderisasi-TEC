@@ -26,6 +26,12 @@ $app->get('/users', function(Request $request, Response $response, array $args) 
     return $response->withJson($error);
   }
 
+  $page = $request->getQueryParam("page");
+  $number_per_items = $request->getQueryParam("items_per_page") ?? 5;
+  if (isset($page)) {
+    $sql .= " LIMIT " . $number_per_items . " OFFSET " . $number_per_items* ($page - 1);
+  }
+
   try {
     $db = $this->get('db');
     $stmt = $db->query($sql);
