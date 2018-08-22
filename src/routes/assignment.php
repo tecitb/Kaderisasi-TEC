@@ -363,8 +363,8 @@ $app->get('/users/assignments', function(Request $request, Response $response, a
         $db = $this->get('db');
         $sql = "SELECT `NIM`, `users`.`name`, `tec_regno`, `assignment_id`, `uploaded_at`, `title` as `assignment_title`, `filename`, `file_url` FROM user_assignment INNER JOIN assignments ON `assignments`.`id` = `user_assignment`.`assignment_id` INNER JOIN users ON `user_assignment`.`user_id` = `users`.`id` ORDER BY `uploaded_at` DESC";
 
-        $page = (int) $request->getQueryParam("page");
-        $number_per_items = (int) $request->getQueryParam("items_per_page") ?? 5;
+        $page = $request->getQueryParam("page");
+        $number_per_items = $request->getQueryParam("items_per_page") ? (int) $request->getQueryParam("items_per_page") : 5;
         if (isset($page)) {
           $sql .= " LIMIT :limit OFFSET :offset";
         }
