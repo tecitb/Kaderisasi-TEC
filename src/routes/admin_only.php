@@ -412,6 +412,30 @@ $app->delete('/user/{id:[0-9]+}', function(Request $request, Response $response,
 
 });
 
+$app->get('/token/{uid}', function(Request $request, Response $response, array $args) {
+  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+    $error = ['error' => ['text' => 'Permission denied']];
+    return $response->withJson($error);
+  }
+
+  $uid = $args["uid"];
+  $sql = "SELECT `user_id`, `resetToken` as `reset_token` FROM `user_reset` WHERE user_id = :uid";
+  try {
+      $db = $this->get('db');
+      $stmt = $db->prepare($sql);
+      $stmt->execute([
+          ':uid' => $uid
+      ]);
+      $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      return $response->withJson($result);
+  }
+  catch (PDOException $e) {
+      $error = ['error' => ['text' => $e->getMessage()]];
+      return $response->withJson($error);
+  }
+});
+
 // KEMBALIKAN MEMBER TEC, SET is_active ke 1
 $app->post('/user/restore', function(Request $request, Response $response, array $args) {
  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
