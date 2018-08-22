@@ -347,6 +347,78 @@ $app->post('/quiz', function(Request $request, Response $response, array $args) 
  }
 });
 
+// EDIT A QUIZ
+$app->post('/quiz/{qid:[0-9]+}', function(Request $request, Response $response, array $args) {
+ if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+   $error = ['error' => ['text' => 'Permission denied']];
+   return $response->withJson($error);
+ }
+
+ $title = $request->getParam('title');
+
+ $sql = "UPDATE `quiz` SET `title` = :title WHERE `quiz`.`id` = :qid";
+ try {
+   $db = $this->get('db');
+   $stmt = $db->prepare($sql);
+   $stmt->execute([
+     ':title' => $title,
+     ':qid' => $args['qid']
+   ]);
+ }
+ catch (PDOException $e) {
+   $error = ['error' => ['text' => $e->getMessage()]];
+   return $response->withJson($error);
+ }
+
+ $question_answer = $request->getParam('question_answer');
+
+ $data = [];
+ $sql = "";
+
+ foreach ($question_answer as $qa) {
+   if($qa["id"]==-99){
+     $sql.="INSERT INTO `question_answer`(`type`,`question`, `answer`, `decoy`, `created_at`, `quiz_id`) VALUES (?,?,?,?,?,?);";
+     $data[] = $qa['type'];
+     $data[] = $qa['question'];
+     $data[] = $qa['answer'];
+     if($qa['type']=="isian"){
+       $data[] = "";
+     }elseif($qa['type']=="pilgan"){
+       $data[] = implode(", ", $qa['decoy']);
+     }
+
+     $data[] = date("Y-m-d H:i:s");
+     $data[] = $args['qid'];
+   }else{
+     $sql.="UPDATE `question_answer` SET `question` = ?, `answer` = ?, `decoy` = ?, `created_at` = ? WHERE `question_answer`.`id` = ?;";
+
+     $data[] = $qa['question'];
+     $data[] = $qa['answer'];
+     if($qa['type']=="isian"){
+       $data[] = "";
+     }elseif($qa['type']=="pilgan"){
+       $data[] = implode(", ", $qa['decoy']);
+     }
+
+     $data[] = date("Y-m-d H:i:s");
+     $data[] = $qa['id'];
+   }
+ }
+
+ try {
+   $db = $this->get('db');
+   $stmt = $db->prepare($sql);
+   $stmt->execute($data);
+
+   $data = ["notice"=>["type"=>"success", "text" => "Quiz sucessfully added"]];
+   return $response->withJson($data);
+ }
+ catch (PDOException $e) {
+   $error = ['error' => ['text' => $e->getMessage()]];
+   return $response->withJson($error);
+ }
+});
+
 // DELETE A QUIZ
 $app->delete('/quiz/{id:[0-9]+}', function(Request $request, Response $response, array $args) {
  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
@@ -412,6 +484,30 @@ $app->delete('/user/{id:[0-9]+}', function(Request $request, Response $response,
 
 });
 
+$app->get('/token/{uid}', function(Request $request, Response $response, array $args) {
+  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+    $error = ['error' => ['text' => 'Permission denied']];
+    return $response->withJson($error);
+  }
+
+  $uid = $args["uid"];
+  $sql = "SELECT `user_id`, `resetToken` as `reset_token` FROM `user_reset` WHERE user_id = :uid";
+  try {
+      $db = $this->get('db');
+      $stmt = $db->prepare($sql);
+      $stmt->execute([
+          ':uid' => $uid
+      ]);
+      $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      return $response->withJson($result);
+  }
+  catch (PDOException $e) {
+      $error = ['error' => ['text' => $e->getMessage()]];
+      return $response->withJson($error);
+  }
+});
+
 // KEMBALIKAN MEMBER TEC, SET is_active ke 1
 $app->post('/user/restore', function(Request $request, Response $response, array $args) {
  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
@@ -439,4 +535,26 @@ $app->post('/user/restore', function(Request $request, Response $response, array
    return $response->withJson($error);
  }
 
+});
+
+// GET A QUIZ DETAILS
+$app->get('/quiz/{id}/full', function(Request $request, Response $response, array $args) {
+	$sql = "SELECT title, question_answer.id, `type`, `question`, `answer`, `decoy`, `created_at` FROM `question_answer` INNER JOIN quiz ON question_answer.quiz_id = quiz.id WHERE quiz.id = :id";
+
+   try {
+     $db = $this->get('db');
+
+     $stmt = $db->prepare($sql);
+     $stmt->execute([
+       ':id' => $args['id']
+     ]);
+     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+     $db = null;
+
+     return $response->withJson($result);
+   }
+   catch (PDOException $e) {
+     $error = ['error' => ['text' => $e->getMessage()]];
+     return $response->withJson($error);
+   }
 });

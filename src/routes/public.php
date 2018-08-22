@@ -42,7 +42,7 @@ $app->get('/verifyToken/{uid:[0-9]+}', function (Request $request, Response $res
     $tokenUid = $request->getAttribute("jwt")['id'];
 
     if ($uid == $tokenUid){
-        return $this->response->withJson(['status' => "valid"]);
+        return $this->response->withJson(['status' => "valid","isAdmin" => $request->getAttribute("jwt")['isAdmin']]);
     }else {
         return $this->response->withJson(['status' => "invalid"]);
     }
