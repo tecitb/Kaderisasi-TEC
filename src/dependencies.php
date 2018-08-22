@@ -1,6 +1,8 @@
 <?php
 // DIC configuration
 use Aws\S3\S3Client;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 $container = $app->getContainer();
 
@@ -43,3 +45,26 @@ $container['spaces'] = function($c) {
 
     return $client;
 };
+
+$container['mailer'] = function($c) {
+    $settings = $c->get('settings')['smtp'];
+
+    $mail = new PHPMailer(true);
+
+    //Server settings
+    $mail->SMTPDebug = 2;                                 // Enable verbose debug output
+    $mail->isSMTP();                                      // Set mailer to use SMTP
+    $mail->Host = $settings['host'];  // Specify main and backup SMTP servers
+    $mail->SMTPAuth = true;                               // Enable SMTP authentication
+    $mail->Username = $settings['username'];                 // SMTP username
+    $mail->Password = $settings['password'];                           // SMTP password
+    $mail->SMTPSecure = $settings['security'] ?: 'tls';                            // Enable TLS encryption, `ssl` also accepted
+    $mail->Port = $settings['port'];                                    // TCP port to connect to
+
+    //Recipients
+    $mail->setFrom($settings['from_address'], $settings['from_name']);
+    $mail->addReplyTo($settings['reply_to']);
+
+    return $mail;
+};
+

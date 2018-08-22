@@ -31,6 +31,16 @@ return [
             "region" => getenv("DO_SPACES_REGION"),
             "name" => getenv("DO_SPACES_BUCKET_NAME"),
         ],
+        "smtp" => [
+            "host" => getenv("SMTP_HOST") ?: "localhost",
+            "port" => getenv("SMTP_PORT") ?: 587,
+            "security" => getenv("SMTP_SECURITY") ?: "tls",
+            "username" => getenv("SMTP_AUTH_USERNAME") ?: "admin@tec.or.id",
+            "password" => getenv("SMTP_AUTH_PASSWORD") ?: "",
+            "from_address" => getenv("SMTP_FROM_ADDRESS") ?: "admin@tec.or.id",
+            "from_name" => getenv("SMTP_FROM_NAME") ?: "TEC Internship 2018",
+            "reply_to" => getenv("SMTP_REPLY_TO") ?: "internship@tec.or.id",
+        ],
         'profile_directory' =>  dirname(__DIR__) . '/uploads/profile',
         'assignment_directory' =>  dirname(__DIR__) . '/uploads/assignment',
         'memories_directory' =>  dirname(__DIR__) . '/uploads/memories'
