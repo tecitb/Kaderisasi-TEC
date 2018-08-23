@@ -26,9 +26,23 @@ $app->get('/users', function(Request $request, Response $response, array $args) 
     return $response->withJson($error);
   }
 
+  $page = $request->getQueryParam("page");
+  $number_per_items = $request->getQueryParam("items_per_page") ? (int) $request->getQueryParam("items_per_page") : 5;
+  if (isset($page) && filter_var($page, FILTER_VALIDATE_INT)) {
+    $sql .= " LIMIT :limit OFFSET :offset";
+  }
+
   try {
     $db = $this->get('db');
-    $stmt = $db->query($sql);
+    if (isset($page) && filter_var($page, FILTER_VALIDATE_INT)) {
+      $stmt = $db->prepare($sql);
+      $stmt->bindValue(':limit', $number_per_items, PDO::PARAM_INT);
+      $stmt->bindValue(':offset', $number_per_items * ($page - 1), PDO::PARAM_INT);
+      $stmt->execute();
+    }
+    else {
+      $stmt = $db->query($sql);
+    }
     $users = $stmt->fetchAll(PDO::FETCH_OBJ);
     $db = null;
     return $response->withJson($users);
@@ -62,9 +76,23 @@ $app->get('/members', function(Request $request, Response $response, array $args
     return $response->withJson($error);
   }
 
+  $page = $request->getQueryParam("page");
+  $number_per_items = $request->getQueryParam("items_per_page") ? (int) $request->getQueryParam("items_per_page") : 5;
+  if (isset($page) && filter_var($page, FILTER_VALIDATE_INT)) {
+    $sql .= " LIMIT :limit OFFSET :offset";
+  }
+
   try {
     $db = $this->get('db');
-    $stmt = $db->query($sql);
+    if (isset($page) && filter_var($page, FILTER_VALIDATE_INT)) {
+      $stmt = $db->prepare($sql);
+      $stmt->bindValue(':limit', $number_per_items, PDO::PARAM_INT);
+      $stmt->bindValue(':offset', $number_per_items * ($page - 1), PDO::PARAM_INT);
+      $stmt->execute();
+    }
+    else {
+      $stmt = $db->query($sql);
+    }
     $users = $stmt->fetchAll(PDO::FETCH_OBJ);
     $db = null;
     return $response->withJson($users);
