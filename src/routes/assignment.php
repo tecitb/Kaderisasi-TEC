@@ -127,18 +127,47 @@ $app->get('/assignment/{id:[0-9]+}/submission', function(Request $request, Respo
         return $response->withJson($error);
     }
 
+
+
     try {
-        $db = $this->get('db');
+      $db = $this->get('db');
+
+      $page = $request->getQueryParam("page");
+      $number_per_items = $request->getQueryParam("items_per_page") ? (int) $request->getQueryParam("items_per_page") : 5;
+      if (isset($page)) {
+        $sql .= " LIMIT :limit OFFSET :offset";
         $stmt = $db->prepare($sql);
-        $stmt->execute([
-            ':id' => $args['id']
-        ]);
-        $assignments = $stmt->fetchAll(PDO::FETCH_OBJ);
-        $db = null;
-        return $response->withJson($assignments);
+        $stmt->bindValue(':limit', $number_per_items, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $number_per_items * ($page - 1), PDO::PARAM_INT);
+      }else{
+        $stmt = $db->prepare($sql);
+      }
+
+      $stmt->bindValue(':id',$args['id'],PDO::PARAM_INT);
+      $stmt->execute();
+      $assignments = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+      $db = null;
     }
     catch (PDOException $e) {
-        return $response->withJson(['error'=>['text' => 'Something wrong happened']]);
+      $error = ['error' => ['text' => $e->getMessage()]];
+      return $response->withJson($error);
+    }
+
+    try {
+      $db = $this->get('db');
+      $sql = "SELECT COUNT(*) AS jumlah FROM user_assignment WHERE assignment_id = :id";
+      $stmt = $db->prepare($sql);
+      $stmt->bindValue(':id',$args['id'],PDO::PARAM_INT);
+      $stmt->execute();
+      $totalCount = $stmt->fetchAll();
+
+      $db = null;
+      return $response->withJson(["total"=>$totalCount[0]["jumlah"],"data"=>$assignments]);
+    }
+    catch (PDOException $e) {
+      $error = ['error' => ['text' => $e->getMessage()]];
+      return $response->withJson($error);
     }
 });
 
