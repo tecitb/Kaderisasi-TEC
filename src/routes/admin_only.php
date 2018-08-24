@@ -168,11 +168,38 @@ $app->get('/quiz/{qid:[0-9]+}/score', function(Request $request, Response $respo
 
   try {
     $db = $this->get('db');
-    $stmt = $db->prepare($sql);
-    $stmt->execute([":qid" => $args["qid"]]);
+
+    $page = $request->getQueryParam("page");
+    $number_per_items = $request->getQueryParam("items_per_page") ? (int) $request->getQueryParam("items_per_page") : 5;
+    if (isset($page)) {
+      $sql .= " LIMIT :limit OFFSET :offset";
+      $stmt = $db->prepare($sql);
+      $stmt->bindValue(':limit', $number_per_items, PDO::PARAM_INT);
+      $stmt->bindValue(':offset', $number_per_items * ($page - 1), PDO::PARAM_INT);
+    }else{
+      $stmt = $db->prepare($sql);
+    }
+
+    $stmt->bindValue(":qid",$args["qid"],PDO::PARAM_INT);
+    $stmt->execute();
     $quizes = $stmt->fetchAll(PDO::FETCH_OBJ);
     $db = null;
-    return $response->withJson($quizes);
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+
+  try {
+    $db = $this->get('db');
+    $sql = "SELECT COUNT(*) as jumlah FROM `user_score` WHERE quiz_id = :qid";
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':qid',$args['qid'],PDO::PARAM_INT);
+    $stmt->execute();
+    $totalCount = $stmt->fetchAll();
+
+    $db = null;
+    return $response->withJson(["total"=>$totalCount[0]["jumlah"],"data"=>$quizes]);
   }
   catch (PDOException $e) {
     $error = ['error' => ['text' => $e->getMessage()]];
