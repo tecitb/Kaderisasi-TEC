@@ -32,6 +32,8 @@ $app->get('/users', function(Request $request, Response $response, array $args) 
     $sql .= " LIMIT :limit OFFSET :offset";
   }
 
+  $totalCount = 1;
+
   try {
     $db = $this->get('db');
     if (isset($page) && filter_var($page, FILTER_VALIDATE_INT)) {
@@ -43,9 +45,23 @@ $app->get('/users', function(Request $request, Response $response, array $args) 
     else {
       $stmt = $db->query($sql);
     }
+
     $users = $stmt->fetchAll(PDO::FETCH_OBJ);
     $db = null;
-    return $response->withJson($users);
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+
+  try {
+    $db = $this->get('db');
+    $sql = "SELECT COUNT(*) as jumlah FROM users";
+    $stmt = $db->query($sql);
+    $totalCount = $stmt->fetchAll();
+
+    $db = null;
+    return $response->withJson(["total"=>$totalCount[0]["jumlah"],"data"=>$users]);
   }
   catch (PDOException $e) {
     $error = ['error' => ['text' => $e->getMessage()]];
@@ -95,7 +111,20 @@ $app->get('/members', function(Request $request, Response $response, array $args
     }
     $users = $stmt->fetchAll(PDO::FETCH_OBJ);
     $db = null;
-    return $response->withJson($users);
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+
+  try {
+    $db = $this->get('db');
+    $sql = "SELECT COUNT(*) as jumlah FROM users WHERE is_active=1 AND isAdmin = 0";
+    $stmt = $db->query($sql);
+    $totalCount = $stmt->fetchAll();
+
+    $db = null;
+    return $response->withJson(["total"=>$totalCount[0]["jumlah"],"data"=>$users]);
   }
   catch (PDOException $e) {
     $error = ['error' => ['text' => $e->getMessage()]];
