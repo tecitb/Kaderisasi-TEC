@@ -642,3 +642,29 @@ $app->get('/quiz/{id}/full', function(Request $request, Response $response, arra
      return $response->withJson($error);
    }
 });
+
+$app->put('/changepasswd/{user_id}', function(Request $request, Response $response, array $args) {
+    if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+        $error = ['error' => ['text' => 'Permission denied']];
+        return $response->withJson($error);
+    }
+
+    $user_id = $args['user_id'];
+    $new_password = $request->getParam("new_password");
+    try {
+        $db = $this->get('db');
+        $password = password_hash($new_password, PASSWORD_DEFAULT);
+        $stmt = $db->prepare("UPDATE `users` SET password = :password WHERE id = :uid");
+        $stmt->execute([
+            ':password' => $password,
+            ':uid' => $user_id
+        ]);
+
+        $result = ["notice"=>["type"=>"success", "text" => "Password reset success"]];
+        return $response->withJson($result);
+    }
+    catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+    }
+});
