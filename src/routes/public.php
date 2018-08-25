@@ -120,7 +120,7 @@ $app->post('/registration', function(Request $request, Response $response, array
         $result = $stmt->fetch();
 
         if($stmt->rowCount() > 0) {
-            $tecRegNo = substr($result['tec_regno'],4)+1;
+            $tecRegNo = substr($result['tec_regno'],3)+1;
         }
     }
     catch (PDOException $e) {
