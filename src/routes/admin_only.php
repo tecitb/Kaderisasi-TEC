@@ -285,8 +285,16 @@ $app->post('/changeCoupon', function (Request $request, Response $response, arra
     $stmt->bindValue(":cid", $cid ,PDO::PARAM_STR);
     $stmt->execute();
     $db = null;
-    $success = ["notice"=>["type"=>"success"]];
-    return $response->withJson($success);
+
+    if($stmt->rowCount()>0){
+      $success = ["notice"=>["type"=>"success"]];
+      return $response->withJson($success);
+    }else{
+      $success = ["error"=>["text"=>"Kupon tidak valid atau sudah sesuai tipe"]];
+      return $response->withJson($success);
+    }
+
+
  }
  catch (PDOException $e) {
    $error = ['error' => ['text' => $e->getMessage()]];
