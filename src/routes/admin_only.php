@@ -26,6 +26,16 @@ $app->get('/users', function(Request $request, Response $response, array $args) 
     return $response->withJson($error);
   }
 
+  $sql .= " WHERE name LIKE :query";
+
+  $searchQuery = $request->getQueryParam("query");
+
+  if(($searchQuery == null)||($searchQuery == "")){
+    $searchQuery = "%%";
+  }else{
+    $searchQuery = "%".$searchQuery."%";
+  }
+
   $page = $request->getQueryParam("page");
   $number_per_items = $request->getQueryParam("items_per_page") ? (int) $request->getQueryParam("items_per_page") : 5;
   if (isset($page) && filter_var($page, FILTER_VALIDATE_INT)) {
@@ -37,13 +47,18 @@ $app->get('/users', function(Request $request, Response $response, array $args) 
   try {
     $db = $this->get('db');
     if (isset($page) && filter_var($page, FILTER_VALIDATE_INT)) {
+
       $stmt = $db->prepare($sql);
       $stmt->bindValue(':limit', $number_per_items, PDO::PARAM_INT);
       $stmt->bindValue(':offset', $number_per_items * ($page - 1), PDO::PARAM_INT);
+      $stmt->bindValue(':query', $searchQuery, PDO::PARAM_STR);
       $stmt->execute();
     }
     else {
-      $stmt = $db->query($sql);
+      $stmt = $db->prepare($sql);
+      $stmt->bindValue(':query', $searchQuery, PDO::PARAM_STR);
+      $stmt->execute();
+
     }
 
     $users = $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -56,8 +71,11 @@ $app->get('/users', function(Request $request, Response $response, array $args) 
 
   try {
     $db = $this->get('db');
-    $sql = "SELECT COUNT(*) as jumlah FROM users";
-    $stmt = $db->query($sql);
+    $sql = "SELECT COUNT(*) as jumlah FROM users WHERE name LIKE :query";
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':query', $searchQuery, PDO::PARAM_STR);
+    $stmt->execute();
+
     $totalCount = $stmt->fetchAll();
 
     $db = null;
@@ -78,18 +96,26 @@ $app->get('/members', function(Request $request, Response $response, array $args
 
   $sortby = $request->getQueryParam("sort");
   if(($sortby == null)||($sortby == "")){
-    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1 AND isAdmin = 0";
+    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1 AND isAdmin = 0 AND name LIKE :query";
   }else if($sortby == "noTEC_asc"){
-    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 ORDER BY tec_regno ASC";
+    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 AND name LIKE :query ORDER BY tec_regno ASC";
   }else if($sortby == "noTEC_desc"){
-    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 ORDER BY tec_regno DESC";
+    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 AND name LIKE :query ORDER BY tec_regno DESC";
   }else if($sortby == "nama_asc"){
-    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 ORDER BY name ASC";
+    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 AND name LIKE :query ORDER BY name ASC";
   }else if($sortby == "nama_desc"){
-    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 ORDER BY name DESC";
+    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 AND name LIKE :query ORDER BY name DESC";
   }else{
     $error = ['error' => ['text' => 'invalid parameter']];
     return $response->withJson($error);
+  }
+
+  $searchQuery = $request->getQueryParam("query");
+
+  if(($searchQuery == null)||($searchQuery == "")){
+    $searchQuery = "%%";
+  }else{
+    $searchQuery = "%".$searchQuery."%";
   }
 
   $page = $request->getQueryParam("page");
@@ -104,11 +130,15 @@ $app->get('/members', function(Request $request, Response $response, array $args
       $stmt = $db->prepare($sql);
       $stmt->bindValue(':limit', $number_per_items, PDO::PARAM_INT);
       $stmt->bindValue(':offset', $number_per_items * ($page - 1), PDO::PARAM_INT);
+      $stmt->bindValue(':query', $searchQuery, PDO::PARAM_STR);
       $stmt->execute();
     }
     else {
-      $stmt = $db->query($sql);
+      $stmt = $db->prepare($sql);
+      $stmt->bindValue(':query', $searchQuery, PDO::PARAM_STR);
+      $stmt->execute();
     }
+
     $users = $stmt->fetchAll(PDO::FETCH_OBJ);
     $db = null;
   }
@@ -119,8 +149,10 @@ $app->get('/members', function(Request $request, Response $response, array $args
 
   try {
     $db = $this->get('db');
-    $sql = "SELECT COUNT(*) as jumlah FROM users WHERE is_active=1 AND isAdmin = 0";
-    $stmt = $db->query($sql);
+    $sql = "SELECT COUNT(*) as jumlah FROM users WHERE is_active=1 AND isAdmin=0 AND name LIKE :query";
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':query', $searchQuery, PDO::PARAM_STR);
+    $stmt->execute();
     $totalCount = $stmt->fetchAll();
 
     $db = null;
