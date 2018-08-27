@@ -6,7 +6,7 @@ use Slim\Http\UploadedFile;
 use Aws\S3\S3Client;
 
 // GET USER INFO
-$app->get('/linegroupredir',function(Request $request, Response $response, array $args) {
+$app->get('/linegrouprlinegrouprediredir',function(Request $request, Response $response, array $args) {
     $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture`, `profile_picture_url`, `is_active`,`gid` FROM `users` WHERE id=:id";
 
     try {
