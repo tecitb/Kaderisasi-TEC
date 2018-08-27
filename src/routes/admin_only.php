@@ -10,23 +10,27 @@ $app->get('/users', function(Request $request, Response $response, array $args) 
      return $response->withJson($error);
   }
 
-  $sortby = $request->getQueryParam("sort");
-  if(($sortby == null)||($sortby == "")){
-    $sql = "SELECT id, name, email, created_at, tec_regno, updated_at, lunas, isAdmin, is_active FROM users";
-  }else if($sortby == "noTEC_asc"){
-    $sql = "SELECT id, name, email, created_at, tec_regno, updated_at, lunas, isAdmin, is_active FROM users ORDER BY tec_regno ASC";
-  }else if($sortby == "noTEC_desc"){
-    $sql = "SELECT id, name, email, created_at, tec_regno, updated_at, lunas, isAdmin, is_active FROM users ORDER BY tec_regno DESC";
-  }else if($sortby == "nama_asc"){
-    $sql = "SELECT id, name, email, created_at, tec_regno, updated_at, lunas, isAdmin, is_active FROM users ORDER BY name ASC";
-  }else if($sortby == "nama_desc"){
-    $sql = "SELECT id, name, email, created_at, tec_regno, updated_at, lunas, isAdmin, is_active FROM users ORDER BY name DESC";
+  $sql = "SELECT id, name, email, created_at, tec_regno, updated_at, lunas, isAdmin, is_active FROM users";
+
+  $searchType = $request->getQueryParam("queryType");
+  if(($searchType == null)||($searchType == "")){
+    $sql .= " WHERE name LIKE :query";
+  }else if($searchType == "name"){
+    $sql .= " WHERE name LIKE :query";
+  }else if($searchType == "email"){
+    $sql .= " WHERE email LIKE :query";
+  }else if($searchType == "tec_regno"){
+    $sql .= " WHERE tec_regno LIKE :query";
+  }else if($searchType == "line"){
+    $sql .= " WHERE line_id LIKE :query";
+  }else if($searchType == "phone"){
+    $sql .= " WHERE mobile LIKE :query";
+  }else if($searchType == "instagram"){
+    $sql .= " WHERE instagram LIKE :query";
   }else{
-    $error = ['error' => ['text' => 'invalid parameter']];
+    $error = ['error' => ['text' => 'invalid parameter (queryType)']];
     return $response->withJson($error);
   }
-
-  $sql .= " WHERE name LIKE :query";
 
   $searchQuery = $request->getQueryParam("query");
 
@@ -34,6 +38,22 @@ $app->get('/users', function(Request $request, Response $response, array $args) 
     $searchQuery = "%%";
   }else{
     $searchQuery = "%".$searchQuery."%";
+  }
+
+  $sortby = $request->getQueryParam("sort");
+  if(($sortby == null)||($sortby == "")){
+
+  }else if($sortby == "noTEC_asc"){
+    $sql .= " ORDER BY tec_regno ASC";
+  }else if($sortby == "noTEC_desc"){
+    $sql .= " ORDER BY tec_regno DESC";
+  }else if($sortby == "nama_asc"){
+    $sql .= " ORDER BY name ASC";
+  }else if($sortby == "nama_desc"){
+    $sql .= " ORDER BY name DESC";
+  }else{
+    $error = ['error' => ['text' => 'invalid parameter (sort)']];
+    return $response->withJson($error);
   }
 
   $page = $request->getQueryParam("page");
@@ -94,19 +114,41 @@ $app->get('/members', function(Request $request, Response $response, array $args
      return $response->withJson($error);
   }
 
+  $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1 AND isAdmin = 0";
+
+  $searchType = $request->getQueryParam("queryType");
+  if(($searchType == null)||($searchType == "")){
+    $sql .= " AND name LIKE :query";
+  }else if($searchType == "name"){
+    $sql .= " AND name LIKE :query";
+  }else if($searchType == "email"){
+    $sql .= " AND email LIKE :query";
+  }else if($searchType == "tec_regno"){
+    $sql .= " AND tec_regno LIKE :query";
+  }else if($searchType == "line"){
+    $sql .= " AND line_id LIKE :query";
+  }else if($searchType == "phone"){
+    $sql .= " AND mobile LIKE :query";
+  }else if($searchType == "instagram"){
+    $sql .= " AND instagram LIKE :query";
+  }else{
+    $error = ['error' => ['text' => 'invalid parameter (queryType)']];
+    return $response->withJson($error);
+  }
+
   $sortby = $request->getQueryParam("sort");
   if(($sortby == null)||($sortby == "")){
-    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1 AND isAdmin = 0 AND name LIKE :query";
+
   }else if($sortby == "noTEC_asc"){
-    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 AND name LIKE :query ORDER BY tec_regno ASC";
+    $sql .= " ORDER BY tec_regno ASC";
   }else if($sortby == "noTEC_desc"){
-    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 AND name LIKE :query ORDER BY tec_regno DESC";
+    $sql .= " ORDER BY tec_regno DESC";
   }else if($sortby == "nama_asc"){
-    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 AND name LIKE :query ORDER BY name ASC";
+    $sql .= " ORDER BY name ASC";
   }else if($sortby == "nama_desc"){
-    $sql = "SELECT id, tec_regno, name, email, created_at, updated_at, lunas FROM users WHERE is_active=1  AND isAdmin = 0 AND name LIKE :query ORDER BY name DESC";
+    $sql .= " ORDER BY name DESC";
   }else{
-    $error = ['error' => ['text' => 'invalid parameter']];
+    $error = ['error' => ['text' => 'invalid parameter (sort)']];
     return $response->withJson($error);
   }
 
