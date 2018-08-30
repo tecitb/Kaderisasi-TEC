@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -6,7 +6,7 @@ use \Firebase\JWT\JWT;
 
 
 // GET A QUIZ DETAILS
-$app->get('/quiz/{id}', function(Request $request, Response $response, array $args) {
+$app->get('/quiz/{id:[0-9]+}', function(Request $request, Response $response, array $args) {
 	$sql = "SELECT title, question_answer.id, `type`, `question`, `answer`, `decoy`, `created_at` FROM `question_answer` INNER JOIN quiz ON question_answer.quiz_id = quiz.id WHERE quiz.id = :id";
 
    try {
@@ -69,7 +69,6 @@ $app->get('/quiz', function(Request $request, Response $response, array $args) {
    }
 });
 
-
 // Kirim jawaban user untuk diproses
 $app->post('/answer', function(Request $request, Response $response, array $args) {
 
@@ -91,7 +90,7 @@ $app->post('/answer', function(Request $request, Response $response, array $args
     $stmt = $db->prepare($sql);
     $stmt->execute([':user_id' => $user_id, ':quiz_id'=>$quiz_id]);
     $result = $stmt->fetch();
-    
+
     if($result['sudah_jawab'] == 1) {
       return $response->withJson(['error'=>['text' => 'Kuis hanya dapat dijawab sekali']]);
     }

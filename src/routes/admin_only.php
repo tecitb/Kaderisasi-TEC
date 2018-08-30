@@ -3,6 +3,8 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use \Firebase\JWT\JWT;
 
+//USER ADMIN GROUP
+
 // GET ALL USERS
 $app->get('/users', function(Request $request, Response $response, array $args) {
   if ($request->getAttribute("jwt")['isAdmin'] != 1) {
@@ -206,81 +208,6 @@ $app->get('/members', function(Request $request, Response $response, array $args
   }
 });
 
-// GET ALL QUIZ RESULT
-$app->get('/quiz/{qid:[0-9]+}/score', function(Request $request, Response $response, array $args) {
-  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
-     $error = ['error' => ['text' => 'Permission denied']];
-     return $response->withJson($error);
-  }
-
-    $sortby = $request->getQueryParam("sort");
-  if(($sortby == null)||($sortby == "")){
-    $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid";
-  }
-  else if($sortby == "noTEC_asc"){
-    $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `tec_regno` ASC";
-  }
-  else if($sortby == "noTEC_desc"){
-     $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `tec_regno` DESC";
-  }
-  else if($sortby == "nama_asc"){
-     $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `name` ASC";
-  }
-  else if($sortby == "nama_desc"){
-     $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `name` DESC";
-  }
-  else if($sortby == "score_asc"){
-     $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `score` ASC";
-  }
-  else if($sortby == "score_desc"){
-     $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `score` DESC";
-  }
-  else{
-    $error = ['error' => ['text' => 'invalid parameter']];
-    return $response->withJson($error);
-  }
-
-  try {
-    $db = $this->get('db');
-
-    $page = $request->getQueryParam("page");
-    $number_per_items = $request->getQueryParam("items_per_page") ? (int) $request->getQueryParam("items_per_page") : 5;
-    if (isset($page)) {
-      $sql .= " LIMIT :limit OFFSET :offset";
-      $stmt = $db->prepare($sql);
-      $stmt->bindValue(':limit', $number_per_items, PDO::PARAM_INT);
-      $stmt->bindValue(':offset', $number_per_items * ($page - 1), PDO::PARAM_INT);
-    }else{
-      $stmt = $db->prepare($sql);
-    }
-
-    $stmt->bindValue(":qid",$args["qid"],PDO::PARAM_INT);
-    $stmt->execute();
-    $quizes = $stmt->fetchAll(PDO::FETCH_OBJ);
-    $db = null;
-  }
-  catch (PDOException $e) {
-    $error = ['error' => ['text' => $e->getMessage()]];
-    return $response->withJson($error);
-  }
-
-  try {
-    $db = $this->get('db');
-    $sql = "SELECT COUNT(*) as jumlah FROM `user_score` WHERE quiz_id = :qid";
-    $stmt = $db->prepare($sql);
-    $stmt->bindValue(':qid',$args['qid'],PDO::PARAM_INT);
-    $stmt->execute();
-    $totalCount = $stmt->fetchAll();
-
-    $db = null;
-    return $response->withJson(["total"=>$totalCount[0]["jumlah"],"data"=>$quizes]);
-  }
-  catch (PDOException $e) {
-    $error = ['error' => ['text' => $e->getMessage()]];
-    return $response->withJson($error);
-  }
-});
-
 // GET USER RESULT IN A QUIZ
 $app->get('/user/{uid:[0-9]+}/quiz/{qid:[0-9]+}', function(Request $request, Response $response, array $args) {
    if ($request->getAttribute("jwt")['isAdmin'] != 1) {
@@ -306,6 +233,89 @@ $app->get('/user/{uid:[0-9]+}/quiz/{qid:[0-9]+}', function(Request $request, Res
    return $response->withJson($error);
  }
 });
+
+$app->put('/changepasswd/{user_id}', function(Request $request, Response $response, array $args) {
+    if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+        $error = ['error' => ['text' => 'Permission denied']];
+        return $response->withJson($error);
+    }
+
+    $user_id = $args['user_id'];
+    $new_password = $request->getParam("new_password");
+    try {
+        $db = $this->get('db');
+        $password = password_hash($new_password, PASSWORD_DEFAULT);
+        $stmt = $db->prepare("UPDATE `users` SET password = :password WHERE id = :uid");
+        $stmt->execute([
+            ':password' => $password,
+            ':uid' => $user_id
+        ]);
+
+        $result = ["notice"=>["type"=>"success", "text" => "Password reset success"]];
+        return $response->withJson($result);
+    }
+    catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+    }
+});
+
+$app->get('/token/{uid}', function(Request $request, Response $response, array $args) {
+  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+    $error = ['error' => ['text' => 'Permission denied']];
+    return $response->withJson($error);
+  }
+
+  $uid = $args["uid"];
+  $sql = "SELECT `user_id`, `resetToken` as `reset_token` FROM `user_reset` WHERE user_id = :uid";
+  try {
+      $db = $this->get('db');
+      $stmt = $db->prepare($sql);
+      $stmt->execute([
+          ':uid' => $uid
+      ]);
+      $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      return $response->withJson($result);
+  }
+  catch (PDOException $e) {
+      $error = ['error' => ['text' => $e->getMessage()]];
+      return $response->withJson($error);
+  }
+});
+
+// KEMBALIKAN MEMBER TEC, SET is_active ke 1
+$app->post('/user/restore', function(Request $request, Response $response, array $args) {
+ if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+   $error = ['error' => ['text' => 'Permission denied']];
+   return $response->withJson($error);
+ }
+
+ $id = $request->getParam('uid');
+
+ if (empty($id) || filter_var($id, FILTER_VALIDATE_INT) === FALSE) {
+   die('Invalid ID');
+ }
+
+ try {
+  $db = $this->get('db');
+
+  $stmt = $db->prepare('UPDATE users SET is_active = 1 WHERE id = :id AND isAdmin = 0');
+  $stmt->execute([':id' => $id]);
+
+  $data = ["notice"=>["type"=>"success", "text" => "Member sukses dikembalikan"]];
+  return $response->withJson($data);
+ }
+ catch (PDOException $exception) {
+   $error = ['error' => ['text' => $e->getMessage()]];
+   return $response->withJson($error);
+ }
+
+});
+
+
+
+// COUPON ADMIN GROUP
 
 // GET COUPONS
 $app->get('/getCoupon/{num:[0-9]+}', function (Request $request, Response $response, array $args) {
@@ -451,6 +461,85 @@ $app->post('/generateCoupon/{num:[0-9]+}', function (Request $request, Response 
    $error = ['error' => ['text' => $e->getMessage()]];
    return $response->withJson($error);
  }
+});
+
+
+
+// QUIZ ADMIN GROUP
+
+// GET ALL QUIZ RESULT
+$app->get('/quiz/{qid:[0-9]+}/score', function(Request $request, Response $response, array $args) {
+  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+     $error = ['error' => ['text' => 'Permission denied']];
+     return $response->withJson($error);
+  }
+
+    $sortby = $request->getQueryParam("sort");
+  if(($sortby == null)||($sortby == "")){
+    $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid";
+  }
+  else if($sortby == "noTEC_asc"){
+    $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `tec_regno` ASC";
+  }
+  else if($sortby == "noTEC_desc"){
+     $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `tec_regno` DESC";
+  }
+  else if($sortby == "nama_asc"){
+     $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `name` ASC";
+  }
+  else if($sortby == "nama_desc"){
+     $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `name` DESC";
+  }
+  else if($sortby == "score_asc"){
+     $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `score` ASC";
+  }
+  else if($sortby == "score_desc"){
+     $sql = "SELECT `user_id`,`tec_regno`,`NIM`,`name`,`score` FROM `user_score` INNER JOIN `users` ON `user_score`.user_id = `users`.id WHERE quiz_id = :qid ORDER BY `score` DESC";
+  }
+  else{
+    $error = ['error' => ['text' => 'invalid parameter']];
+    return $response->withJson($error);
+  }
+
+  try {
+    $db = $this->get('db');
+
+    $page = $request->getQueryParam("page");
+    $number_per_items = $request->getQueryParam("items_per_page") ? (int) $request->getQueryParam("items_per_page") : 5;
+    if (isset($page)) {
+      $sql .= " LIMIT :limit OFFSET :offset";
+      $stmt = $db->prepare($sql);
+      $stmt->bindValue(':limit', $number_per_items, PDO::PARAM_INT);
+      $stmt->bindValue(':offset', $number_per_items * ($page - 1), PDO::PARAM_INT);
+    }else{
+      $stmt = $db->prepare($sql);
+    }
+
+    $stmt->bindValue(":qid",$args["qid"],PDO::PARAM_INT);
+    $stmt->execute();
+    $quizes = $stmt->fetchAll(PDO::FETCH_OBJ);
+    $db = null;
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+
+  try {
+    $db = $this->get('db');
+    $sql = "SELECT COUNT(*) as jumlah FROM `user_score` WHERE quiz_id = :qid";
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':qid',$args['qid'],PDO::PARAM_INT);
+    $stmt->execute();
+    $totalCount = $stmt->fetchAll();
+
+    $db = null;
+    return $response->withJson(["total"=>$totalCount[0]["jumlah"],"data"=>$quizes]);
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
 });
 
 // CREATE A QUIZ
@@ -620,6 +709,68 @@ $app->delete('/quiz/{id:[0-9]+}', function(Request $request, Response $response,
 
 });
 
+//Close submission
+$app->post('/quiz/{id:[0-9]+}/close', function(Request $request, Response $response, array $args) {
+  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+    $error = ['error' => ['text' => 'Permission denied']];
+    return $response->withJson($error);
+  }
+
+  $sql = "UPDATE `quiz` SET `isOpen` = '0' WHERE `quiz`.`id` = :id";
+  try {
+    $db = $this->get('db');
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':id', $args['id'], PDO::PARAM_INT);
+    $stmt->execute();
+
+    $db = null;
+
+    if($stmt->rowCount()>0){
+      $success = ["notice"=>["type"=>"success"]];
+      return $response->withJson($success);
+    }else{
+      $success = ["notice"=>["type"=>"error","text"=>"No row affected"]];
+      return $response->withJson($success);
+    }
+  }
+  catch (PDOException $e) {
+    $error = ['notice' => ["type"=>"error",'text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+});
+
+//Reopen submission
+$app->post('/quiz/{id:[0-9]+}/open', function(Request $request, Response $response, array $args) {
+  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+    $error = ['error' => ['text' => 'Permission denied']];
+    return $response->withJson($error);
+  }
+
+  $sql = "UPDATE `quiz` SET `isOpen` = '1' WHERE `quiz`.`id` = :id";
+  try {
+    $db = $this->get('db');
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':id', $args['id'], PDO::PARAM_INT);
+    $stmt->execute();
+
+    $db = null;
+
+    if($stmt->rowCount()>0){
+      $success = ["notice"=>["type"=>"success"]];
+      return $response->withJson($success);
+    }else{
+      $success = ["notice"=>["type"=>"error","text"=>"No row affected"]];
+      return $response->withJson($success);
+    }
+  }
+  catch (PDOException $e) {
+    $error = ['notice' => ["type"=>"error",'text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+});
+
 
 // CORET MEMBER TEC, SET is_active ke 0
 $app->delete('/user/{id:[0-9]+}', function(Request $request, Response $response, array $args) {
@@ -650,59 +801,6 @@ $app->delete('/user/{id:[0-9]+}', function(Request $request, Response $response,
 
 });
 
-$app->get('/token/{uid}', function(Request $request, Response $response, array $args) {
-  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
-    $error = ['error' => ['text' => 'Permission denied']];
-    return $response->withJson($error);
-  }
-
-  $uid = $args["uid"];
-  $sql = "SELECT `user_id`, `resetToken` as `reset_token` FROM `user_reset` WHERE user_id = :uid";
-  try {
-      $db = $this->get('db');
-      $stmt = $db->prepare($sql);
-      $stmt->execute([
-          ':uid' => $uid
-      ]);
-      $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-      return $response->withJson($result);
-  }
-  catch (PDOException $e) {
-      $error = ['error' => ['text' => $e->getMessage()]];
-      return $response->withJson($error);
-  }
-});
-
-// KEMBALIKAN MEMBER TEC, SET is_active ke 1
-$app->post('/user/restore', function(Request $request, Response $response, array $args) {
- if ($request->getAttribute("jwt")['isAdmin'] != 1) {
-   $error = ['error' => ['text' => 'Permission denied']];
-   return $response->withJson($error);
- }
-
- $id = $request->getParam('uid');
-
- if (empty($id) || filter_var($id, FILTER_VALIDATE_INT) === FALSE) {
-   die('Invalid ID');
- }
-
- try {
-  $db = $this->get('db');
-
-  $stmt = $db->prepare('UPDATE users SET is_active = 1 WHERE id = :id AND isAdmin = 0');
-  $stmt->execute([':id' => $id]);
-
-  $data = ["notice"=>["type"=>"success", "text" => "Member sukses dikembalikan"]];
-  return $response->withJson($data);
- }
- catch (PDOException $exception) {
-   $error = ['error' => ['text' => $e->getMessage()]];
-   return $response->withJson($error);
- }
-
-});
-
 // GET A QUIZ DETAILS
 $app->get('/quiz/{id}/full', function(Request $request, Response $response, array $args) {
 	$sql = "SELECT title, question_answer.id, `type`, `question`, `answer`, `decoy`, `created_at` FROM `question_answer` INNER JOIN quiz ON question_answer.quiz_id = quiz.id WHERE quiz.id = :id";
@@ -723,30 +821,4 @@ $app->get('/quiz/{id}/full', function(Request $request, Response $response, arra
      $error = ['error' => ['text' => $e->getMessage()]];
      return $response->withJson($error);
    }
-});
-
-$app->put('/changepasswd/{user_id}', function(Request $request, Response $response, array $args) {
-    if ($request->getAttribute("jwt")['isAdmin'] != 1) {
-        $error = ['error' => ['text' => 'Permission denied']];
-        return $response->withJson($error);
-    }
-
-    $user_id = $args['user_id'];
-    $new_password = $request->getParam("new_password");
-    try {
-        $db = $this->get('db');
-        $password = password_hash($new_password, PASSWORD_DEFAULT);
-        $stmt = $db->prepare("UPDATE `users` SET password = :password WHERE id = :uid");
-        $stmt->execute([
-            ':password' => $password,
-            ':uid' => $user_id
-        ]);
-
-        $result = ["notice"=>["type"=>"success", "text" => "Password reset success"]];
-        return $response->withJson($result);
-    }
-    catch (PDOException $e) {
-        $error = ['error' => ['text' => $e->getMessage()]];
-        return $response->withJson($error);
-    }
 });
