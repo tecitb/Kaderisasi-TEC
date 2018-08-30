@@ -54,7 +54,7 @@ $app->get('/user/regno/{id}',function(Request $request, Response $response, arra
         return $response->withJson($error);
     }
 
-    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture`,`is_active`,`gid` FROM `users` WHERE tec_regno=:id";
+    $sql = "SELECT `id`,`name`,`email`,`created_at`,`updated_at`,`lunas`,`verified`,`isAdmin`,`interests`,`nickname`,`about_me`,`line_id`,`instagram`,`mobile`,`tec_regno`,`address`, `NIM`, `profile_picture`, `profile_picture_url`, `is_active`,`gid` FROM `users` WHERE tec_regno=:id";
 
     try {
         $db = $this->get('db');
