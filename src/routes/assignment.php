@@ -171,12 +171,74 @@ $app->get('/assignment/{id:[0-9]+}/submission', function(Request $request, Respo
     }
 });
 
+//Close submission
+$app->post('/assignment/{id:[0-9]+}/close', function(Request $request, Response $response, array $args) {
+  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+    $error = ['error' => ['text' => 'Permission denied']];
+    return $response->withJson($error);
+  }
+
+  $sql = "UPDATE `assignments` SET `isOpen` = '0' WHERE `assignments`.`id` = :id";
+  try {
+    $db = $this->get('db');
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':id', $args['id'], PDO::PARAM_INT);
+    $stmt->execute();
+
+    $db = null;
+
+    if($stmt->rowCount()>0){
+      $success = ["notice"=>["type"=>"success"]];
+      return $response->withJson($success);
+    }else{
+      $success = ["notice"=>["type"=>"error","text"=>"No row affected"]];
+      return $response->withJson($success);
+    }
+  }
+  catch (PDOException $e) {
+    $error = ['notice' => ["type"=>"error",'text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+});
+
+//Reopen submission
+$app->post('/assignment/{id:[0-9]+}/open', function(Request $request, Response $response, array $args) {
+  if ($request->getAttribute("jwt")['isAdmin'] != 1) {
+    $error = ['error' => ['text' => 'Permission denied']];
+    return $response->withJson($error);
+  }
+
+  $sql = "UPDATE `assignments` SET `isOpen` = '1' WHERE `assignments`.`id` = :id";
+  try {
+    $db = $this->get('db');
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':id', $args['id'], PDO::PARAM_INT);
+    $stmt->execute();
+
+    $db = null;
+
+    if($stmt->rowCount()>0){
+      $success = ["notice"=>["type"=>"success"]];
+      return $response->withJson($success);
+    }else{
+      $success = ["notice"=>["type"=>"error","text"=>"No row affected"]];
+      return $response->withJson($success);
+    }
+  }
+  catch (PDOException $e) {
+    $error = ['notice' => ["type"=>"error",'text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+});
+
 
 // GET ALL ASSIGNMENT
 
 $app->get('/assignment', function(Request $request, Response $response, array $args) {
 
-    $sql = "SELECT `id`,`title`,`description` FROM `assignments`";
+    $sql = "SELECT `id`,`title`,`description`,`isOpen` FROM `assignments`";
     try {
         $db = $this->get('db');
         $stmt = $db->prepare($sql);
@@ -215,7 +277,7 @@ $app->get('/assignment/{id:[0-9]+}', function(Request $request, Response $respon
 
     $id = $args['id'];
 
-    $sql = "SELECT `id`,`title`,`description` FROM `assignments` WHERE `id` = :id";
+    $sql = "SELECT `id`,`title`,`description`,`isOpen` FROM `assignments` WHERE `id` = :id";
     try {
         $db = $this->get('db');
         $stmt = $db->prepare($sql);
@@ -225,6 +287,12 @@ $app->get('/assignment/{id:[0-9]+}', function(Request $request, Response $respon
 
         $assignment = $stmt->fetch(PDO::FETCH_OBJ);
         $db = null;
+
+        if($assignment->isOpen==0){
+          $error = ['error' => ['text' => "Assignment sudah tidak menerima upload"]];
+          return $response->withJson($error);
+        }
+
         return $response->withJson($assignment);
     }
     catch (PDOException $e) {
@@ -238,6 +306,23 @@ $app->get('/assignment/{id:[0-9]+}', function(Request $request, Response $respon
 $app->post('/user/assignment/{id:[0-9]+}', function(Request $request, Response $response, array $args) {
     $id = $args["id"];
     $user_id = $request->getAttribute("jwt")['id'];
+
+    $sql = "SELECT * FROM `assignments` WHERE id = :aid";
+
+    try {
+      $db = $this->get('db');
+      $stmt = $db->prepare($sql);
+      $stmt->execute([':aid'=>$id]);
+      $result = $stmt->fetch();
+
+      if($result['isOpen'] == 0) {
+        return $response->withJson(['error'=>['text' => 'Assignment sudah tidak menerima upload']]);
+      }
+    }
+    catch (PDOException $e) {
+      $error = ['error' => ['text' => $e->getMessage()]];
+      return $response->withJson($error);
+    }
 
     /** @var Aws\S3\S3Client $spaces */
     $spaces = $this->spaces;

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -6,8 +6,8 @@ use \Firebase\JWT\JWT;
 
 
 // GET A QUIZ DETAILS
-$app->get('/quiz/{id}', function(Request $request, Response $response, array $args) {
-	$sql = "SELECT title, question_answer.id, `type`, `question`, `answer`, `decoy`, `created_at` FROM `question_answer` INNER JOIN quiz ON question_answer.quiz_id = quiz.id WHERE quiz.id = :id";
+$app->get('/quiz/{id:[0-9]+}', function(Request $request, Response $response, array $args) {
+	$sql = "SELECT title, question_answer.id, `type`,`isOpen`, `question`, `answer`, `decoy`, `created_at` FROM `question_answer` INNER JOIN quiz ON question_answer.quiz_id = quiz.id WHERE quiz.id = :id";
 
    try {
      $db = $this->get('db');
@@ -19,6 +19,10 @@ $app->get('/quiz/{id}', function(Request $request, Response $response, array $ar
      $result = $stmt->fetchAll(PDO::FETCH_OBJ);
      $db = null;
      foreach ($result as $quiz) {
+      if($quiz->isOpen == 0){
+        $error = ['error' => ['text' => "Kuis sudah tutup"]];
+        return $response->withJson($error);
+      }
       if($quiz->type == "pilgan") {
         $quiz->option = array_merge(explode(", ", $quiz->decoy), [$quiz->answer]);
         shuffle($quiz->option);
@@ -69,7 +73,6 @@ $app->get('/quiz', function(Request $request, Response $response, array $args) {
    }
 });
 
-
 // Kirim jawaban user untuk diproses
 $app->post('/answer', function(Request $request, Response $response, array $args) {
 
@@ -82,6 +85,25 @@ $app->post('/answer', function(Request $request, Response $response, array $args
    return $response->withJson($error);
   }
 
+  // Cek apa masih buka
+  $sql = "SELECT * FROM `quiz` WHERE id = :qid";
+
+  try {
+    $db = $this->get('db');
+    $stmt = $db->prepare($sql);
+    $stmt->execute([':qid'=>$quiz_id]);
+    $result = $stmt->fetch();
+
+    if($result['isOpen'] == 0) {
+      return $response->withJson(['error'=>['text' => 'Kuis sudah tutup']]);
+    }
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+
+
   // Cek apakah user sudah pernah jawab
 
   $sql = "SELECT EXISTS(SELECT * FROM user_score WHERE user_id = :user_id AND quiz_id = :quiz_id) as sudah_jawab";
@@ -91,7 +113,7 @@ $app->post('/answer', function(Request $request, Response $response, array $args
     $stmt = $db->prepare($sql);
     $stmt->execute([':user_id' => $user_id, ':quiz_id'=>$quiz_id]);
     $result = $stmt->fetch();
-    
+
     if($result['sudah_jawab'] == 1) {
       return $response->withJson(['error'=>['text' => 'Kuis hanya dapat dijawab sekali']]);
     }
