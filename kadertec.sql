@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Waktu pembuatan: 22 Agu 2018 pada 17.41
--- Versi server: 5.7.23-0ubuntu0.18.04.1
+-- Waktu pembuatan: 30 Agu 2018 pada 14.01
+-- Versi server: 8.0.12
 -- Versi PHP: 7.2.7-0ubuntu0.18.04.2
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -31,17 +31,18 @@ SET time_zone = "+00:00";
 CREATE TABLE `assignments` (
   `id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
-  `description` text NOT NULL
+  `description` text NOT NULL,
+  `isOpen` int(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data untuk tabel `assignments`
 --
 
-INSERT INTO `assignments` (`id`, `title`, `description`) VALUES
-(1, 'Buatlah CV', 'Bikin CV semenarik mungkin'),
-(2, 'Buatlah Resume', 'Bikin resume pertemuan kemarin'),
-(3, 'Buatlah Portofolio', 'Bikin portfolio');
+INSERT INTO `assignments` (`id`, `title`, `description`, `isOpen`) VALUES
+(1, 'Buatlah CV', 'Bikin CV semenarik mungkin', 1),
+(2, 'Buatlah Resume', 'Bikin resume pertemuan kemarin', 1),
+(3, 'Buatlah Portofolio', 'Bikin portfolio', 1);
 
 -- --------------------------------------------------------
 
@@ -54,6 +55,13 @@ CREATE TABLE `coupons` (
   `coupon` varchar(255) NOT NULL,
   `lunas` int(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data untuk tabel `coupons`
+--
+
+INSERT INTO `coupons` (`id`, `coupon`, `lunas`) VALUES
+(2, 'SIVZSSCH', 1);
 
 -- --------------------------------------------------------
 
@@ -129,15 +137,16 @@ INSERT INTO `question_answer` (`id`, `type`, `question`, `answer`, `decoy`, `cre
 
 CREATE TABLE `quiz` (
   `id` int(10) UNSIGNED NOT NULL,
-  `title` text NOT NULL
+  `title` text NOT NULL,
+  `isOpen` int(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data untuk tabel `quiz`
 --
 
-INSERT INTO `quiz` (`id`, `title`) VALUES
-(1, 'Kuis Pendiri Startup');
+INSERT INTO `quiz` (`id`, `title`, `isOpen`) VALUES
+(1, 'Kuis Pendiri Startup', 1);
 
 -- --------------------------------------------------------
 
@@ -147,26 +156,26 @@ INSERT INTO `quiz` (`id`, `title`) VALUES
 
 CREATE TABLE `users` (
   `id` int(10) UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `NIM` int(11) NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `NIM` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `lunas` tinyint(1) NOT NULL,
-  `verified` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `verified` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `isAdmin` tinyint(1) NOT NULL DEFAULT '0',
   `is_active` int(11) NOT NULL DEFAULT '1',
-  `interests` text COLLATE utf8_unicode_ci NOT NULL,
-  `nickname` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `about_me` text COLLATE utf8_unicode_ci NOT NULL,
-  `line_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `instagram` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `mobile` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `tec_regno` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `address` text COLLATE utf8_unicode_ci NOT NULL,
-  `profile_picture` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `profile_picture_url` text COLLATE utf8_unicode_ci,
+  `interests` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `nickname` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `about_me` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `line_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `instagram` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `mobile` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `tec_regno` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `address` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `profile_picture` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `profile_picture_url` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
   `role` int(11) NOT NULL DEFAULT '1',
   `gid` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -176,12 +185,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `NIM`, `created_at`, `updated_at`, `lunas`, `verified`, `isAdmin`, `is_active`, `interests`, `nickname`, `about_me`, `line_id`, `instagram`, `mobile`, `tec_regno`, `address`, `profile_picture`, `profile_picture_url`, `role`, `gid`) VALUES
-(1, 'Terry Djony', 'demokader@tec.itb.ac.id', '$2y$10$nsAWzVA4SZi.Df9INWS.g.EyJKtuHjKugZSYttjwxXtoYJ57UEKpq', 13316014, '2018-05-24 01:10:00', '2018-05-24 01:10:48', 0, 'Yes', 1, 1, 'fnb,artsndesign', 'Terry', 'testetstewttestetsettststes', 'test', 'test', '0818888888', 'A17001', 'Test', 'userpic/user_1_7ce0168cfad5a1c4.jpg', 'https://tec-test.sgp1.digitaloceanspaces.com/userpic/user_1_7ce0168cfad5a1c4.jpg', 1, NULL),
-(2, 'John Terry', 'johnterry@gmail.com', '$2y$10$AcfUvDusmZN5/ZRbWAFHZOswg22gD/UOt.8gFfJy8NAJwaIo0r8Z2', 0, '2018-05-25 10:39:53', '2018-05-25 16:39:54', 0, '659a6d82e0ec8cbb5ac3f60adb9fcaf4', 0, 1, 'tech,financial', 'Terry', 'testt te ste ts et est', 'test', 'test', '09975564250', '', 'testtetstetset', '', '', 1, NULL),
-(3, 'Terry Jhonny', 'terryjhonny@gmail.com', '$2y$10$tG/20YpUK9diSPB75aJfSu.yqr8POHssDIP6fGgb4kEdkxR6sQpDW', 0, '2018-05-25 13:48:49', '2018-05-25 19:48:50', 1, 'fb2206e6c003e65c3dfc00caefd67fcf', 0, 1, '', '', '', '', '', '', '', '', '', '', 1, NULL),
-(4, 'Muhammad Aditya Hilmy', 'didithilmy@gmail.com', '$2y$10$nq6vUexGUmP.noqWQwjAAu05eunkqZ9cYriAYd0Wz.SHiKw4cmnHC', 16517292, '2018-06-23 03:27:06', '2018-06-23 03:27:06', 1, 'c4dd7ea1dd5f70f7ba7da117cb84c271', 0, 1, 'tech,financial', 'Didit', 'Technology enthusiast, problem solver, curious person.', 'webid', 'didithilmy', '087870408551', 'TEC001', 'Jl. Bogor', NULL, '', 1, NULL),
-(5, 'Adyaksa Wisanggeni', 'adyaksa@iwa.ng', '$2y$10$W/sVuNC73RgVexLhMwRMj.jA2rN0th7owX7hrdxn.m2YuAoIAt29G', 16517351, '2018-06-23 03:58:28', '2018-06-23 03:58:28', 1, 'ca2f4a7e9673829acde6eaacb1629912', 0, 1, 'tech,artsndesign', 'Iwang', 'Saya wibu', 'wangky', '-', '08111111111', 'TEC044', 'Tokopedia Tower', 'userpic/user_5_029a1395072f3e1c.jpg', 'https://tec-test.sgp1.digitaloceanspaces.com/userpic/user_5_029a1395072f3e1c.jpg', 1, NULL),
-(9, 'Hermawansyah Hidayat', 'erwan@tec.or.id', '$2y$10$yAhBPe/BY2bd1KSAlQHMHOdzIWJHtcGl3.DHba3uQkXrZ3gbzucAC', 10516010, '2018-08-20 14:11:00', '2018-08-20 14:11:00', 0, 'f2975d4d49e1209ff0754838da8f3877', 0, 1, 'fashion,artsndesign', 'Erwan', 'Meh', 'idtec', 'idtec', '086516625617', 'TEC045', 'Jl. Bandung', NULL, NULL, 1, NULL);
+(1, 'Terry Djony', 'demokader@tec.itb.ac.id', '$2y$10$nsAWzVA4SZi.Df9INWS.g.EyJKtuHjKugZSYttjwxXtoYJ57UEKpq', '13316014', '2018-05-24 01:10:00', '2018-05-24 01:10:48', 0, 'Yes', 1, 1, 'fnb,artsndesign', 'Terry', 'testetstewttestetsettststes', 'test', 'test', '0818888888', 'A17001', 'Test', 'userpic/user_1_7ce0168cfad5a1c4.jpg', 'https://tec-test.sgp1.digitaloceanspaces.com/userpic/user_1_7ce0168cfad5a1c4.jpg', 1, NULL),
+(2, 'John Terry', 'johnterry@gmail.com', '$2y$10$AcfUvDusmZN5/ZRbWAFHZOswg22gD/UOt.8gFfJy8NAJwaIo0r8Z2', '0', '2018-05-25 10:39:53', '2018-05-25 16:39:54', 0, '659a6d82e0ec8cbb5ac3f60adb9fcaf4', 0, 1, 'tech,financial', 'Terry', 'testt te ste ts et est', 'test', 'test', '09975564250', '', 'testtetstetset', '', '', 1, NULL),
+(3, 'Terry Jhonny', 'terryjhonny@gmail.com', '$2y$10$tG/20YpUK9diSPB75aJfSu.yqr8POHssDIP6fGgb4kEdkxR6sQpDW', '0', '2018-05-25 13:48:49', '2018-05-25 19:48:50', 1, 'fb2206e6c003e65c3dfc00caefd67fcf', 0, 1, '', '', '', '', '', '', '', '', '', '', 1, NULL),
+(4, 'Muhammad Aditya Hilmy', 'didithilmy@gmail.com', '$2y$10$nq6vUexGUmP.noqWQwjAAu05eunkqZ9cYriAYd0Wz.SHiKw4cmnHC', '16517292', '2018-06-23 03:27:06', '2018-06-23 03:27:06', 1, 'c4dd7ea1dd5f70f7ba7da117cb84c271', 0, 1, 'tech,financial', 'Didit', 'Technology enthusiast, problem solver, curious person.', 'webid', 'didithilmy', '087870408551', 'TEC001', 'Jl. Bogor', NULL, '', 1, NULL),
+(5, 'Adyaksa Wisanggeni', 'adyaksa@iwa.ng', '$2y$10$W/sVuNC73RgVexLhMwRMj.jA2rN0th7owX7hrdxn.m2YuAoIAt29G', '16517351', '2018-06-23 03:58:28', '2018-06-23 03:58:28', 1, 'ca2f4a7e9673829acde6eaacb1629912', 0, 1, 'tech,artsndesign', 'Iwang', 'Saya wibu', 'wangky', '-', '08111111111', 'TEC044', 'Tokopedia Tower', 'userpic/user_5_029a1395072f3e1c.jpg', 'https://tec-test.sgp1.digitaloceanspaces.com/userpic/user_5_029a1395072f3e1c.jpg', 1, NULL),
+(9, 'Hermawansyah Hidayat', 'erwan@tec.or.id', '$2y$10$yAhBPe/BY2bd1KSAlQHMHOdzIWJHtcGl3.DHba3uQkXrZ3gbzucAC', '10516010', '2018-08-20 14:11:00', '2018-08-20 14:11:00', 0, 'f2975d4d49e1209ff0754838da8f3877', 0, 1, 'fashion,artsndesign', 'Erwan', 'Meh', 'idtec', 'idtec', '086516625617', 'TEC045', 'Jl. Bandung', NULL, NULL, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -193,7 +202,8 @@ CREATE TABLE `user_answer` (
   `id` int(10) UNSIGNED NOT NULL,
   `answer` text NOT NULL,
   `qa_id` int(10) UNSIGNED NOT NULL,
-  `user_id` int(10) UNSIGNED NOT NULL
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `answered_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -208,7 +218,7 @@ CREATE TABLE `user_assignment` (
   `assignment_id` int(11) NOT NULL,
   `filename` varchar(255) NOT NULL,
   `file_url` text NOT NULL,
-  `uploaded_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `uploaded_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -226,11 +236,11 @@ INSERT INTO `user_assignment` (`id`, `user_id`, `assignment_id`, `filename`, `fi
 
 CREATE TABLE `user_memories` (
   `id` bigint(20) NOT NULL,
-  `user_id` text COLLATE utf8_unicode_ci NOT NULL,
-  `memories_with` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Entity UID (TEC regno)',
-  `text` text COLLATE utf8_unicode_ci,
-  `img_path` text COLLATE utf8_unicode_ci,
-  `img_filename` text COLLATE utf8_unicode_ci NOT NULL
+  `user_id` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `memories_with` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'Entity UID (TEC regno)',
+  `text` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+  `img_path` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+  `img_filename` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -303,15 +313,9 @@ CREATE TABLE `user_score` (
   `id` int(10) UNSIGNED NOT NULL,
   `score` int(11) NOT NULL,
   `quiz_id` int(10) UNSIGNED NOT NULL,
-  `user_id` int(10) UNSIGNED NOT NULL
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `submitted_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data untuk tabel `user_score`
---
-
-INSERT INTO `user_score` (`id`, `score`, `quiz_id`, `user_id`) VALUES
-(1, 50, 1, 1);
 
 --
 -- Indexes for dumped tables
@@ -412,7 +416,7 @@ ALTER TABLE `assignments`
 -- AUTO_INCREMENT untuk tabel `coupons`
 --
 ALTER TABLE `coupons`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `groups`
@@ -442,13 +446,13 @@ ALTER TABLE `quiz`
 -- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT untuk tabel `user_answer`
 --
 ALTER TABLE `user_answer`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `user_assignment`
@@ -461,6 +465,12 @@ ALTER TABLE `user_assignment`
 --
 ALTER TABLE `user_relations`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+
+--
+-- AUTO_INCREMENT untuk tabel `user_score`
+--
+ALTER TABLE `user_score`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
