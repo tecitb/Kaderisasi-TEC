@@ -8,6 +8,8 @@ php:
 services:
   - docker
 
+before_script: composer install
+
 script:
   - docker build -t tec/intern/rest-api-web .
   - docker tag tec/intern/rest-api-web node2.didithilmy.com/tec/intern/rest-api-web
