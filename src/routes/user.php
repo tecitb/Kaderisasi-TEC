@@ -39,6 +39,41 @@ $app->get('/user/{id:[0-9]+}',function(Request $request, Response $response, arr
     }
 });
 
+// GET USER INFO
+$app->get('/user/{id:[0-9]+}/group',function(Request $request, Response $response, array $args) {
+    if($request->getAttribute("jwt")['isAdmin'] != 1){
+        if ($request->getAttribute("jwt")['id'] != $args['id']) {
+            $error = ['error' => ['text' => 'Permission denied']];
+            return $response->withJson($error);
+        }
+    }
+
+    // Input validation
+    if(empty($args['id'])) {
+        $error = ['error' => ['text' => 'id cannot be empty']];
+        return $response->withJson($error);
+    }
+
+    $sql = "SELECT * FROM user_group WHERE uid=:uid";
+
+    try {
+        $db = $this->get('db');
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute([
+            ':uid' => $args['id']
+        ]);
+        $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $db = null;
+        return $response->withJson($groups);
+    }
+    catch (PDOException $e) {
+        $error = ['error' => ['text' => $e->getMessage()]];
+        return $response->withJson($error);
+    }
+});
+
 // GET USER INFO by TEC REG NO
 $app->get('/user/regno/{id}',function(Request $request, Response $response, array $args) {
     if($request->getAttribute("jwt")['isAdmin'] != 1){
@@ -429,7 +464,7 @@ $app->get('/group/{gid:[0-9]+}/members', function(Request $request, Response $re
     return $response->withJson($error);
   }
 
-  $sql = "SELECT `id`,`NIM`,`tec_regno`,`name`,`profile_picture` FROM `users` WHERE gid=:gid";
+  $sql = "SELECT `id`,`NIM`,`tec_regno`,`name`,`profile_picture` FROM `users` INNER JOIN `user_group` ON `uid`=`id` WHERE user_group.gid=:gid";
 
   try {
     $stmt = $db->prepare($sql);
