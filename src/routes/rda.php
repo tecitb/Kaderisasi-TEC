@@ -4,6 +4,9 @@
  * This endpoint allows third-party data access using Data Access Code
  */
 
+use Slim\Http\Request;
+use Slim\Http\Response;
+
 /**
  * Get user Data Access Code
  */
