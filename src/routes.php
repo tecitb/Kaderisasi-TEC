@@ -29,4 +29,5 @@ $app->group('/api', function(\Slim\App $app) {
     require_once __DIR__ . '/routes/memories.php';
     require_once __DIR__ . '/routes/admin_only.php';
     require_once __DIR__ . '/routes/lineredir.php';
+    require_once __DIR__ . '/routes/rda.php';
 });
