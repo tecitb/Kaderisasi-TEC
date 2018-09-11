@@ -27,7 +27,7 @@ $app->get('/rda/dac',function(Request $request, Response $response, array $args)
 
         // Get last used by user info
         if(!empty($dac->last_used_by)) {
-            $qf = "SELECT `name` FROM `users` WHERE `user_id`=:user_id";
+            $qf = "SELECT `name` FROM `users` WHERE `id`=:user_id";
             $stmt = $db->prepare($qf);
             $stmt->execute([
                 ':user_id' => $dac->last_used_by
