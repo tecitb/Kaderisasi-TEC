@@ -342,3 +342,23 @@ $app->get("/dp/{id}",  function(Request $request, Response $response, array $arg
         return $response->withStatus(500);
     }
 });
+
+
+// Get all groups name and id
+$app->get('/groups', function(Request $request, Response $response, array $args) {
+  $sql = "SELECT * FROM `groups`";
+
+  $db = $this->get('db');
+  try {
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    $result = $stmt->fetchAll();
+  }
+  catch (PDOException $e) {
+    $error = ['error' => ['text' => $e->getMessage()]];
+    return $response->withJson($error);
+  }
+
+  return $response->withJson($result);
+
+});
