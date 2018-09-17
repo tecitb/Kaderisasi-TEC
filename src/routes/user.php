@@ -5,6 +5,8 @@ use \Firebase\JWT\JWT;
 use Slim\Http\UploadedFile;
 use Aws\S3\S3Client;
 
+const MSDMRole = 12;
+
 // GET USER INFO
 $app->get('/user/{id:[0-9]+}',function(Request $request, Response $response, array $args) {
     if($request->getAttribute("jwt")['isAdmin'] != 1){
@@ -54,7 +56,27 @@ $app->get('/user/{id:[0-9]+}/group',function(Request $request, Response $respons
         return $response->withJson($error);
     }
 
-    $sql = "SELECT * FROM user_group WHERE uid=:uid";
+    // Check msdm
+    $sql = "SELECT `role` FROM `users` WHERE `id`=:uid";
+
+    $db = $this->get('db');
+    try {
+      $stmt = $db->prepare($sql);
+      $stmt->execute([":uid" => $request->getAttribute("jwt")["id"]]);
+      $cekRole = $stmt->fetch();
+    }
+    catch (PDOException $e) {
+      $error = ['error' => ['text' => $e->getMessage()]];
+      return $response->withJson($error);
+    }
+
+    if($cekRole["role"]==MSDMRole){
+      $sql = "SELECT id as gid FROM `groups`";
+    }else{
+      $sql = "SELECT id as gid FROM `groups` WHERE head=:uid";
+    }
+
+
 
     try {
         $db = $this->get('db');
@@ -460,11 +482,26 @@ $app->get('/group/{gid:[0-9]+}/members', function(Request $request, Response $re
   }
 
   if($result["head"] != $request->getAttribute("jwt")["id"]){
-    $error = ['error' => ['text' => 'Not head of group']];
-    return $response->withJson($error);
+    $sql = "SELECT `role` FROM `users` WHERE `id`=:uid";
+
+    $db = $this->get('db');
+    try {
+      $stmt = $db->prepare($sql);
+      $stmt->execute([":uid" => $request->getAttribute("jwt")["id"]]);
+      $cekRole = $stmt->fetch();
+    }
+    catch (PDOException $e) {
+      $error = ['error' => ['text' => $e->getMessage()]];
+      return $response->withJson($error);
+    }
+
+    if($cekRole["role"]!=MSDMRole){
+      $error = ['error' => ['text' => 'Not head of group']];
+      return $response->withJson($error);
+    }
   }
 
-  $sql = "SELECT `id`,`NIM`,`tec_regno`,`name`,`profile_picture` FROM `users` INNER JOIN `user_group` ON `uid`=`id` WHERE user_group.gid=:gid";
+  $sql = "SELECT `id`,`NIM`,`tec_regno`,`name`,`profile_picture_url` FROM `users` INNER JOIN `user_group` ON `uid`=`id` WHERE user_group.gid=:gid";
 
   try {
     $stmt = $db->prepare($sql);
