@@ -5,6 +5,8 @@ use \Firebase\JWT\JWT;
 use Slim\Http\UploadedFile;
 use Aws\S3\S3Client;
 
+const MSDMRole = 12;
+
 // GET USER INFO
 $app->get('/user/{id:[0-9]+}',function(Request $request, Response $response, array $args) {
     if($request->getAttribute("jwt")['isAdmin'] != 1){
@@ -68,7 +70,7 @@ $app->get('/user/{id:[0-9]+}/group',function(Request $request, Response $respons
       return $response->withJson($error);
     }
 
-    if($cekRole["role"]==2){
+    if($cekRole["role"]==MSDMRole){
       $sql = "SELECT id as gid FROM `groups`";
     }else{
       $sql = "SELECT id as gid FROM `groups` WHERE head=:uid";
@@ -493,7 +495,7 @@ $app->get('/group/{gid:[0-9]+}/members', function(Request $request, Response $re
       return $response->withJson($error);
     }
 
-    if($cekRole["role"]!=2){
+    if($cekRole["role"]!=MSDMRole){
       $error = ['error' => ['text' => 'Not head of group']];
       return $response->withJson($error);
     }
